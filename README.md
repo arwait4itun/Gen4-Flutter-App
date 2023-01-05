@@ -1,6 +1,6 @@
 # flyer
 
-A new Flutter project.
+Application for microspin
 
 ## Getting Started
 
