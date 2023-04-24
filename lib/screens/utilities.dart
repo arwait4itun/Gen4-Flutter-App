@@ -5,6 +5,8 @@ import 'package:flyer/globals.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:flyer/screens/animations/ripple_animation.dart';
 
+import '../services/file_service.dart';
+
 class UtilitiesPage extends StatefulWidget {
   const UtilitiesPage({Key? key}) : super(key: key);
 
@@ -47,8 +49,9 @@ class _UtilitiesPageState extends State<UtilitiesPage>  with SingleTickerProvide
           const RipplesAnimation()
           : Center(
             child: Container(
-            height: MediaQuery.of(context).size.height*0.3,
-            width: MediaQuery.of(context).size.width*0.3,
+            height: MediaQuery.of(context).size.height*0.20,
+            width: MediaQuery.of(context).size.width*0.2,
+            margin: EdgeInsets.only(top: 24,bottom: 25),
             decoration: const BoxDecoration(
                 color: Colors.red,
                 shape: BoxShape.circle
@@ -56,7 +59,7 @@ class _UtilitiesPageState extends State<UtilitiesPage>  with SingleTickerProvide
             child: const Icon(
               Icons.play_arrow,
               color: Colors.white,
-              size: 55,
+              size: 50,
             ),
           ),
           ),
@@ -84,7 +87,13 @@ class _UtilitiesPageState extends State<UtilitiesPage>  with SingleTickerProvide
           Text("File size: 0KB"),
           SizedBox.fromSize(),
           ElevatedButton(
-              onPressed: ()=>{},
+              onPressed: (){
+
+                List<List<String>> _list = [["hi","bye"],["12","34"]];
+
+                FileService().writeLog(_list);
+
+              },
               child: Text("UPLOAD TO SERVER"),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).primaryColor),
