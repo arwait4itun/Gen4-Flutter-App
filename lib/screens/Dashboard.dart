@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flyer/screens/drawer.dart';
 import 'package:flyer/screens/settings.dart';
 import 'package:flyer/screens/status.dart';
 import 'package:flyer/screens/tests.dart';
@@ -33,6 +34,7 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
 
   void _onTapFloatingActionButton(){
     showModalBottomSheet(
+        isDismissible: false,
         context: context,
         builder: (context){
           return UtilitiesPage();
@@ -45,11 +47,7 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      drawer: const Drawer(
-        child: Center(
-          child: Text("drawer"),
-        ),
-      ),
+      drawer: DrawerPage(),
       bottomNavigationBar: navigationBar(),
       body: _pages[_selectedIndex],
       floatingActionButton: FloatingActionButton(

@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flyer/screens/Dashboard.dart';
+import 'package:flyer/services/provider_service.dart';
+import 'package:provider/provider.dart';
 import 'globals.dart' as globals;
 
-void main() {
-  runApp(const MyApp());
-}
 
+
+void main() {
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ConnectionProvider(),
+      child: const MyApp(),
+    ),
+  );
+}
 
 
 class MyApp extends StatelessWidget {
@@ -19,6 +28,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.lightGreen,
         highlightColor: Colors.lightGreenAccent,
+        sliderTheme: const SliderThemeData(
+          showValueIndicator: ShowValueIndicator.always,
+        ),
       ),
       home: const DashboardScaffold(),
       debugShowCheckedModeBanner: false,
