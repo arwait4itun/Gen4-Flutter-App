@@ -120,6 +120,9 @@ class RequestSettings{
     else if(t==SettingsAttribute.rampdownTime.hexVal){
       return SettingsAttribute.rampdownTime.name;
     }
+    else if(t==SettingsAttribute.changeLayerTime.hexVal){
+      return SettingsAttribute.changeLayerTime.name;
+    }
     else{
       return "";
     }
@@ -129,7 +132,7 @@ class RequestSettings{
 
 void main() {
 
-  String p = "7E740200115004028A51044100000052043F800000540404B0550400FA56044000000057043FCCCCCD5804003053043F8000005904000F6004000F7E";
+  String p = "7E840200125004028A51084100000052083F99999A540404B05504011856084040000057083F8000005804003053083F80000059042EE060041F4060041F40610403207E";
   
   print(RequestSettings().decode(p));
 }
