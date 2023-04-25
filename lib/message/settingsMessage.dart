@@ -16,6 +16,7 @@ class SettingsMessage{
   String bareBobbinDia;
   String rampupTime;
   String rampdownTime;
+  String changeLayerTime;
   
   SettingsMessage({
   required this.spindleSpeed,
@@ -29,6 +30,7 @@ class SettingsMessage{
   required this.bareBobbinDia,
   required this.rampupTime,
   required this.rampdownTime,
+  required this.changeLayerTime
   });
 
   String createPacket(){
@@ -36,7 +38,7 @@ class SettingsMessage{
     String packet = "";
 
     String packetLength = "";
-    String attributeCount =  "11";
+    String attributeCount =  SettingsAttribute.values.length.toString();
 
     int bit4 = 4; //for padding
     String bit4s = "04";
@@ -62,7 +64,7 @@ class SettingsMessage{
     packet += attribute(SettingsAttribute.bareBobbinDia.hexVal, bit4s, padding(bareBobbinDia, bit4));
     packet += attribute(SettingsAttribute.rampupTime.hexVal, bit4s, padding(rampupTime, bit4));
     packet += attribute(SettingsAttribute.rampdownTime.hexVal, bit4s, padding(rampdownTime, bit4));
-
+    packet += attribute(SettingsAttribute.changeLayerTime.hexVal, bit4s, padding(changeLayerTime, bit4));
 
     packet += Separator.eof.hexVal;
 
@@ -113,5 +115,5 @@ void main(){
 
   String s ="12345678";
 
-  print(s.substring(1,5));
+  print(SettingsAttribute.values.length.toString());
 }

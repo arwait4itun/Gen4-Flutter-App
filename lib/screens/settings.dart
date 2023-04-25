@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -33,6 +34,9 @@ class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _bareBobbinDia = new TextEditingController();
   final TextEditingController _rampupTime = new TextEditingController();
   final TextEditingController _rampdownTime = new TextEditingController();
+  final TextEditingController _changeLayerTime = new TextEditingController();
+
+  var settingsListenController = StreamController<Uint8List>.broadcast();
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +78,7 @@ class _SettingsPageState extends State<SettingsPage> {
               _customRow("Bare Bobbin-dia", _bareBobbinDia, isFloat: false, defaultValue: "48"),
               _customRow("Rampup Time", _rampupTime, isFloat: false,defaultValue: "12"),
               _customRow("Rampdown Time", _rampdownTime, isFloat: false, defaultValue: "12"),
+              _customRow("Change Layer Time (ms)", _changeLayerTime, isFloat: false, defaultValue: "800"),
             ],
           ),
           Container(
@@ -108,6 +113,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _bareBobbinDia.text = "48";
                     _rampupTime.text= "12";
                     _rampdownTime.text = "12";
+                    _changeLayerTime.text = "800";
                   },
                   icon: Icon(Icons.build,color: Theme.of(context).primaryColor,),
                 ),
@@ -118,7 +124,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                     if(_valid == "valid"){
 
-                      SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, lengthLimit: _lengthLimit.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text);
+                      SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, lengthLimit: _lengthLimit.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
 
                       String _msg = _sm.createPacket();
 
@@ -144,7 +150,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                           ScaffoldMessenger.of(context).showSnackBar(_sb);
                         }
-                      }).onDone(() { });
+                      }).onDone(() {});
 
 
                     }
@@ -392,6 +398,20 @@ class _SettingsPageState extends State<SettingsPage> {
       }
     }
 
+    if(_changeLayerTime.text.trim() == "" ){
+      errorMessage = "Change Layer Time is Empty!";
+      return errorMessage;
+    }
+    else{
+      List range = globals.settingsLimits["changeLayerTime"]!;
+      double val = double.parse(_changeLayerTime.text.trim());
+
+      if(val < range[0] || val > range[1]){
+        errorMessage = "Rampdown Time values should be within $range";
+        return errorMessage;
+      }
+    }
+
     return errorMessage;
   }
 
@@ -404,11 +424,13 @@ class _SettingsPageState extends State<SettingsPage> {
 
       SnackBar _sb = SnackBarService(message: "Sent Request for Settings!", color: Colors.green).snackBar();
 
-      ScaffoldMessenger.of(context).showSnackBar(_sb);
+      //ScaffoldMessenger.of(context).showSnackBar(_sb);
+
 
       globals.connection!.input!.listen((data) {
         String _d = utf8.decode(data);
 
+        //print("here: $_d");
         Map<String, double> settings = RequestSettings().decode(_d);
 
         if(settings.isEmpty){
@@ -426,7 +448,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _bareBobbinDia.text = settings["bareBobbinDia"]!.toInt().toString();
         _rampupTime.text = settings["rampupTime"]!.toInt().toString();
         _rampdownTime.text = settings["rampdownTime"]!.toInt().toString();
-
+        _changeLayerTime.text = settings["changeLayerTime"]!.toInt().toString();
       }).onDone(() { });
 
       _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
@@ -434,11 +456,23 @@ class _SettingsPageState extends State<SettingsPage> {
       ScaffoldMessenger.of(context).showSnackBar(_sb);
     }
     catch(e){
-      print("Settings: $e.toString()");
+      print("Settings!: ${e.toString()}");
 
-      SnackBar _sb = SnackBarService(message: "Error in Receiving Settings", color: Colors.red).snackBar();
+      //Remember to change this error suppression
+      if(e.toString() !=  "Bad state: Stream has already been listened to."){
 
-      ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+        SnackBar _sb = SnackBarService(message: "Error in Receiving Settings", color: Colors.red).snackBar();
+
+        ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+      }
+      else{
+        SnackBar _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
+
+        ScaffoldMessenger.of(context).showSnackBar(_sb);
+      }
+
     }
 
   }

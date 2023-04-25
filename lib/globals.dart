@@ -24,4 +24,5 @@ Map<String,List> settingsLimits = {
    "bareBobbinDia":[46,52],
    "rampupTime":[5,20],
    "rampdownTime":[5,20],
+   "changeLayerTime": [200,2500],
 };

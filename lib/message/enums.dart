@@ -215,6 +215,7 @@ enum SettingsAttribute{
   bareBobbinDia,
   rampupTime,
   rampdownTime,
+  changeLayerTime,
 }
 
 extension SettingsAttributeTypeExtension on SettingsAttribute{
@@ -244,6 +245,8 @@ extension SettingsAttributeTypeExtension on SettingsAttribute{
         return "59";
       case SettingsAttribute.rampdownTime:
         return "60";
+      case SettingsAttribute.changeLayerTime:
+        return "61";
     }
   }
 }
