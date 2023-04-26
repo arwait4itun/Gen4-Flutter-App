@@ -47,21 +47,8 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      drawer: DrawerPage(),
       bottomNavigationBar: navigationBar(),
       body: _pages[_selectedIndex],
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          _onTapFloatingActionButton();
-        },
-        backgroundColor: Colors.grey[400],
-        child: const Icon(
-          Icons.circle,
-          color: Colors.red,
-          size: 55,
-        ),
-      ),
-
     );
   }
 
