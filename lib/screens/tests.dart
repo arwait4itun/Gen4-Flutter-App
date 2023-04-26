@@ -36,7 +36,6 @@ class _TestPageState extends State<TestPage> {
 
 
   late double _target = 10; //10-90%
- // final TextEditingController _targetRPM = new TextEditingController();
   late String _testRuntime = "20";
   late double _testRuntimeval = 20;
 
@@ -46,13 +45,11 @@ class _TestPageState extends State<TestPage> {
   String _dutyPerc="10";
   String prev="0";
 
-
   //stop diagnose variables
   bool _running = false; //running true -> stop diagnose; else run diagnose
 
   String? _runningRPM;
   String? _runningSignalVoltage;
-
 
 
   @override
@@ -65,9 +62,7 @@ class _TestPageState extends State<TestPage> {
 
   }
 
-
   Widget _stopDiagnoseUI(){
-
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
@@ -164,9 +159,12 @@ class _TestPageState extends State<TestPage> {
             },
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children: <TableRow>[
+
+              // This is the test Type section, and has the first row
+              // this row is always there on screen. Based on what you choose in this
+              // rows get populated or not.
               TableRow(
                 children: <Widget>[
-
                   TableCell(
                     verticalAlignment: TableCellVerticalAlignment.middle,
                     child: Container(
@@ -205,9 +203,10 @@ class _TestPageState extends State<TestPage> {
                       ),
                     ),
                   ),
-
                 ],
               ),
+
+              // this is the
               _testTypeChoice=="MOTOR"?
               TableRow(
                 children: <Widget>[
@@ -253,16 +252,19 @@ class _TestPageState extends State<TestPage> {
 
                 ],
               )
-                  :TableRow(
+              :TableRow(
                   children: <Widget>[
                     TableCell(child: Container()),
                     TableCell(child: Container()),
                   ]
               ),
 
-              _testTypeChoice=="MOTOR"? TableRow(
+              // this is the control Type section.
+              //if motor show option to choose control type from dropdown, else
+              //if its lift you just show control type as a fixed close Loop.
+              _testTypeChoice=="MOTOR"?
+              TableRow(
                 children: <Widget>[
-
                   TableCell(
                     verticalAlignment: TableCellVerticalAlignment.middle,
                     child: Container(
@@ -303,8 +305,7 @@ class _TestPageState extends State<TestPage> {
                   ),
 
                 ],
-              ):
-              TableRow(children: <Widget>[TableCell(
+              ):TableRow(children: <Widget>[TableCell(
                 verticalAlignment: TableCellVerticalAlignment.middle,
                 child: Container(
                   margin: EdgeInsets.only(left: 5, right: 5),
@@ -325,6 +326,8 @@ class _TestPageState extends State<TestPage> {
                   ),
                 ),]),
 
+
+              // this is target% section.
               _testTypeChoice=="MOTOR"?
               _targetRow("Target(%)")
                   :  TableRow(
@@ -337,7 +340,6 @@ class _TestPageState extends State<TestPage> {
               _testTypeChoice=="MOTOR" && _controlTypeChoice!="OPEN LOOP" ?
               TableRow(
                 children: <Widget>[
-
                   TableCell(
                     verticalAlignment: TableCellVerticalAlignment.middle,
                     child: Container(
@@ -525,7 +527,6 @@ class _TestPageState extends State<TestPage> {
               ),
             ),
           ),
-
 
         ],
       ),

@@ -68,7 +68,7 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
   AppBar appBar(){
 
     return AppBar(
-      title: const Text("Dashboard"),
+      title: const Text("Flyer Frame"),
       backgroundColor: Theme.of(context).primaryColor,
       elevation: 1.0,
       shadowColor: Theme.of(context).highlightColor,
