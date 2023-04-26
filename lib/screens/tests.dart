@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/diagnosticMessage.dart';
 
 import 'package:flyer/globals.dart' as globals;
@@ -17,7 +18,6 @@ class TestPage extends StatefulWidget {
 class _TestPageState extends State<TestPage> {
 
   //run diagnose variables
-
   List<String> _testType = ["MOTOR","LIFT"];
   List<String> _motorName = ["FLYER","BOBBIN","FRONT ROLLER","BACK ROLLER","DRAFTING","WINDING"];
   List<String> _controlType = ["OPEN LOOP","CLOSED LOOP"];
@@ -36,6 +36,7 @@ class _TestPageState extends State<TestPage> {
 
 
   late double _target = 10; //10-90%
+ // final TextEditingController _targetRPM = new TextEditingController();
   late String _testRuntime = "20";
   late double _testRuntimeval = 20;
 
@@ -50,6 +51,34 @@ class _TestPageState extends State<TestPage> {
 
   String? _runningRPM;
   String? _runningSignalVoltage;
+
+  BluetoothConnection? connection;
+  bool isConnected = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+
+    BluetoothConnection.toAddress(globals.selectedDevice!.address).then((_connection) {
+      print('Connected to the device');
+
+      connection = _connection;
+      isConnected = true;
+      setState(() {
+
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    connection?.dispose();
+    connection = null;
+    super.dispose();
+  }
 
 
   @override
@@ -68,7 +97,7 @@ class _TestPageState extends State<TestPage> {
       width: MediaQuery.of(context).size.width,
 
       child: StreamBuilder<Uint8List>(
-        stream: globals.connection!.input,
+        stream: connection!.input,
         builder: (context, snapshot) {
           if(snapshot.hasData){
             var data = snapshot.data;
@@ -83,7 +112,7 @@ class _TestPageState extends State<TestPage> {
               _runningSignalVoltage = _diagResponse["signalVoltage"]!.toStringAsFixed(2);
             }
             catch(e){
-              print("Tests: ${e.toString()}");
+              print("tests1: ${e.toString()}");
             }
           }
 
@@ -430,7 +459,6 @@ class _TestPageState extends State<TestPage> {
                   ]
               ),
 
-
               _testTypeChoice=="LIFT"?
               TableRow(
                 children: <Widget>[
@@ -755,6 +783,12 @@ class _TestPageState extends State<TestPage> {
   void runDiagnose() async {
 
     try {
+
+      if(!isConnected || connection==null){
+        connection = reconnect();
+        isConnected = true;
+      }
+
       DiagnosticMessage _dm = DiagnosticMessage(
           testTypeChoice: _testTypeChoice,
           motorNameChoice: _motorNameChoice,
@@ -766,9 +800,10 @@ class _TestPageState extends State<TestPage> {
 
       String _m = _dm.createPacket();
 
-      globals.connection!.output.add(Uint8List.fromList(utf8.encode(_m)));
 
-      await globals.connection!.output.allSent;
+      connection!.output.add(Uint8List.fromList(utf8.encode(_m)));
+
+      await connection!.output!.allSent;
       //globals.connection!.close();
 
       setState(() {
@@ -776,20 +811,35 @@ class _TestPageState extends State<TestPage> {
       });
     }
     catch(e){
-      print("Tests: ${e.toString()}");
+
+      print("Tests2: ${e.toString()}");
     }
 
+  }
+
+
+  BluetoothConnection? reconnect(){
+    BluetoothConnection.toAddress(globals.selectedDevice!.address).then((_connection) {
+      print('Reconnected to the device');
+
+      connection = _connection;
+      return connection;
+    });
   }
 
   void stopDiagnose() async {
 
     try{
       setState(() {
+        connection!.dispose();
+        connection = null;
+
+        isConnected = false;
         _running = false;
       });
     }
     catch(e){
-      print("Tests: ${e.toString()}");
+      print("Tests3: ${e.toString()}");
     }
   }
 }

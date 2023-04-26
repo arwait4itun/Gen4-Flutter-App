@@ -11,7 +11,7 @@ class FileService {
     final directory = await getApplicationDocumentsDirectory();
 
 
-    String _logPath = directory.path+"/flyer_logs";
+    String _logPath = directory!.path+"/flyer_logs";
 
     if(File(_logPath).existsSync()){
       return _logPath;

@@ -187,17 +187,20 @@ class _BluetoothPageState extends State<BluetoothPage> {
                           ConnectionProvider().setConnection(true);
 
                           globals.selectedDevice = selectedDevice;
-                          globals.connection = await BluetoothConnection.toAddress(selectedDevice.address);
+                          BluetoothConnection connection = await BluetoothConnection.toAddress(selectedDevice.address);
 
                           //impaired message
-                          globals.connection!.output.add(ascii.encode(ImPaired().createPacket()));
-                          await globals.connection!.output.allSent;
+                          connection!.output!.add(ascii.encode(ImPaired().createPacket()));
+                          connection!.output.allSent;
 
                           Provider.of<ConnectionProvider>(context,listen: false).setConnection(true);
 
                           SnackBar _sb = SnackBarService(message: "Connected!", color: Colors.green).snackBar();
 
-                          ScaffoldMessenger.of(context).showSnackBar(_sb);
+                          await ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+                          Navigator.of(context).pushNamed("/dashboard");
+
                         } else {
                           print('Discovery -> no device selected');
 
@@ -233,17 +236,20 @@ class _BluetoothPageState extends State<BluetoothPage> {
                         globals.isConnected = true;
                         ConnectionProvider().setConnection(true);
                         globals.selectedDevice = selectedDevice;
-                        globals.connection = await BluetoothConnection.toAddress(selectedDevice.address);
+                        BluetoothConnection connection = await BluetoothConnection.toAddress(selectedDevice.address);
 
                         //im paired message
-                        globals.connection!.output.add(ascii.encode(ImPaired().createPacket()));
-                        await globals.connection!.output.allSent;
+                        connection!.output!.add(ascii.encode(ImPaired().createPacket()));
+                        await connection!.output.allSent;
 
                         Provider.of<ConnectionProvider>(context,listen: false).setConnection(true);
 
                         SnackBar _sb = SnackBarService(message: "Connected!", color: Colors.green).snackBar();
 
-                        ScaffoldMessenger.of(context).showSnackBar(_sb);
+                        await ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+                        Navigator.of(context).pushNamed("/dashboard");
+
                       }
                       catch(e){
 
@@ -319,7 +325,8 @@ class _BluetoothPageState extends State<BluetoothPage> {
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: (){
-          Navigator.pop(context);
+          print("exit");
+          SystemNavigator.pop();
         },
       ),
     );

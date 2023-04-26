@@ -12,6 +12,7 @@ class SnackBarService{
     return SnackBar(
         content: Text(message,textAlign: TextAlign.center,),
         backgroundColor: color,
+        duration: Duration(seconds: 1),
     );
   }
 }

@@ -87,7 +87,8 @@ class DiagnosticMessage{
         _controlType = ControlType.closedLoop.hexVal;
 
         targetRPM = "1500";
-        int val = (int.parse(targetRPM)*int.parse(target)/100).toInt();
+        int t = double.parse(target).toInt();
+        int val = (int.parse(targetRPM)*t/100).toInt();
 
         subpacket += attribute(DiagnosticAttributeType.targetPercent.hexVal, "04", padding(val.toString(), 4));
         subpacket += attribute(DiagnosticAttributeType.testTime.hexVal, "04", padding(testRuntime,4));
@@ -133,6 +134,7 @@ class DiagnosticMessage{
     if(no==4 || no == 2){
 
       s = double.parse(str).toInt().toString();
+
       s = int.parse(s).toRadixString(16);
       len = s.length;
     }
@@ -165,6 +167,7 @@ class DiagnosticMessageResponse{
 
 
     String sof = packet.substring(0,2); //7E start of frame
+
     int len = int.parse(packet.substring(2,4),radix: 16); //Packet Length
 
     String _diagnosticResponse = packet.substring(4,6);
@@ -206,6 +209,7 @@ class DiagnosticMessageResponse{
       }
 
       if(l==4){
+
         v = int.parse(val,radix: 16).toDouble();
       }
       else{
