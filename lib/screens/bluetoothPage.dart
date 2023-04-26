@@ -190,7 +190,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
                           globals.connection = await BluetoothConnection.toAddress(selectedDevice.address);
 
                           //impaired message
-                          globals.connection!.output!.add(ascii.encode(ImPaired().createPacket()));
+                          globals.connection!.output.add(ascii.encode(ImPaired().createPacket()));
                           await globals.connection!.output.allSent;
 
                           Provider.of<ConnectionProvider>(context,listen: false).setConnection(true);
@@ -236,7 +236,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
                         globals.connection = await BluetoothConnection.toAddress(selectedDevice.address);
 
                         //im paired message
-                        globals.connection!.output!.add(ascii.encode(ImPaired().createPacket()));
+                        globals.connection!.output.add(ascii.encode(ImPaired().createPacket()));
                         await globals.connection!.output.allSent;
 
                         Provider.of<ConnectionProvider>(context,listen: false).setConnection(true);

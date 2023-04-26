@@ -38,7 +38,7 @@ class DiagnosticMessage{
     //attribute count
   //  packet += "5";
 
-    if(this.testTypeChoice == "MOTOR"){
+    if(testTypeChoice == "MOTOR"){
 
 
       String _motorId;

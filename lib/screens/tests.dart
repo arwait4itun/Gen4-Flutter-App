@@ -54,9 +54,9 @@ class _TestPageState extends State<TestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Container(
         padding: EdgeInsets.only(left: 10,top: 7,bottom: 7, right: 7),
-        scrollDirection: Axis.vertical,
+        //scrollDirection: Axis.vertical,
         child: _running? _stopDiagnoseUI() : _runDiagnoseUI(),
     );
 
@@ -70,7 +70,6 @@ class _TestPageState extends State<TestPage> {
       child: StreamBuilder<Uint8List>(
         stream: globals.connection!.input,
         builder: (context, snapshot) {
-
           if(snapshot.hasData){
             var data = snapshot.data;
             String _d = utf8.decode(data!);
@@ -137,32 +136,18 @@ class _TestPageState extends State<TestPage> {
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
-
+      margin: EdgeInsets.all(MediaQuery.of(context).size.height*0.02),
       child: Column(
-
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-
         children: [
-          Container(
-            height: MediaQuery.of(context).size.height*0.1,
-            width: MediaQuery.of(context).size.width,
-
-            child: Center(
-              child: Text("TESTS",style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20,color: Theme.of(context).primaryColor),),
-            ),
-          ),
           Table(
             columnWidths: const <int, TableColumnWidth>{
-              0: FractionColumnWidth(0.5),
-              1: FractionColumnWidth(0.5),
+              0: FractionColumnWidth(0.55),
+              1: FractionColumnWidth(0.35),
             },
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            children: <TableRow>[
-
-              // This is the test Type section, and has the first row
-              // this row is always there on screen. Based on what you choose in this
-              // rows get populated or not.
+            children:  <TableRow>[
               TableRow(
                 children: <Widget>[
                   TableCell(
@@ -206,7 +191,7 @@ class _TestPageState extends State<TestPage> {
                 ],
               ),
 
-              // this is the
+              // this is motor name if youve selected "MOTOR" or an empty container
               _testTypeChoice=="MOTOR"?
               TableRow(
                 children: <Widget>[
@@ -232,6 +217,7 @@ class _TestPageState extends State<TestPage> {
                         value: _motorNameChoice,
                         icon: const Icon(Icons.arrow_drop_down),
                         elevation: 16,
+                        alignment: FractionalOffset.topLeft,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
                         onChanged: (String? value) {
@@ -327,7 +313,8 @@ class _TestPageState extends State<TestPage> {
                 ),]),
 
 
-              // this is target% section.
+              // this is target% section. If "MOTOR", then put a target Row, a specialized table row,
+              //else an empty rable row
               _testTypeChoice=="MOTOR"?
               _targetRow("Target(%)")
                   :  TableRow(
@@ -337,33 +324,45 @@ class _TestPageState extends State<TestPage> {
                   ]
               ),
 
-              _testTypeChoice=="MOTOR" && _controlTypeChoice!="OPEN LOOP" ?
-              TableRow(
-                children: <Widget>[
-                  TableCell(
-                    verticalAlignment: TableCellVerticalAlignment.middle,
-                    child: Container(
-                      margin: EdgeInsets.only(left: 5, right: 5),
-                      child: Text(
-                        "Target RPM",
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                  ),
-                  TableCell(
-                    verticalAlignment: TableCellVerticalAlignment.middle,
-                    child:
-                    Container(
-                      margin: EdgeInsets.only(top:10,left: 5, right: 5,bottom: 10),
-                      child: Text(
-                        _targetRPM,
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                  ),
+              _testTypeChoice=="MOTOR" ?
+              _testTimeRow("Run Time (%)")
+                  :TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
+              ),
 
-                ],
-              )
+              //if "MOTOR", is open Loop put target Duty, if Closed loop put targetRPM
+              // if LIFT put empty container.
+              _testTypeChoice=="MOTOR" ?
+                _controlTypeChoice!="OPEN LOOP" ?
+                  TableRow(
+                    children: <Widget>[
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Container(
+                          margin: EdgeInsets.only(left: 5, right: 5),
+                          child: Text(
+                            "Target RPM",
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child:
+                        Container(
+                          margin: EdgeInsets.only(top:10,left: 5, right: 5,bottom: 10),
+                          child: Text(
+                            _targetRPM,
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+
+                    ],
+                  )
                   :TableRow(
                   children: <Widget>[
                     TableCell(
@@ -388,17 +387,49 @@ class _TestPageState extends State<TestPage> {
                       ),
                     ),
                   ]
+              )
+              :TableRow(
+                children: <Widget>[
+                TableCell(child: Container()),
+                TableCell(child: Container()),
+                ]
               ),
 
-
+              //if "MOTOR", is open Loop put target Duty, if Closed loop put targetRPM
+              // if LIFT put empty container.
               _testTypeChoice=="MOTOR" ?
-              _testTimeRow("Test Run Time(s)")
-                  :TableRow(
+              TableRow(
+                children: <Widget>[
+                  TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child: Container(
+                      margin: EdgeInsets.only(left: 5, right: 5),
+                      child: Text(
+                        "RunTime Seconds",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child:
+                    Container(
+                      margin: EdgeInsets.only(top:10,left: 5, right: 5,bottom: 10),
+                      child: Text(
+                        _testRuntime,
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+
+                ],
+              ):TableRow(
                   children: <Widget>[
                     TableCell(child: Container()),
                     TableCell(child: Container()),
                   ]
               ),
+
 
               _testTypeChoice=="LIFT"?
               TableRow(
@@ -538,7 +569,6 @@ class _TestPageState extends State<TestPage> {
     double perc = 0;
     double num = 1500;
 
-
     if(_target != null || _target != ""){
 
       try {
@@ -640,12 +670,9 @@ class _TestPageState extends State<TestPage> {
 
 
   TableRow _targetRow(String label){
-
     //slider row
-
     return TableRow(
       children: <Widget>[
-
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.middle,
           child: Container(
@@ -660,7 +687,7 @@ class _TestPageState extends State<TestPage> {
           verticalAlignment: TableCellVerticalAlignment.middle,
           child: Container(
             padding: EdgeInsets.only(left:0),
-            margin: EdgeInsets.only(left: 0, right: 10),
+            margin: EdgeInsets.only(left: 0, right: 0),
             child: Slider(
               value: _target,
               max: 90.0,
@@ -682,9 +709,7 @@ class _TestPageState extends State<TestPage> {
   }
 
   TableRow _testTimeRow(String label){
-
     //slider row
-
     return TableRow(
       children: <Widget>[
 
@@ -708,12 +733,11 @@ class _TestPageState extends State<TestPage> {
               max: 310.0,
               min: 20.0,
               activeColor: Theme.of(context).primaryColor,
-              label: _testRuntime.toString(),
+             // label: _testRuntime.toString(),
               onChanged: (val){
                 setState(() {
                   _testRuntimeval = (val/10).ceil()*10;
-                  _testRuntime = _testRuntimeval.toString();
-
+                  _testRuntime = _testRuntimeval.toInt().toString();
                   if(_testRuntimeval>300){
                     _testRuntime = "infinity";
                   }
@@ -744,7 +768,7 @@ class _TestPageState extends State<TestPage> {
 
       globals.connection!.output.add(Uint8List.fromList(utf8.encode(_m)));
 
-      await globals.connection!.output!.allSent;
+      await globals.connection!.output.allSent;
       //globals.connection!.close();
 
       setState(() {
