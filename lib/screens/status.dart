@@ -33,6 +33,8 @@ class _StatusPageState extends State<StatusPage> {
   ChartSeriesController? _chartSeriesController;
   List<Data>? _data;
   late StreamSubscription s;
+  late BluetoothConnection? connection=null;
+  bool isConnected = false;
 
 
 
@@ -45,12 +47,23 @@ class _StatusPageState extends State<StatusPage> {
     Timer _everySecond;
     bool _ignore_timer = false;
 
+    BluetoothConnection.toAddress(globals.selectedDevice?.address).then((_connection) {
+      print('Connected to the device');
+      connection = _connection;
+      setState(() {
+        isConnected = true;
+      });
+    }).catchError((error) {
+      print('Cannot connect, exception occured');
+      print(error);
+    });
 
-    if(globals.connection!=null && globals.isListening == false) {
+
+    if(connection!=null && isConnected == true) {
       print("connections work");
 
       try {
-        s = globals.connection!.input!.listen((event) {
+        s = connection!.input!.listen((event) {
           _onDataReceived(event);
         });
         globals.isListening = true;
@@ -69,6 +82,11 @@ class _StatusPageState extends State<StatusPage> {
     _data!.clear();
     _chartSeriesController = null;
 
+    if(isConnected){
+      s.cancel();
+      connection!.dispose();
+      connection = null;
+    }
     super.dispose();
   }
 

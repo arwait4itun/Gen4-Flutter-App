@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/message/acknowledgement.dart';
@@ -37,6 +38,46 @@ class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _changeLayerTime = new TextEditingController();
 
   var settingsListenController = StreamController<Uint8List>.broadcast();
+  BluetoothConnection? connection = null;
+
+  List<String> _data = List<String>.empty(growable: true);
+  bool newDataReceived = false;
+
+  bool isConnected = false;
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    BluetoothConnection.toAddress(globals.selectedDevice!.address).then((_connection) {
+      print('Connected to the device');
+
+      connection = _connection;
+      isConnected = true;
+
+
+      connection!.input!.listen(_onDataReceived).onDone(() {});
+
+      setState(() {});
+    }).catchError((error) {
+      print('Settings: Cannot connect, exception occured');
+      print(error);
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    connection?.dispose();
+    connection = null;
+    isConnected = false;
+    _data.clear();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -129,12 +170,16 @@ class _SettingsPageState extends State<SettingsPage> {
                       String _msg = _sm.createPacket();
 
 
-                      globals.connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
+                      connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
 
-                      await globals.connection!.output!.allSent;
+                      await connection!.output!.allSent.then((v) {});
 
-                      globals.connection!.input!.listen((data) {
-                        String _d = utf8.decode(data);
+                      await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
+
+
+
+                      if(newDataReceived){
+                        String _d = _data.last;
                         print(_d);
                         if(_d == Acknowledgement().createPacket()){
                           //no eeprom error , acknowledge
@@ -150,8 +195,13 @@ class _SettingsPageState extends State<SettingsPage> {
 
                           ScaffoldMessenger.of(context).showSnackBar(_sb);
                         }
-                      }).onDone(() {});
 
+                        newDataReceived = false;
+                        setState(() {
+
+                        });
+
+                      }
 
                     }
                     else{
@@ -163,18 +213,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                   icon: Icon(Icons.save,color: Theme.of(context).primaryColor,),
                 ),
-                _pidEnabled?
-                IconButton(
-                  onPressed: (){
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context){
-                        return PIDPage();
-                      })
-                    );
-                  },
-                  icon: Icon(Icons.query_stats,color: Theme.of(context).primaryColor,),
-                )
-                : Container(),
               ],
             ),
           ),
@@ -183,6 +221,26 @@ class _SettingsPageState extends State<SettingsPage> {
     );
 
 
+  }
+
+  void _onDataReceived(Uint8List data) {
+
+    try {
+      String _d = utf8.decode(data);
+
+      if(_d==null || _d==""){
+        throw FormatException('Invalid Packet');
+      }
+
+      setState(() {
+        _data.add(_d);
+        newDataReceived = true;
+      });
+    }
+    catch (e){
+
+      print("Settings: onDataReceived: ${e.toString()}");
+    }
   }
 
   TableRow _customRow(String label, TextEditingController controller, {bool isFloat=true, String defaultValue="0"}){
@@ -417,23 +475,27 @@ class _SettingsPageState extends State<SettingsPage> {
 
 
   void _requestSettings() async {
-    try{
-      globals.connection!.output.add(Uint8List.fromList(utf8.encode(RequestSettings().createPacket())));
+    try {
+      connection!.output.add(Uint8List.fromList(utf8.encode(RequestSettings().createPacket())));
 
-      await globals.connection!.output!.allSent;
+      await connection!.output!.allSent;
 
-      SnackBar _sb = SnackBarService(message: "Sent Request for Settings!", color: Colors.green).snackBar();
+      await Future.delayed(Duration(milliseconds: 500)); //wait for acknowlegement
+
+      SnackBar _sb = SnackBarService(
+          message: "Sent Request for Settings!", color: Colors.green)
+          .snackBar();
 
       //ScaffoldMessenger.of(context).showSnackBar(_sb);
 
 
-      globals.connection!.input!.listen((data) {
-        String _d = utf8.decode(data);
+      if(newDataReceived){
+        String _d = _data.last; //remember to make newDataReceived = false;
 
         //print("here: $_d");
         Map<String, double> settings = RequestSettings().decode(_d);
 
-        if(settings.isEmpty){
+        if (settings.isEmpty) {
           throw FormatException("Settings Returned Empty");
         }
 
@@ -449,7 +511,12 @@ class _SettingsPageState extends State<SettingsPage> {
         _rampupTime.text = settings["rampupTime"]!.toInt().toString();
         _rampdownTime.text = settings["rampdownTime"]!.toInt().toString();
         _changeLayerTime.text = settings["changeLayerTime"]!.toInt().toString();
-      }).onDone(() { });
+
+        newDataReceived = false;
+        setState(() {
+
+        });
+      }
 
       _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
 

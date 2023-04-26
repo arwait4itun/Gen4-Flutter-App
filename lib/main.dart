@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flyer/screens/Dashboard.dart';
+import 'package:flyer/screens/bluetoothPage.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
 import 'globals.dart' as globals;
@@ -32,8 +33,13 @@ class MyApp extends StatelessWidget {
           showValueIndicator: ShowValueIndicator.always,
         ),
       ),
-      home: const DashboardScaffold(),
+      home: DashboardScaffold(),
       debugShowCheckedModeBanner: false,
+      initialRoute: "/bluetooth",
+      routes: {
+        '/dashboard': (context) => const DashboardScaffold(),
+        '/bluetooth': (context) => BluetoothPage(),
+      },
     );
   }
 }

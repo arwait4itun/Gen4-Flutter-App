@@ -93,51 +93,6 @@ class _DrawerPageState extends State<DrawerPage> {
               },
             ),
             Divider(),
-            globals.pidEnabled?
-            MaterialButton(
-
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-
-                children: [
-                  Icon(Icons.query_stats,color: Colors.grey[400],),
-                  Container(
-                    width: 30,
-                  ),
-                  Text("Disable PID",style: TextStyle(fontWeight: FontWeight.w400,color: Theme.of(context).primaryColor),)
-                ],
-              ),
-              onPressed: () {
-                globals.pidEnabled = false;
-                Provider.of<ConnectionProvider>(context,listen: false).setPID(false);
-                setState(() {
-
-                });
-                SnackBar _sb = SnackBarService(message: "PID disabled", color: Colors.green).snackBar();
-
-                ScaffoldMessenger.of(context).showSnackBar(_sb);
-              },
-            )
-            :MaterialButton(
-
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-
-                children: [
-                  Icon(Icons.query_stats,color: Colors.grey[400],),
-                  Container(
-                    width: 30,
-                  ),
-                  Text("Enable PID",style: TextStyle(fontWeight: FontWeight.w400,color: Theme.of(context).primaryColor),)
-                ],
-              ),
-              onPressed: () {
-                _enablePID();
-              },
-            ),
-            Divider(),
             MaterialButton(
 
               child: Row(
