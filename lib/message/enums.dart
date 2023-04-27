@@ -222,7 +222,6 @@ extension SettingsAttributeTypeExtension on SettingsAttribute{
 
   String get hexVal {
     switch (this){
-
       case SettingsAttribute.spindleSpeed:
         return "50";
       case SettingsAttribute.draft:

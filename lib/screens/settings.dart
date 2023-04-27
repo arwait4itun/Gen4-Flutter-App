@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 
 import '../services/snackbar_service.dart';
 
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
@@ -57,7 +58,6 @@ class _SettingsPageState extends State<SettingsPage> {
       connection = _connection;
       isConnected = true;
 
-
       connection!.input!.listen(_onDataReceived).onDone(() {});
 
       setState(() {});
@@ -98,7 +98,6 @@ class _SettingsPageState extends State<SettingsPage> {
             },
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children: <TableRow>[
-
               _customRow("Spindle Speed (RPM)", _spindleSpeed, isFloat: false,defaultValue: ""),
               _customRow("Draft", _draft,defaultValue: ""),
               _customRow("Twists Per Inch", _twistPerInch,defaultValue: ""),
@@ -153,48 +152,32 @@ class _SettingsPageState extends State<SettingsPage> {
                     if(_valid == "valid"){
                       SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, lengthLimit: _lengthLimit.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
                       String _msg = _sm.createPacket();
-
-
                       connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
-
                       await connection!.output!.allSent.then((v) {});
-
                       await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
-
-
-
                       if(newDataReceived){
                         String _d = _data.last;
                         print(_d);
                         if(_d == Acknowledgement().createPacket()){
                           //no eeprom error , acknowledge
-
                           SnackBar _sb = SnackBarService(message: "Settings Saved", color: Colors.green).snackBar();
-
                           ScaffoldMessenger.of(context).showSnackBar(_sb);
+
                         }
                         else{
                           //failed acknowledgement
-
                           SnackBar _sb = SnackBarService(message: "Settings Not Saved", color: Colors.red).snackBar();
-
                           ScaffoldMessenger.of(context).showSnackBar(_sb);
                         }
-
                         newDataReceived = false;
                         setState(() {
-
                         });
-
                       }
-
                     }
                     else{
                       SnackBar _sb = SnackBarService(message: _valid, color: Colors.red).snackBar();
-
                       ScaffoldMessenger.of(context).showSnackBar(_sb);
                     }
-
                   },
                   icon: Icon(Icons.save,color: Theme.of(context).primaryColor,),
                 ),
@@ -262,9 +245,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
               ],
               keyboardType: TextInputType.phone,
+
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: defaultValue,
+                //hintText: defaultValue,
               ),
             ),
           ),
@@ -458,23 +442,17 @@ class _SettingsPageState extends State<SettingsPage> {
   void _requestSettings() async {
     try {
       connection!.output.add(Uint8List.fromList(utf8.encode(RequestSettings().createPacket())));
-
       await connection!.output!.allSent;
-
       await Future.delayed(Duration(milliseconds: 500)); //wait for acknowlegement
-
-      SnackBar _sb = SnackBarService(
+      /*SnackBar _sb = SnackBarService(
           message: "Sent Request for Settings!", color: Colors.green)
-          .snackBar();
-
+          .snackBar();*/
       //ScaffoldMessenger.of(context).showSnackBar(_sb);
-
 
       if(newDataReceived){
         String _d = _data.last; //remember to make newDataReceived = false;
-
-        //print("here: $_d");
         Map<String, double> settings = RequestSettings().decode(_d);
+        //settings = RequestSettings().decode(_d);
 
         if(settings.isEmpty){
           throw const FormatException("Settings Returned Empty");
@@ -498,9 +476,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
         });
       }
-
-      _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
-
+      SnackBar _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
       ScaffoldMessenger.of(context).showSnackBar(_sb);
     }
     catch(e){
