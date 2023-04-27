@@ -182,6 +182,7 @@ extension ControlTypeExtension on ControlType{
 enum DiagnosticAttributeType{
   kindOfTest,
   motorID,
+  motorDirection,
   targetPercent,
   testTime,
 }
@@ -195,6 +196,8 @@ extension DiagnosticAttributeTypeExtension on DiagnosticAttributeType{
         return "41";
       case DiagnosticAttributeType.motorID:
         return "40";
+      case DiagnosticAttributeType.motorDirection:
+        return "44";
       case DiagnosticAttributeType.targetPercent:
         return "42";
       case DiagnosticAttributeType.testTime:
@@ -253,6 +256,8 @@ extension SettingsAttributeTypeExtension on SettingsAttribute{
 enum DiagnosticResponse{
   speedRPM,
   signalVoltage,
+  current,
+  power,
 }
 
 extension DiagnosticResponseExtension on DiagnosticResponse{
@@ -264,6 +269,28 @@ extension DiagnosticResponseExtension on DiagnosticResponse{
         return "01";
       case DiagnosticResponse.signalVoltage:
         return "02";
+      case DiagnosticResponse.current:
+        return "03";
+      case DiagnosticResponse.power:
+        return "04";
+    }
+  }
+}
+
+enum MotorDirection{
+  defaultDirection,
+  reverseDirection
+}
+
+extension MotorDirectionExtension on MotorDirection{
+
+  String get hexVal {
+    switch (this){
+
+      case MotorDirection.defaultDirection:
+        return "00";
+      case MotorDirection.reverseDirection:
+        return "01";
     }
   }
 }

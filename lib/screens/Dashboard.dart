@@ -60,6 +60,13 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
       elevation: 1.0,
       shadowColor: Theme.of(context).highlightColor,
       centerTitle: true,
+
+      leading: IconButton(
+        icon: Icon(Icons.bluetooth,color: Colors.white,),
+        onPressed: (){
+          Navigator.of(context).pop();
+        },
+      ),
     );
   }
 
