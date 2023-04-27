@@ -87,7 +87,9 @@ class DiagnosticMessage{
         _controlType = ControlType.closedLoop.hexVal;
 
         targetRPM = "1500";
+
         int t = double.parse(target).toInt();
+
         int val = (int.parse(targetRPM)*t/100).toInt();
 
         subpacket += attribute(DiagnosticAttributeType.targetPercent.hexVal, "04", padding(val.toString(), 4));

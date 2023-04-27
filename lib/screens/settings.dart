@@ -46,7 +46,6 @@ class _SettingsPageState extends State<SettingsPage> {
   bool isConnected = false;
 
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -152,9 +151,11 @@ class _SettingsPageState extends State<SettingsPage> {
                     if(_valid == "valid"){
                       SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, lengthLimit: _lengthLimit.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
                       String _msg = _sm.createPacket();
+
                       connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
                       await connection!.output!.allSent.then((v) {});
                       await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
+
                       if(newDataReceived){
                         String _d = _data.last;
                         print(_d);
@@ -169,10 +170,12 @@ class _SettingsPageState extends State<SettingsPage> {
                           SnackBar _sb = SnackBarService(message: "Settings Not Saved", color: Colors.red).snackBar();
                           ScaffoldMessenger.of(context).showSnackBar(_sb);
                         }
+                        
                         newDataReceived = false;
                         setState(() {
                         });
                       }
+
                     }
                     else{
                       SnackBar _sb = SnackBarService(message: _valid, color: Colors.red).snackBar();
@@ -210,6 +213,7 @@ class _SettingsPageState extends State<SettingsPage> {
       print("Settings: onDataReceived: ${e.toString()}");
     }
   }
+
 
   TableRow _customRow(String label, TextEditingController controller, {bool isFloat=true, String defaultValue="0"}){
     return TableRow(
@@ -442,6 +446,7 @@ class _SettingsPageState extends State<SettingsPage> {
   void _requestSettings() async {
     try {
       connection!.output.add(Uint8List.fromList(utf8.encode(RequestSettings().createPacket())));
+
       await connection!.output!.allSent;
       await Future.delayed(Duration(milliseconds: 500)); //wait for acknowlegement
       /*SnackBar _sb = SnackBarService(
@@ -451,8 +456,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
       if(newDataReceived){
         String _d = _data.last; //remember to make newDataReceived = false;
+
         Map<String, double> settings = RequestSettings().decode(_d);
         //settings = RequestSettings().decode(_d);
+
 
         if(settings.isEmpty){
           throw const FormatException("Settings Returned Empty");
