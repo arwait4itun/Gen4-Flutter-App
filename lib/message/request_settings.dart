@@ -10,8 +10,7 @@ class RequestSettings{
 
     //print("packet: $packet");
 
-    Map<String, double> _settings = new Map<String, double>();
-
+    Map<String, double> _settings = Map<String, double>();
 
     String sof = packet.substring(0,2); //7E start of frame
     int len = int.parse(packet.substring(2,4),radix: 16); //Packet Length
@@ -33,9 +32,6 @@ class RequestSettings{
     if(_requestSettings!="02"){
       throw FormatException("Invalid Request Settings Code");
     }
-
-
-
 
     for(int i=start; i<end;){
 
@@ -127,7 +123,6 @@ class RequestSettings{
       return "";
     }
   }
-
 }
 
 void main() {
@@ -136,3 +131,4 @@ void main() {
   
   print(RequestSettings().decode(p));
 }
+

@@ -9,11 +9,11 @@ import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/message/acknowledgement.dart';
 import 'package:flyer/message/request_settings.dart';
 import 'package:flyer/message/settingsMessage.dart';
-import 'package:flyer/screens/pid_page.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
 
 import '../services/snackbar_service.dart';
+
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -24,18 +24,18 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
 
-  final TextEditingController _spindleSpeed = new TextEditingController();
-  final TextEditingController _draft = new TextEditingController();
-  final TextEditingController _twistPerInch = new TextEditingController();
-  final TextEditingController _RTF = new TextEditingController();
-  final TextEditingController _lengthLimit = new TextEditingController();
-  final TextEditingController _maxHeightOfContent = new TextEditingController();
-  final TextEditingController _rovingWidth = new TextEditingController();
-  final TextEditingController _deltaBobbinDia = new TextEditingController();
-  final TextEditingController _bareBobbinDia = new TextEditingController();
-  final TextEditingController _rampupTime = new TextEditingController();
-  final TextEditingController _rampdownTime = new TextEditingController();
-  final TextEditingController _changeLayerTime = new TextEditingController();
+  final TextEditingController _spindleSpeed = TextEditingController();
+  final TextEditingController _draft = TextEditingController();
+  final TextEditingController _twistPerInch = TextEditingController();
+  final TextEditingController _RTF = TextEditingController();
+  final TextEditingController _lengthLimit = TextEditingController();
+  final TextEditingController _maxHeightOfContent = TextEditingController();
+  final TextEditingController _rovingWidth = TextEditingController();
+  final TextEditingController _deltaBobbinDia = TextEditingController();
+  final TextEditingController _bareBobbinDia = TextEditingController();
+  final TextEditingController _rampupTime = TextEditingController();
+  final TextEditingController _rampdownTime = TextEditingController();
+  final TextEditingController _changeLayerTime = TextEditingController();
 
   var settingsListenController = StreamController<Uint8List>.broadcast();
   BluetoothConnection? connection = null;
@@ -44,7 +44,6 @@ class _SettingsPageState extends State<SettingsPage> {
   bool newDataReceived = false;
 
   bool isConnected = false;
-
 
 
   @override
@@ -57,7 +56,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
       connection = _connection;
       isConnected = true;
-
 
       connection!.input!.listen(_onDataReceived).onDone(() {});
 
@@ -81,45 +79,36 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    bool _pidEnabled = Provider.of<ConnectionProvider>(context).PIDEnabled;
+    double screenHt  = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.only(left: 10,top: 7,bottom: 7, right: 7),
+      padding: EdgeInsets.only(left:screenHt *0.02,top: screenHt*0.05 ,bottom: screenHt*0.01, right: screenWidth*0.02),
       scrollDirection: Axis.vertical,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-          Container(
-            height: MediaQuery.of(context).size.height*0.1,
-            width: MediaQuery.of(context).size.width,
-
-            child: Center(
-              child: Text("SETTINGS",style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20,color: Theme.of(context).primaryColor),),
-            ),
-          ),
           Table(
             columnWidths: const <int, TableColumnWidth>{
-              0: FractionColumnWidth(0.5),
-              1: FractionColumnWidth(0.5),
+              0: FractionColumnWidth(0.55),
+              1: FractionColumnWidth(0.35),
             },
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children: <TableRow>[
-
-              _customRow("Spindle Speed(RPM)", _spindleSpeed, isFloat: false,defaultValue: "650"),
-              _customRow("Draft", _draft,defaultValue: "8.8"),
-              _customRow("Twist Per Inch", _twistPerInch,defaultValue: "1.4"),
-              _customRow("RTF", _RTF,defaultValue: "1"),
-              _customRow("Length Limit (mtrs)", _lengthLimit, isFloat: false,defaultValue: "1000"),
-              _customRow("Max Height of Content", _maxHeightOfContent, isFloat: false,defaultValue: "280"),
-              _customRow("Roving Width", _rovingWidth, defaultValue: "1.2"),
-              _customRow("Delta Bobbin-dia", _deltaBobbinDia,defaultValue: "1.1"),
-              _customRow("Bare Bobbin-dia", _bareBobbinDia, isFloat: false, defaultValue: "48"),
-              _customRow("Rampup Time", _rampupTime, isFloat: false,defaultValue: "12"),
-              _customRow("Rampdown Time", _rampdownTime, isFloat: false, defaultValue: "12"),
-              _customRow("Change Layer Time (ms)", _changeLayerTime, isFloat: false, defaultValue: "800"),
+              _customRow("Spindle Speed (RPM)", _spindleSpeed, isFloat: false,defaultValue: ""),
+              _customRow("Draft", _draft,defaultValue: ""),
+              _customRow("Twists Per Inch", _twistPerInch,defaultValue: ""),
+              _customRow("Initial RTF", _RTF,defaultValue: ""),
+              _customRow("Length Limit (mtrs)", _lengthLimit, isFloat: false,defaultValue: ""),
+              _customRow("Max Content Ht (mm)", _maxHeightOfContent, isFloat: false,defaultValue: ""),
+              _customRow("Roving Width", _rovingWidth, defaultValue: ""),
+              _customRow("Delta Bobbin-dia (mm)", _deltaBobbinDia,defaultValue: ""),
+              _customRow("Bare Bobbin-dia (mm)", _bareBobbinDia, isFloat: false, defaultValue: ""),
+              _customRow("Ramp Up Time (s)", _rampupTime, isFloat: false,defaultValue: ""),
+              _customRow("Ramp Down Time (s)", _rampdownTime, isFloat: false, defaultValue: ""),
+              _customRow("Change Layer Time (ms)", _changeLayerTime, isFloat: false, defaultValue: ""),
             ],
           ),
           Container(
@@ -140,9 +129,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 IconButton(
                   onPressed: (){
-
                     //hard coded change
-
                     _spindleSpeed.text =  "650";
                     _draft.text =  "8.8";
                     _twistPerInch.text = "1.4";
@@ -156,60 +143,44 @@ class _SettingsPageState extends State<SettingsPage> {
                     _rampdownTime.text = "12";
                     _changeLayerTime.text = "800";
                   },
-                  icon: Icon(Icons.build,color: Theme.of(context).primaryColor,),
+                  icon: Icon(Icons.settings_backup_restore,color: Theme.of(context).primaryColor,),
                 ),
                 IconButton(
                   onPressed: () async {
-
                     String _valid = isValidForm();
-
                     if(_valid == "valid"){
-
                       SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, lengthLimit: _lengthLimit.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
-
                       String _msg = _sm.createPacket();
 
-
                       connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
-
                       await connection!.output!.allSent.then((v) {});
-
                       await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
-
-
 
                       if(newDataReceived){
                         String _d = _data.last;
                         print(_d);
                         if(_d == Acknowledgement().createPacket()){
                           //no eeprom error , acknowledge
-
                           SnackBar _sb = SnackBarService(message: "Settings Saved", color: Colors.green).snackBar();
-
                           ScaffoldMessenger.of(context).showSnackBar(_sb);
+
                         }
                         else{
                           //failed acknowledgement
-
                           SnackBar _sb = SnackBarService(message: "Settings Not Saved", color: Colors.red).snackBar();
-
                           ScaffoldMessenger.of(context).showSnackBar(_sb);
                         }
-
+                        
                         newDataReceived = false;
                         setState(() {
-
                         });
-
                       }
 
                     }
                     else{
                       SnackBar _sb = SnackBarService(message: _valid, color: Colors.red).snackBar();
-
                       ScaffoldMessenger.of(context).showSnackBar(_sb);
                     }
-
                   },
                   icon: Icon(Icons.save,color: Theme.of(context).primaryColor,),
                 ),
@@ -243,15 +214,14 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  TableRow _customRow(String label, TextEditingController controller, {bool isFloat=true, String defaultValue="0"}){
 
+  TableRow _customRow(String label, TextEditingController controller, {bool isFloat=true, String defaultValue="0"}){
     return TableRow(
       children: <Widget>[
-
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.middle,
           child: Container(
-            margin: EdgeInsets.only(left: 20, right: 5),
+            margin: EdgeInsets.only(left: 20, right: 20),
             child: Text(
                 label,
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
@@ -275,13 +245,14 @@ class _SettingsPageState extends State<SettingsPage> {
               : FilteringTextInputFormatter.allow(RegExp(r'^\d+')),
 
               FilteringTextInputFormatter.deny('-'),
-              // for version 2 and greater youcan also use this
+              // for version 2 and greater you can also use this
 
               ],
               keyboardType: TextInputType.phone,
+
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: defaultValue,
+                //hintText: defaultValue,
               ),
             ),
           ),
@@ -304,10 +275,8 @@ class _SettingsPageState extends State<SettingsPage> {
       return errorMessage;
     }
     else{
-
       List range = globals.settingsLimits["spindleSpeed"]!;
       double val = double.parse(_spindleSpeed.text.trim());
-
       if(val < range[0] || val > range[1]){
         errorMessage = "Spindle Speed values should be within $range";
         return errorMessage;
@@ -437,13 +406,13 @@ class _SettingsPageState extends State<SettingsPage> {
       double val = double.parse(_rampupTime.text.trim());
 
       if(val < range[0] || val > range[1]){
-        errorMessage = "Rampup Time values should be within $range";
+        errorMessage = "Ramp Up Time values should be within $range";
         return errorMessage;
       }
     }
 
     if(_rampdownTime.text.trim() == "" ){
-      errorMessage = "Rampdown Time is Empty!";
+      errorMessage = "Ramp Down Time is Empty!";
       return errorMessage;
     }
     else{
@@ -451,7 +420,7 @@ class _SettingsPageState extends State<SettingsPage> {
       double val = double.parse(_rampdownTime.text.trim());
 
       if(val < range[0] || val > range[1]){
-        errorMessage = "Rampdown Time values should be within $range";
+        errorMessage = "Ramp Down Time values should be within $range";
         return errorMessage;
       }
     }
@@ -465,7 +434,7 @@ class _SettingsPageState extends State<SettingsPage> {
       double val = double.parse(_changeLayerTime.text.trim());
 
       if(val < range[0] || val > range[1]){
-        errorMessage = "Rampdown Time values should be within $range";
+        errorMessage = "Change Layer values should be within $range";
         return errorMessage;
       }
     }
@@ -479,24 +448,21 @@ class _SettingsPageState extends State<SettingsPage> {
       connection!.output.add(Uint8List.fromList(utf8.encode(RequestSettings().createPacket())));
 
       await connection!.output!.allSent;
-
       await Future.delayed(Duration(milliseconds: 500)); //wait for acknowlegement
-
-      SnackBar _sb = SnackBarService(
+      /*SnackBar _sb = SnackBarService(
           message: "Sent Request for Settings!", color: Colors.green)
-          .snackBar();
-
+          .snackBar();*/
       //ScaffoldMessenger.of(context).showSnackBar(_sb);
-
 
       if(newDataReceived){
         String _d = _data.last; //remember to make newDataReceived = false;
 
-        //print("here: $_d");
         Map<String, double> settings = RequestSettings().decode(_d);
+        //settings = RequestSettings().decode(_d);
 
-        if (settings.isEmpty) {
-          throw FormatException("Settings Returned Empty");
+
+        if(settings.isEmpty){
+          throw const FormatException("Settings Returned Empty");
         }
 
         _spindleSpeed.text = settings["spindleSpeed"]!.toInt().toString();
@@ -517,27 +483,19 @@ class _SettingsPageState extends State<SettingsPage> {
 
         });
       }
-
-      _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
-
+      SnackBar _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
       ScaffoldMessenger.of(context).showSnackBar(_sb);
     }
     catch(e){
       print("Settings!: ${e.toString()}");
-
       //Remember to change this error suppression
       if(e.toString() !=  "Bad state: Stream has already been listened to."){
-
-
-        SnackBar _sb = SnackBarService(message: "Error in Receiving Settings", color: Colors.red).snackBar();
-
-        ScaffoldMessenger.of(context).showSnackBar(_sb);
-
+        SnackBar sb = SnackBarService(message: "Error in Receiving Settings", color: Colors.red).snackBar();
+        ScaffoldMessenger.of(context).showSnackBar(sb);
       }
       else{
-        SnackBar _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
-
-        ScaffoldMessenger.of(context).showSnackBar(_sb);
+        SnackBar sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
+        ScaffoldMessenger.of(context).showSnackBar(sb);
       }
 
     }

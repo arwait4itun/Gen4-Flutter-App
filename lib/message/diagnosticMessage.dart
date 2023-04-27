@@ -38,7 +38,7 @@ class DiagnosticMessage{
     //attribute count
   //  packet += "5";
 
-    if(this.testTypeChoice == "MOTOR"){
+    if(testTypeChoice == "MOTOR"){
 
 
       String _motorId;
@@ -91,7 +91,6 @@ class DiagnosticMessage{
         int t = double.parse(target).toInt();
 
         int val = (int.parse(targetRPM)*t/100).toInt();
-
 
         subpacket += attribute(DiagnosticAttributeType.targetPercent.hexVal, "04", padding(val.toString(), 4));
         subpacket += attribute(DiagnosticAttributeType.testTime.hexVal, "04", padding(testRuntime,4));
