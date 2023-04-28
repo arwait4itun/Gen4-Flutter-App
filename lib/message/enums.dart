@@ -98,8 +98,8 @@ enum Information {
   settingsToApp,
   diagnostics,
   diagnosticResponse,
-  PIDsettings,
   updateRTF,
+  machineState,
 }
 
 extension InformationExtension on Information{
@@ -119,7 +119,7 @@ extension InformationExtension on Information{
         return "04";
       case Information.diagnosticResponse:
         return "05";
-      case Information.PIDsettings:
+      case Information.machineState:
         return "06";
       case Information.updateRTF:
         return "07";
@@ -136,6 +136,8 @@ enum Substate{
   pause,
   stop,
   homing,
+  inching,
+  error,
 }
 
 extension SubstateExtension on Substate{
@@ -143,6 +145,8 @@ extension SubstateExtension on Substate{
   String get hexVal {
     switch (this){
 
+      case Substate.idle:
+        return "00";
       case Substate.run:
         return "01";
       case Substate.pause:
@@ -151,8 +155,10 @@ extension SubstateExtension on Substate{
         return "03";
       case Substate.homing:
         return "04";
+      case Substate.inching:
+        return "05";
       default:
-        return "00";
+        return "06";
     }
   }
 }

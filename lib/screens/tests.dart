@@ -857,13 +857,16 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
             print("\nTESTS: run diagnose data: "+_d);
             print(snapshot.data);
 
-            Map<String,double> _diagResponse = DiagnosticMessageResponse().decode(_d);
 
             try{
+
+              Map<String,double> _diagResponse = DiagnosticMessageResponse().decode(_d);
+              print("HERE!!!!!!!!!!!!!!: $_diagResponse");
+
               _runningRPM = _diagResponse["speedRPM"]!.toStringAsFixed(2);
               _runningSignalVoltage = _diagResponse["signalVoltage"]!.toStringAsFixed(2);
               _current = _diagResponse["current"]!.toStringAsFixed(2);
-              _runningSignalVoltage = _diagResponse["power"]!.toStringAsFixed(2);
+              _power = _diagResponse["power"]!.toStringAsFixed(2);
             }
             catch(e){
               print("tests1: ${e.toString()}");

@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flyer/screens/drawer.dart';
+import 'package:flyer/screens/phone_status_page.dart';
 import 'package:flyer/screens/settings.dart';
 import 'package:flyer/screens/status.dart';
 import 'package:flyer/screens/tests.dart';
@@ -18,8 +19,11 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
 
   int _selectedIndex = 0;
 
+
   final List<Widget> _pages = <Widget>[
-    const StatusPage(),
+    //checks if the device is a phone or tablet based on screen size
+    MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
+    PhoneStatusPageUI() : StatusPage(),
     const SettingsPage(),
     TestPage()
   ];

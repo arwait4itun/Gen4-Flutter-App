@@ -252,6 +252,12 @@ class DiagnosticMessageResponse{
     else if(t==DiagnosticResponse.signalVoltage.hexVal){
       return DiagnosticResponse.signalVoltage.name;
     }
+    else if(t==DiagnosticResponse.current.hexVal){
+      return DiagnosticResponse.current.name;
+    }
+    else if(t==DiagnosticResponse.power.hexVal){
+      return DiagnosticResponse.power.name;
+    }
     else{
       return "";
     }

@@ -111,7 +111,8 @@ class _StatusPageState extends State<StatusPage> {
       print('Data incoming!!!!!!!!!!!!!!!: ${_arr}');
 
 
-      if(_arr.length ==3) {       _data!.add(
+      if(_arr.length ==3) {
+        _data!.add(
             Data(x: _data!.length.toDouble(), y1: _y1, y2: _y2, y3: _y3));
         _chartSeriesController?.updateDataSource(
           addedDataIndexes: <int>[_data!.length - 1],

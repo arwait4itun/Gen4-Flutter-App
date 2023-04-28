@@ -37,7 +37,6 @@ class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _rampdownTime = TextEditingController();
   final TextEditingController _changeLayerTime = TextEditingController();
 
-  var settingsListenController = StreamController<Uint8List>.broadcast();
   BluetoothConnection? connection = null;
 
   List<String> _data = List<String>.empty(growable: true);
