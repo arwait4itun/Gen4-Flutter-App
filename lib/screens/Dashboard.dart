@@ -1,15 +1,21 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/screens/drawer.dart';
 import 'package:flyer/screens/phone_status_page.dart';
 import 'package:flyer/screens/settings.dart';
 import 'package:flyer/screens/status.dart';
 import 'package:flyer/screens/tests.dart';
 import 'package:flyer/screens/utilities.dart';
+import 'package:flyer/globals.dart' as globals;
 
 class DashboardScaffold extends StatefulWidget {
-  const DashboardScaffold({Key? key}) : super(key: key);
+
+  BluetoothConnection connection;
+
+  DashboardScaffold({required this.connection});
 
   @override
   _DashboardScaffoldState createState() => _DashboardScaffoldState();
@@ -18,15 +24,44 @@ class DashboardScaffold extends StatefulWidget {
 class _DashboardScaffoldState extends State<DashboardScaffold> {
 
   int _selectedIndex = 0;
+  BluetoothConnection? connection;
+  Stream<Uint8List>? multiStream; //for multiple stream
+
+  @override
+  void initState() {
+    // TODO: implement initState
 
 
-  final List<Widget> _pages = <Widget>[
-    //checks if the device is a phone or tablet based on screen size
-    MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
-    PhoneStatusPageUI() : StatusPage(),
-    const SettingsPage(),
-    TestPage()
-  ];
+    if(widget.connection.isConnected){
+      //if connection is already established
+      connection = widget.connection;
+
+      setState(() {});
+    }
+    else{
+      //reconnect with the selected device's address
+      BluetoothConnection.toAddress(globals.selectedDevice!.address).then((_connection) {
+        print('Connected to the device');
+
+        connection = _connection;
+
+        setState(() {
+
+        });
+      });
+    }
+
+    try{
+      multiStream = connection!.input!.asBroadcastStream();
+    }
+    catch(e){
+      print("Dashboard: Broadcast stream: ${e.toString()}");
+    }
+
+
+    super.initState();
+  }
+
 
 
 
@@ -49,6 +84,18 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
 
   @override
   Widget build(BuildContext context) {
+
+
+    final List<Widget> _pages = <Widget>[
+      //checks if the device is a phone or tablet based on screen size
+      MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
+      PhoneStatusPageUI() : StatusPage(),
+      SettingsPage(connection: connection, settingsStream: multiStream,),
+      TestPage(connection: connection, testsStream: multiStream,),
+    ];
+
+
+
     return Scaffold(
       appBar: appBar(),
       bottomNavigationBar: navigationBar(),

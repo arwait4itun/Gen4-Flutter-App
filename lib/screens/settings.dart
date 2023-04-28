@@ -16,7 +16,12 @@ import '../services/snackbar_service.dart';
 
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+
+  BluetoothConnection? connection;
+
+  Stream<Uint8List>? settingsStream;
+
+  SettingsPage({required this.connection, required this.settingsStream});
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -37,12 +42,12 @@ class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _rampdownTime = TextEditingController();
   final TextEditingController _changeLayerTime = TextEditingController();
 
-  BluetoothConnection? connection = null;
 
   List<String> _data = List<String>.empty(growable: true);
   bool newDataReceived = false;
 
-  bool isConnected = false;
+  BluetoothConnection? connection;
+  Stream<Uint8List>? settingsStream;
 
 
   @override
@@ -50,6 +55,13 @@ class _SettingsPageState extends State<SettingsPage> {
     // TODO: implement initState
     super.initState();
 
+    try{
+      connection = widget.connection;
+      settingsStream = widget.settingsStream;
+    }
+    catch(e){
+      print("Settings: Connection init: ${e.toString()}");
+    }
 
 
     if(!Provider.of<ConnectionProvider>(context,listen: false).isSettingsEmpty){
@@ -72,29 +84,24 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
 
-    BluetoothConnection.toAddress(globals.selectedDevice!.address).then((_connection) {
-      print('Connected to the device');
+    try{
+      settingsStream!.listen(_onDataReceived).onDone(() {});
+    }
+    catch(e){
 
-      connection = _connection;
-      isConnected = true;
+      print("Settings: Listening init: ${e.toString()}");
+    }
 
-      connection!.input!.listen(_onDataReceived).onDone(() {});
 
-      setState(() {});
-    }).catchError((error) {
-      print('Settings: Cannot connect, exception occured');
-      print(error);
-    });
 
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    connection?.dispose();
-    connection = null;
-    isConnected = false;
     _data.clear();
+    settingsStream = null;
+
     super.dispose();
   }
 

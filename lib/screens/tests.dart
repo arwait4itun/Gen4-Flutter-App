@@ -9,7 +9,14 @@ import 'package:flyer/globals.dart' as globals;
 
 
 class TestPage extends StatefulWidget {
-  const TestPage({Key? key}) : super(key: key);
+
+  BluetoothConnection? connection;
+
+  Stream<Uint8List>? testsStream;
+
+
+  TestPage({required this.connection, this.testsStream});
+
 
   @override
   _TestPageState createState() => _TestPageState();
@@ -52,30 +59,29 @@ class _TestPageState extends State<TestPage> {
 
 
   BluetoothConnection? connection;
-  bool isConnected = false;
+  Stream<Uint8List>? testsStream;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
+    try{
+      connection = widget.connection;
+      testsStream = widget.testsStream;
+    }
+    catch(e){
+      print("TESTS: Connection init: ${e.toString()}");
+    }
 
-    BluetoothConnection.toAddress(globals.selectedDevice!.address).then((_connection) {
-      print('Connected to the device');
-
-      connection = _connection;
-      isConnected = true;
-      setState(() {
-
-      });
-    });
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    connection?.dispose();
-    connection = null;
+
+
+    testsStream = null;
     super.dispose();
   }
 
@@ -740,11 +746,6 @@ class _TestPageState extends State<TestPage> {
 
     try {
 
-      if(!isConnected || connection==null){
-        connection = reconnect();
-        isConnected = true;
-      }
-
       DiagnosticMessage _dm = DiagnosticMessage(
           testTypeChoice: _testTypeChoice,
           motorNameChoice: _motorNameChoice,
@@ -765,7 +766,7 @@ class _TestPageState extends State<TestPage> {
       //globals.connection!.close();
 
       Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-        builder: (_) => StopDiagnoseUI(connection: connection,),
+        builder: (_) => StopDiagnoseUI(connection: connection,testsStream: testsStream,),
         ),
       );
 
@@ -778,14 +779,6 @@ class _TestPageState extends State<TestPage> {
   }
 
 
-  BluetoothConnection? reconnect(){
-    BluetoothConnection.toAddress(globals.selectedDevice!.address).then((_connection) {
-      print('Reconnected to the device');
-
-      connection = _connection;
-      return connection;
-    });
-  }
 
 
 }
@@ -793,8 +786,10 @@ class _TestPageState extends State<TestPage> {
 class StopDiagnoseUI extends StatefulWidget {
 
   BluetoothConnection? connection;
+  Stream<Uint8List>? testsStream;
 
-  StopDiagnoseUI({required this.connection});
+
+  StopDiagnoseUI({required this.connection, required this.testsStream});
 
   @override
   _StopDiagnoseUIState createState() => _StopDiagnoseUIState();
@@ -809,7 +804,9 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
 
   bool isConnected = false;
 
+
   BluetoothConnection? connection;
+  Stream<Uint8List>? testsStream;
 
   @override
   void initState() {
@@ -817,6 +814,7 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
     super.initState();
 
     connection = widget.connection;
+    testsStream = widget.testsStream;
   }
 
   @override
@@ -849,7 +847,7 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
       width: MediaQuery.of(context).size.width,
 
       child: StreamBuilder<Uint8List>(
-        stream: connection!.input,
+        stream: testsStream,
         builder: (context, snapshot) {
           if(snapshot.hasData){
             var data = snapshot.data;
@@ -930,6 +928,8 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
         String _sd = StopDignostics().stopDiagnosePacket();
 
         connection!.output.add(Uint8List.fromList(utf8.encode(_sd)));
+
+        testsStream = null;
         isConnected = false;
 
       });

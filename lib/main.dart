@@ -33,11 +33,9 @@ class MyApp extends StatelessWidget {
           showValueIndicator: ShowValueIndicator.always,
         ),
       ),
-      home: DashboardScaffold(),
       debugShowCheckedModeBanner: false,
       initialRoute: "/bluetooth",
       routes: {
-        '/dashboard': (context) => const DashboardScaffold(),
         '/bluetooth': (context) => BluetoothPage(),
       },
     );
