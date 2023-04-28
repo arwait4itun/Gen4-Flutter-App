@@ -46,12 +46,15 @@ class SettingsMessage{
     int bit8 = 8;
     String bit8s = "08";
 
+    int bit2 = 2;
+    String bit2s = "02";
+
 
     //  packet += packetLength;
     
     packet += Information.settingsFromApp.hexVal;
     packet += Substate.run.hexVal; // doesnt matter for this usecase
-    packet += attributeCount;
+    packet += padding(attributeCount,bit2);
 
     packet += attribute(SettingsAttribute.spindleSpeed.hexVal,bit4s,padding(spindleSpeed, bit4));
     packet += attribute(SettingsAttribute.draft.hexVal, bit8s, padding(draft, bit8));
@@ -107,6 +110,26 @@ class SettingsMessage{
     }
 
     return s;
+  }
+
+  Map<String,String> toMap(){
+
+    Map<String,String> _settings = {
+      "spindleSpeed": spindleSpeed,
+      "draft": draft,
+      "twistPerInch": twistPerInch,
+      "RTF": RTF,
+      "lengthLimit": lengthLimit,
+      "maxHeightOfContent": maxHeightOfContent,
+      "rovingWidth": rovingWidth,
+      "deltaBobbinDia": deltaBobbinDia,
+      "bareBobbinDia": bareBobbinDia,
+      "rampupTime": rampupTime,
+      "rampdownTime": rampdownTime,
+      "changeLayerTime": changeLayerTime,
+    };
+
+    return _settings;
   }
 }
 

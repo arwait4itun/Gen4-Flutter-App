@@ -22,6 +22,8 @@ class _TestPageState extends State<TestPage> {
   List<String> _motorName = ["FLYER","BOBBIN","FRONT ROLLER","BACK ROLLER","DRAFTING","WINDING"];
   List<String> _controlType = ["OPEN LOOP","CLOSED LOOP"];
 
+  List<String> _motorDirection = ["DEFAULT","REVERSE"];
+
   List<String> _liftMotors = ["BOTH","LEFT","RIGHT"];
   List<String> _bedDirection = ["UP","DOWN"];
 
@@ -30,6 +32,8 @@ class _TestPageState extends State<TestPage> {
   late String _testTypeChoice = _testType.first;
   late String _motorNameChoice = _motorName.first;
   late String _controlTypeChoice = _controlType.first;
+
+  late String _motorDirectionChoice = _motorDirection.first;
 
   late String _liftMotorsChoice = _liftMotors.first;
   late String _bedDirectionChoice = _bedDirection.first;
@@ -46,11 +50,6 @@ class _TestPageState extends State<TestPage> {
   String _dutyPerc="10";
   String prev="0";
 
-  //stop diagnose variables
-  bool _running = false; //running true -> stop diagnose; else run diagnose
-
-  String? _runningRPM;
-  String? _runningSignalVoltage;
 
   BluetoothConnection? connection;
   bool isConnected = false;
@@ -86,79 +85,12 @@ class _TestPageState extends State<TestPage> {
     return Container(
         padding: EdgeInsets.only(left: 10,top: 7,bottom: 7, right: 7),
         //scrollDirection: Axis.vertical,
-        child: _running? _stopDiagnoseUI() : _runDiagnoseUI(),
+        child: _runDiagnoseUI(),
     );
 
   }
 
-  Widget _stopDiagnoseUI(){
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
 
-      child: StreamBuilder<Uint8List>(
-        stream: connection!.input,
-        builder: (context, snapshot) {
-          if(snapshot.hasData){
-            var data = snapshot.data;
-            String _d = utf8.decode(data!);
-            print("\nTESTS: run diagnose data: "+_d);
-            print(snapshot.data);
-
-            Map<String,double> _diagResponse = DiagnosticMessageResponse().decode(_d);
-
-            try{
-              _runningRPM = _diagResponse["speedRPM"]!.toStringAsFixed(2);
-              _runningSignalVoltage = _diagResponse["signalVoltage"]!.toStringAsFixed(2);
-            }
-            catch(e){
-              print("tests1: ${e.toString()}");
-            }
-          }
-
-          return Column(
-
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height*0.1,
-                width: MediaQuery.of(context).size.width,
-
-                child: Center(
-                  child: Text("TEST RESULTS",style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20,color: Theme.of(context).primaryColor),),
-                ),
-              ),
-              Table(
-                columnWidths: const <int, TableColumnWidth>{
-                  0: FractionColumnWidth(0.5),
-                  1: FractionColumnWidth(0.5),
-                },
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                children: <TableRow>[
-                  _customRow("Speed in RPM", _runningRPM),
-                  _customRow("Signal Voltage", _runningSignalVoltage),
-                ],
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height*0.1,
-                width: MediaQuery.of(context).size.width,
-                margin: EdgeInsets.only(top: 10),
-                child: Center(
-                  child: ElevatedButton(
-                    onPressed: stopDiagnose,
-                    child: Text("STOP DIAGNOSE"),
-                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).primaryColor)),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
 
 
   Widget _runDiagnoseUI(){
@@ -172,8 +104,8 @@ class _TestPageState extends State<TestPage> {
         children: [
           Table(
             columnWidths: const <int, TableColumnWidth>{
-              0: FractionColumnWidth(0.55),
-              1: FractionColumnWidth(0.35),
+              0: FractionColumnWidth(0.50),
+              1: FractionColumnWidth(0.50),
             },
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children:  <TableRow>[
@@ -320,16 +252,18 @@ class _TestPageState extends State<TestPage> {
                   ),
 
                 ],
-              ):TableRow(children: <Widget>[TableCell(
-                verticalAlignment: TableCellVerticalAlignment.middle,
-                child: Container(
+              )
+              :TableRow(children: <Widget>[
+                TableCell(
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                  child: Container(
                   margin: EdgeInsets.only(left: 5, right: 5),
                   child: Text(
                     "Control Type",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
                 ),
-              ),
+                ),
                 TableCell(
                   verticalAlignment: TableCellVerticalAlignment.middle,
                   child:
@@ -339,8 +273,60 @@ class _TestPageState extends State<TestPage> {
                     margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
                     child: Text("CLOSED LOOP"),
                   ),
-                ),]),
+                ),
+              ]),
 
+              //This section is for motor direction
+              _testTypeChoice=="MOTOR"?
+              TableRow(
+                children: <Widget>[
+                  TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child: Container(
+                      margin: EdgeInsets.only(left: 5, right: 5),
+                      child: Text(
+                        "Motor Direction",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child:
+                    Container(
+                      height: MediaQuery.of(context).size.height*0.05,
+                      width: MediaQuery.of(context).size.width*0.2,
+                      margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
+                      child: DropdownButton<String>(
+                        value: _motorDirectionChoice,
+                        icon: const Icon(Icons.arrow_drop_down),
+                        elevation: 16,
+                        style: const TextStyle(color: Colors.lightGreen),
+                        underline: Container(),
+                        onChanged: (String? value) {
+                          // This is called when the user selects an item.
+                          setState(() {
+                            _motorDirectionChoice = value!;
+                          });
+                        },
+                        items: _motorDirection.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+
+                ],
+              )
+              :TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
+              ),
 
               // this is target% section. If "MOTOR", then put a target Row, a specialized table row,
               //else an empty rable row
@@ -452,7 +438,8 @@ class _TestPageState extends State<TestPage> {
                   ),
 
                 ],
-              ):TableRow(
+              )
+              : TableRow(
                   children: <Widget>[
                     TableCell(child: Container()),
                     TableCell(child: Container()),
@@ -663,38 +650,7 @@ class _TestPageState extends State<TestPage> {
     );
   }
 
-  TableRow _customRow(String label,String? attribute){
 
-    //attribute will change
-    return TableRow(
-      children: <Widget>[
-
-        TableCell(
-          verticalAlignment: TableCellVerticalAlignment.middle,
-          child: Container(
-            margin: EdgeInsets.only(left: 5, right: 5),
-            child: Text(
-              label,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ),
-        TableCell(
-          verticalAlignment: TableCellVerticalAlignment.middle,
-          child:
-          Container(
-
-            height: MediaQuery.of(context).size.height*0.05,
-            width: MediaQuery.of(context).size.width*0.2,
-            margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
-            padding: EdgeInsets.only(left: 5, top: 11),
-            child: Text(attribute ?? "--", ),
-          ),
-        ),
-
-      ],
-    );
-  }
 
 
   TableRow _targetRow(String label){
@@ -795,7 +751,8 @@ class _TestPageState extends State<TestPage> {
           controlTypeChoice: _controlTypeChoice,
           target: _target.toString(),
           targetRPM: _targetRPM,
-          testRuntime: _testRuntimeval.toString()
+          testRuntime: _testRuntimeval.toString(),
+          motorDirection: _motorDirectionChoice.toString()
       );
 
 
@@ -807,9 +764,11 @@ class _TestPageState extends State<TestPage> {
       await connection!.output!.allSent;
       //globals.connection!.close();
 
-      setState(() {
-        _running = true;
-      });
+      Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+        builder: (_) => StopDiagnoseUI(connection: connection,),
+        ),
+      );
+
     }
     catch(e){
 
@@ -828,22 +787,194 @@ class _TestPageState extends State<TestPage> {
     });
   }
 
-  void stopDiagnose() async {
+
+}
+
+class StopDiagnoseUI extends StatefulWidget {
+
+  BluetoothConnection? connection;
+
+  StopDiagnoseUI({required this.connection});
+
+  @override
+  _StopDiagnoseUIState createState() => _StopDiagnoseUIState();
+}
+
+class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
+
+  String? _runningRPM;
+  String? _runningSignalVoltage;
+  String? _current;
+  String? _power;
+
+  bool isConnected = false;
+
+  BluetoothConnection? connection;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    connection = widget.connection;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text(
+          "Flyer Frame",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+        leading: Container(),
+      ),
+      body: Container(
+
+        padding: EdgeInsets.only(left: 10,top: 7,bottom: 7, right: 7),
+        //scrollDirection: Axis.vertical,
+        child: _stopDiagnoseUI(),
+      ),
+    );
+
+  }
+
+  Widget _stopDiagnoseUI(){
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+
+      child: StreamBuilder<Uint8List>(
+        stream: connection!.input,
+        builder: (context, snapshot) {
+          if(snapshot.hasData){
+            var data = snapshot.data;
+            String _d = utf8.decode(data!);
+            print("\nTESTS: run diagnose data: "+_d);
+            print(snapshot.data);
+
+
+            try{
+
+              Map<String,double> _diagResponse = DiagnosticMessageResponse().decode(_d);
+              print("HERE!!!!!!!!!!!!!!: $_diagResponse");
+
+              _runningRPM = _diagResponse["speedRPM"]!.toStringAsFixed(2);
+              _runningSignalVoltage = _diagResponse["signalVoltage"]!.toStringAsFixed(2);
+              _current = _diagResponse["current"]!.toStringAsFixed(2);
+              _power = _diagResponse["power"]!.toStringAsFixed(2);
+            }
+            catch(e){
+              print("tests1: ${e.toString()}");
+            }
+          }
+
+
+          return Column(
+
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height*0.1,
+                width: MediaQuery.of(context).size.width,
+
+                child: Center(
+                  child: Text("TEST RESULTS",style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20,color: Theme.of(context).primaryColor),),
+                ),
+              ),
+              Table(
+                columnWidths: const <int, TableColumnWidth>{
+                  0: FractionColumnWidth(0.5),
+                  1: FractionColumnWidth(0.5),
+                },
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: <TableRow>[
+                  _customRow("Speed in RPM", _runningRPM),
+                  _customRow("Signal Voltage", _runningSignalVoltage),
+                  _customRow("Current", _current),
+                  _customRow("Power", _power),
+                ],
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height*0.1,
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.only(top: 10),
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: (){
+                      _stopDiagnose();
+                    },
+                    child: Text("STOP DIAGNOSE"),
+                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).primaryColor)),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _stopDiagnose() async {
 
     try{
       setState(() {
-        connection!.dispose();
-        connection = null;
 
+        String _sd = StopDignostics().stopDiagnosePacket();
+
+        connection!.output.add(Uint8List.fromList(utf8.encode(_sd)));
         isConnected = false;
-        _running = false;
+
       });
+
+      Navigator.of(context).pop();
     }
     catch(e){
       print("Tests3: ${e.toString()}");
     }
   }
+
+  TableRow _customRow(String label,String? attribute){
+
+    //attribute will change
+    return TableRow(
+      children: <Widget>[
+
+        TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child: Container(
+            margin: EdgeInsets.only(left: 5, right: 5),
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ),
+        TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child:
+          Container(
+
+            height: MediaQuery.of(context).size.height*0.05,
+            width: MediaQuery.of(context).size.width*0.2,
+            margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
+            padding: EdgeInsets.only(left: 5, top: 11),
+            child: Text(attribute ?? "--", ),
+          ),
+        ),
+
+      ],
+    );
+  }
 }
+
 
 
 

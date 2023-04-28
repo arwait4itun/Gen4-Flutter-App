@@ -9,6 +9,7 @@ class DiagnosticMessage{
   String target;
   String targetRPM;
   String testRuntime;
+  String motorDirection;
 
 
   DiagnosticMessage({
@@ -17,7 +18,8 @@ class DiagnosticMessage{
   required this.controlTypeChoice,
   required this.target,
   required this.targetRPM,
-  required this.testRuntime
+  required this.testRuntime,
+  required this.motorDirection,
   });
 
   String createPacket(){
@@ -25,13 +27,15 @@ class DiagnosticMessage{
     String packet = "";
 
     String packetLength = "";
-    String attributeCount =  "06";
+    String attributeCount =  DiagnosticAttributeType.values.length.toString();
+
+    int bit2 = 2;
 
   //  packet += packetLength;
 
     packet += Information.diagnostics.hexVal;
     packet += Substate.run.hexVal; // doesnt matter for this usecase
-    packet += attributeCount;
+    packet += padding(attributeCount,bit2);
 
 
   
@@ -70,6 +74,17 @@ class DiagnosticMessage{
       //motor id
       packet += attribute(DiagnosticAttributeType.motorID.hexVal,"02",_motorId);
 
+      String _motorDirVal;
+
+      switch(motorDirection){
+        case "REVERSE":
+          _motorDirVal  = MotorDirection.reverseDirection.hexVal;
+          break;
+        default:
+          _motorDirVal = MotorDirection.defaultDirection.hexVal;
+      }
+
+      packet += attribute(DiagnosticAttributeType.motorDirection.hexVal,"02",_motorDirVal);
 
       String _controlType;
 
@@ -156,6 +171,7 @@ class DiagnosticMessage{
   }
 
 
+
 }
 
 class DiagnosticMessageResponse{
@@ -236,8 +252,31 @@ class DiagnosticMessageResponse{
     else if(t==DiagnosticResponse.signalVoltage.hexVal){
       return DiagnosticResponse.signalVoltage.name;
     }
+    else if(t==DiagnosticResponse.current.hexVal){
+      return DiagnosticResponse.current.name;
+    }
+    else if(t==DiagnosticResponse.power.hexVal){
+      return DiagnosticResponse.power.name;
+    }
     else{
       return "";
     }
   }
+}
+
+class StopDignostics{
+
+  String stopDiagnosePacket(){
+
+    String packet = Information.diagnostics.hexVal+Substate.stop.hexVal+"00"+Separator.eof.hexVal;
+
+    packet = Separator.sof.hexVal+padding(packet.length.toString(),2)+packet;
+
+    return packet;
+  }
+}
+
+
+void main(){
+  print(DiagnosticAttributeType.values.length.toString());
 }
