@@ -53,7 +53,7 @@ class SettingsMessage{
     //  packet += packetLength;
     
     packet += Information.settingsFromApp.hexVal;
-    packet += Substate.run.hexVal; // doesnt matter for this usecase
+    packet += Substate.running.hexVal; // doesnt matter for this usecase
     packet += padding(attributeCount,bit2);
 
     packet += attribute(SettingsAttribute.spindleSpeed.hexVal,bit4s,padding(spindleSpeed, bit4));

@@ -3,22 +3,22 @@ import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
 
-class RequestSettings{
+class StatusMessage{
 
-  Map<String, double> decode(String packet) {
-    //decodes packet after settings request is sent
+  Map<String, String> decode(String packet) {
 
-    //print("packet: $packet");
+    //decodes packet for status
 
-    Map<String, double> _settings = Map<String, double>();
+
+    Map<String, String> _settings = Map<String, String>();
 
     String sof = packet.substring(0,2); //7E start of frame
     int len = int.parse(packet.substring(2,4),radix: 16); //Packet Length
 
-    String _requestSettings = packet.substring(4,6);
+    String _machineState = packet.substring(4,6);
     String _ss = packet.substring(6,8); //not necessary
 
-    int _attributeLength = int.parse(packet.substring(8,10));
+    int _attributeLength = int.parse(packet.substring(8,10)); //should be 3
 
     //print(_attributeLength);
 
@@ -26,14 +26,21 @@ class RequestSettings{
     int end = start + len-8;
 
     if(sof!="7E"){
-      throw FormatException("Invalid Start Of Frame");
+      throw FormatException("Status Message: Invalid Start Of Frame");
     }
 
-    if(_requestSettings!="02"){
-
-      throw FormatException("Invalid Request Settings Code");
+    if(substateName(_ss) != ""){
+      _settings["substate"] = substateName(_ss);
+    }
+    else{
+      throw FormatException("Status Message: Invalid Substate");
     }
 
+    if(_machineState!=Information.machineState.hexVal){
+      throw FormatException("Status Message: Invalid Request Settings Code");
+    }
+
+    /*
     for(int i=start; i<end;){
 
       String t = packet.substring(i,i+2);
@@ -50,7 +57,7 @@ class RequestSettings{
       if(key == ""){
         throw FormatException("Invalid Attribute Type");
       }
-      
+
       if(l==4){
         v = int.parse(val,radix: 16).toDouble();
       }
@@ -59,28 +66,37 @@ class RequestSettings{
       }
 
       //print("t: $t, l: $l, v: $val");
-      _settings[key] = v;
+      _settings[key] = v.toString();
 
       i=i+4+l;
     }
+
+     */
+
     print(_settings);
     return _settings;
   }
 
-  String createPacket(){
+  String substateName(String t){
 
-    String packet = "";
-    String packetLength = "08";
-    String attributeLength = "00";
+    List<Substate> vals = Substate.values;
 
-    packet = Separator.sof.hexVal+packetLength+Information.requestSettings.hexVal+Substate.idle.hexVal+attributeLength+Separator.eof.hexVal;
+    for(int i=0; i<vals.length;i++){
 
-    return packet;
+      Substate v = vals[i];
+
+      if(v.hexVal == t){
+        return v.name;
+      }
+    }
+
+    return "0";
   }
 
   String attributeName(String t){
 
-    
+    //CHANGE THIS TO STATUSattribute -> Create New Enum
+
     if(t==SettingsAttribute.spindleSpeed.hexVal){
       return SettingsAttribute.spindleSpeed.name;
     }
@@ -125,11 +141,3 @@ class RequestSettings{
     }
   }
 }
-
-void main() {
-
-  String p = "7E840200125004028A51084100000052083F99999A540404B05504011856084040000057083F8000005804003053083F80000059042EE060041F4060041F40610403207E";
-  
-  print(RequestSettings().decode(p));
-}
-

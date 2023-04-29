@@ -89,7 +89,7 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
     final List<Widget> _pages = <Widget>[
       //checks if the device is a phone or tablet based on screen size
       MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
-      PhoneStatusPageUI() : StatusPage(),
+      PhoneStatusPageUI(statusStream: multiStream,) : StatusPage(),
       SettingsPage(connection: connection, settingsStream: multiStream,),
       TestPage(connection: connection, testsStream: multiStream,),
     ];
@@ -118,8 +118,65 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
           Navigator.of(context).pop();
         },
       ),
+
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: <Color>[Colors.blue,Colors.lightGreen]),
+        ),
+      ),
+      actions: [
+        _selectedIndex==1? _popUpActionButton(): Container(), //show only for settings page
+      ],
     );
   }
+
+  IconButton _popUpActionButton(){
+
+    return IconButton(
+        onPressed: (){
+
+          showDialog(
+            context: context,
+            builder: (context) {
+              return _popUpUI();
+            }
+          );
+
+        },
+        icon: Icon(Icons.search),
+    );
+  }
+
+
+  Dialog _popUpUI(){
+
+    return Dialog(
+      child: Container(
+        height: MediaQuery.of(context).size.height*0.8,
+        width: MediaQuery.of(context).size.width*0.9,
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(15.0),
+              child: Text(
+                'Choose from Library',
+                style:
+                TextStyle(color: Colors.black, fontSize: 22.0),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
 
   BottomNavigationBar navigationBar(){
     return BottomNavigationBar(

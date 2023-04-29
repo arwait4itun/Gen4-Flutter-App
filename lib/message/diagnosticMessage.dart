@@ -34,7 +34,7 @@ class DiagnosticMessage{
   //  packet += packetLength;
 
     packet += Information.diagnostics.hexVal;
-    packet += Substate.run.hexVal; // doesnt matter for this usecase
+    packet += Substate.running.hexVal; // doesnt matter for this usecase
     packet += padding(attributeCount,bit2);
 
 

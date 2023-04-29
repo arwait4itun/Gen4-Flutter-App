@@ -132,7 +132,7 @@ extension InformationExtension on Information{
 
 enum Substate{
   idle,
-  run,
+  running,
   pause,
   stop,
   homing,
@@ -147,7 +147,7 @@ extension SubstateExtension on Substate{
 
       case Substate.idle:
         return "00";
-      case Substate.run:
+      case Substate.running:
         return "01";
       case Substate.pause:
         return "02";
