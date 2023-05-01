@@ -10,6 +10,7 @@ import 'package:flyer/screens/status.dart';
 import 'package:flyer/screens/tests.dart';
 import 'package:flyer/screens/utilities.dart';
 import 'package:flyer/globals.dart' as globals;
+import 'popup_calc.dart';
 
 class DashboardScaffold extends StatefulWidget {
 
@@ -127,54 +128,11 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
               colors: <Color>[Colors.blue,Colors.lightGreen]),
         ),
       ),
-      actions: [
-        _selectedIndex==1? _popUpActionButton(): Container(), //show only for settings page
-      ],
-    );
-  }
-
-  IconButton _popUpActionButton(){
-
-    return IconButton(
-        onPressed: (){
-
-          showDialog(
-            context: context,
-            builder: (context) {
-              return _popUpUI();
-            }
-          );
-
-        },
-        icon: Icon(Icons.search),
     );
   }
 
 
-  Dialog _popUpUI(){
 
-    return Dialog(
-      child: Container(
-        height: MediaQuery.of(context).size.height*0.8,
-        width: MediaQuery.of(context).size.width*0.9,
-        color: Colors.white,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Text(
-                'Choose from Library',
-                style:
-                TextStyle(color: Colors.black, fontSize: 22.0),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
 
 

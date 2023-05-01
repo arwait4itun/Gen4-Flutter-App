@@ -9,6 +9,7 @@ import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/message/acknowledgement.dart';
 import 'package:flyer/message/request_settings.dart';
 import 'package:flyer/message/settingsMessage.dart';
+import 'package:flyer/screens/popup_calc.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +34,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _draft = TextEditingController();
   final TextEditingController _twistPerInch = TextEditingController();
   final TextEditingController _RTF = TextEditingController();
-  final TextEditingController _lengthLimit = TextEditingController();
+  final TextEditingController _layers = TextEditingController();
   final TextEditingController _maxHeightOfContent = TextEditingController();
   final TextEditingController _rovingWidth = TextEditingController();
   final TextEditingController _deltaBobbinDia = TextEditingController();
@@ -72,7 +73,7 @@ class _SettingsPageState extends State<SettingsPage> {
       _draft.text =  _s["draft"].toString();
       _twistPerInch.text = _s["twistPerInch"].toString();
       _RTF.text = _s["RTF"].toString();
-      _lengthLimit.text=_s["lengthLimit"].toString();
+      _layers.text=_s["layers"].toString();
       _maxHeightOfContent.text  = _s["maxHeightOfContent"].toString();
       _rovingWidth.text = _s["rovingWidth"].toString();
       _deltaBobbinDia.text = _s["deltaBobbinDia"].toString();
@@ -132,7 +133,7 @@ class _SettingsPageState extends State<SettingsPage> {
               _customRow("Draft", _draft,defaultValue: "",enabled: _enabled),
               _customRow("Twists Per Inch", _twistPerInch,defaultValue: "",enabled: _enabled),
               _customRow("Initial RTF", _RTF,defaultValue: "",enabled: _enabled),
-              _customRow("Length Limit (mtrs)", _lengthLimit, isFloat: false,defaultValue: "",enabled: _enabled),
+              _customRow("Layers (mtrs)", _layers, isFloat: false,defaultValue: "",enabled: _enabled),
               _customRow("Max Content Ht (mm)", _maxHeightOfContent, isFloat: false,defaultValue: "",enabled: _enabled),
               _customRow("Roving Width", _rovingWidth, defaultValue: "",enabled: _enabled),
               _customRow("Delta Bobbin-dia (mm)", _deltaBobbinDia,defaultValue: "",enabled: _enabled),
@@ -142,13 +143,18 @@ class _SettingsPageState extends State<SettingsPage> {
               _customRow("Change Layer Time (ms)", _changeLayerTime, isFloat: false, defaultValue: "",enabled: _enabled),
             ],
           ),
+
+          Container(
+
+            width: MediaQuery.of(context).size.width,
+          ),
           Container(
             margin: EdgeInsets.all(10),
             height: MediaQuery.of(context).size.height*0.1,
             width: MediaQuery.of(context).size.width,
 
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
@@ -165,7 +171,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _draft.text =  "8.8";
                     _twistPerInch.text = "1.4";
                     _RTF.text = "1";
-                    _lengthLimit.text="1000";
+                    _layers.text="50";
                     _maxHeightOfContent.text = "280";
                     _rovingWidth.text = "1.2";
                     _deltaBobbinDia.text = "1.1";
@@ -174,7 +180,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _rampdownTime.text = "12";
                     _changeLayerTime.text = "800";
 
-                    SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, lengthLimit: _lengthLimit.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+                    SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
 
                     ConnectionProvider().setSettings(_sm.toMap());
                     Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
@@ -186,7 +192,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   onPressed: () async {
                     String _valid = isValidForm();
                     if(_valid == "valid"){
-                      SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, lengthLimit: _lengthLimit.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+                      SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
                       String _msg = _sm.createPacket();
 
                       connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
@@ -221,6 +227,39 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                   icon: Icon(Icons.save,color: Theme.of(context).primaryColor,),
                 ),
+
+                IconButton(
+                    onPressed: (){
+                      try{
+
+                        String _err = isValidForm();
+
+                        if(_err!="valid"){
+                          //if error in form
+                          SnackBar _snack = SnackBarService(message: _err, color: Colors.red).snackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(_snack);
+
+                          throw FormatException(_err);
+                        }
+
+                        SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+
+                        ConnectionProvider().setSettings(_sm.toMap());
+                        Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return _popUpUI();
+                            }
+                        );
+                      }
+                      catch(e){
+                        print("Settings: search icon button: ${e.toString()}");
+                      }
+                    },
+                    icon: Icon(Icons.search,color: Theme.of(context).primaryColor,),
+                ),
               ],
             ),
           ),
@@ -231,6 +270,20 @@ class _SettingsPageState extends State<SettingsPage> {
 
   }
 
+
+  Dialog _popUpUI(){
+
+    return Dialog(
+      child: Container(
+        height: MediaQuery.of(context).size.height*0.8,
+        width: MediaQuery.of(context).size.width*0.9,
+        color: Colors.white,
+        child: popUpUI(),
+      ),
+    );
+  }
+
+
   void _onDataReceived(Uint8List data) {
 
     try {
@@ -240,10 +293,9 @@ class _SettingsPageState extends State<SettingsPage> {
         throw FormatException('Invalid Packet');
       }
 
-      setState(() {
-        _data.add(_d);
-        newDataReceived = true;
-      });
+      _data.add(_d);
+      newDataReceived = true;
+
     }
     catch (e){
 
@@ -253,6 +305,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
 
   TableRow _customRow(String label, TextEditingController controller, {bool isFloat=true, String defaultValue="0", bool enabled=true}){
+
     return TableRow(
       children: <Widget>[
         TableCell(
@@ -365,16 +418,16 @@ class _SettingsPageState extends State<SettingsPage> {
       }
     }
 
-    if(_lengthLimit.text.trim() == "" ){
-      errorMessage = "Length Limit is Empty!";
+    if(_layers.text.trim() == "" ){
+      errorMessage = "Layers is Empty!";
       return errorMessage;
     }
     else{
-      List range = globals.settingsLimits["lengthLimit"]!;
-      double val = double.parse(_lengthLimit.text.trim());
+      List range = globals.settingsLimits["layers"]!;
+      double val = double.parse(_layers.text.trim());
 
       if(val < range[0] || val > range[1]){
-        errorMessage = "Length Limit values should be within $range";
+        errorMessage = "Layers values should be within $range";
         return errorMessage;
       }
     }
@@ -510,7 +563,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _draft.text = settings["draft"].toString();
         _twistPerInch.text = settings["twistPerInch"].toString();
         _RTF.text = settings["RTF"].toString();
-        _lengthLimit.text = settings["lengthLimit"]!.toInt().toString();
+        _layers.text = settings["layers"]!.toInt().toString();
         _maxHeightOfContent.text = settings["maxHeightOfContent"]!.toInt().toString();
         _rovingWidth.text = settings["rovingWidth"].toString();
         _deltaBobbinDia.text = settings["deltaBobbinDia"].toString();
@@ -522,7 +575,7 @@ class _SettingsPageState extends State<SettingsPage> {
         newDataReceived = false;
 
 
-        SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, lengthLimit: _lengthLimit.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+        SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
         ConnectionProvider().setSettings(_sm.toMap());
         Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 

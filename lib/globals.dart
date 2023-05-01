@@ -16,7 +16,7 @@ Map<String,List> settingsLimits = {
    "draft":[5,9.9],
    "twistPerInch":[1,1.6],
    "RTF":[0.25,2],
-   "lengthLimit":[100,6000],
+   "layers":[1,100],
    "maxHeightOfContent":[250,300],
    "rovingWidth":[1,4],
    "deltaBobbinDia":[1,2.5],

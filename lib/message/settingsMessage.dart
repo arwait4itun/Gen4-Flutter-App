@@ -9,7 +9,7 @@ class SettingsMessage{
   String draft;
   String twistPerInch;
   String RTF;
-  String lengthLimit;
+  String layers;
   String maxHeightOfContent;
   String rovingWidth;
   String deltaBobbinDia;
@@ -23,7 +23,7 @@ class SettingsMessage{
   required this.draft,
   required this.twistPerInch,
   required this.RTF,
-  required this.lengthLimit,
+  required this.layers,
   required this.maxHeightOfContent,
   required this.rovingWidth,
   required this.deltaBobbinDia,
@@ -60,7 +60,7 @@ class SettingsMessage{
     packet += attribute(SettingsAttribute.draft.hexVal, bit8s, padding(draft, bit8));
     packet += attribute(SettingsAttribute.twistPerInch.hexVal, bit8s, padding(twistPerInch, bit8));
     packet += attribute(SettingsAttribute.RTF.hexVal, bit8s, padding(RTF, bit8));
-    packet += attribute(SettingsAttribute.lengthLimit.hexVal,bit4s, padding(lengthLimit, bit4));
+    packet += attribute(SettingsAttribute.layers.hexVal,bit4s, padding(layers, bit4));
     packet += attribute(SettingsAttribute.maxHeightOfContent.hexVal, bit4s, padding(maxHeightOfContent, bit4));
     packet += attribute(SettingsAttribute.rovingWidth.hexVal, bit8s, padding(rovingWidth, bit8));
     packet += attribute(SettingsAttribute.deltaBobbinDia.hexVal, bit8s, padding(deltaBobbinDia,bit8));
@@ -119,7 +119,7 @@ class SettingsMessage{
       "draft": draft,
       "twistPerInch": twistPerInch,
       "RTF": RTF,
-      "lengthLimit": lengthLimit,
+      "layers": layers,
       "maxHeightOfContent": maxHeightOfContent,
       "rovingWidth": rovingWidth,
       "deltaBobbinDia": deltaBobbinDia,

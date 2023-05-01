@@ -37,6 +37,7 @@ class StatusMessage{
     }
 
     if(_machineState!=Information.machineState.hexVal){
+      print(packet);
       throw FormatException("Status Message: Invalid Request Settings Code");
     }
 
@@ -112,8 +113,8 @@ class StatusMessage{
     else if(t==SettingsAttribute.RTF.hexVal){
       return SettingsAttribute.RTF.name;
     }
-    else if(t==SettingsAttribute.lengthLimit.hexVal){
-      return SettingsAttribute.lengthLimit.name;
+    else if(t==SettingsAttribute.layers.hexVal){
+      return SettingsAttribute.layers.name;
     }
     else if(t==SettingsAttribute.maxHeightOfContent.hexVal){
       return SettingsAttribute.maxHeightOfContent.name;

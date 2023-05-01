@@ -191,6 +191,7 @@ enum DiagnosticAttributeType{
   motorDirection,
   targetPercent,
   testTime,
+  bedDistance,
 }
 
 extension DiagnosticAttributeTypeExtension on DiagnosticAttributeType{
@@ -208,6 +209,8 @@ extension DiagnosticAttributeTypeExtension on DiagnosticAttributeType{
         return "42";
       case DiagnosticAttributeType.testTime:
         return "43";
+      case DiagnosticAttributeType.bedDistance:
+        return "45";
     }
   }
 }
@@ -217,7 +220,7 @@ enum SettingsAttribute{
   draft,
   twistPerInch,
   RTF,
-  lengthLimit,
+  layers,
   maxHeightOfContent,
   rovingWidth,
   deltaBobbinDia,
@@ -239,7 +242,7 @@ extension SettingsAttributeTypeExtension on SettingsAttribute{
         return "52";
       case SettingsAttribute.RTF:
         return "53";
-      case SettingsAttribute.lengthLimit:
+      case SettingsAttribute.layers:
         return "54";
       case SettingsAttribute.maxHeightOfContent:
         return "55";
@@ -264,6 +267,7 @@ enum DiagnosticResponse{
   signalVoltage,
   current,
   power,
+  lift,
 }
 
 extension DiagnosticResponseExtension on DiagnosticResponse{
@@ -279,6 +283,8 @@ extension DiagnosticResponseExtension on DiagnosticResponse{
         return "03";
       case DiagnosticResponse.power:
         return "04";
+      case DiagnosticResponse.lift:
+        return "05";
     }
   }
 }

@@ -567,15 +567,30 @@ class _TestPageState extends State<TestPage> {
 
             ],
           ),
+
           Container(
-            height: MediaQuery.of(context).size.height*0.1,
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.only(top: 10),
+            height: MediaQuery.of(context).size.height*0.05,
+            width: MediaQuery.of(context).size.width*0.9,
+            margin: EdgeInsets.only(top: 40),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[Colors.blue,Colors.lightGreen]
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Center(
               child: ElevatedButton(
                 onPressed: runDiagnose,
-                child: Text("RUN DIAGNOSE"),
-                style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).primaryColor)),
+                child: Text("RUN DIAGNOSE",style: TextStyle(fontWeight: FontWeight.bold),),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+
               ),
             ),
           ),
@@ -753,20 +768,28 @@ class _TestPageState extends State<TestPage> {
           target: _target.toString(),
           targetRPM: _targetRPM,
           testRuntime: _testRuntimeval.toString(),
-          motorDirection: _motorDirectionChoice.toString()
+          motorDirection: _testTypeChoice!="LIFT" ? _motorDirectionChoice.toString() : _liftMotorsChoice.toString() ,
+          bedDirectionChoice: _bedDirectionChoice.toString(),
+          bedTravelDistance: _bedTravelDistance.text.toString(),
       );
 
 
       String _m = _dm.createPacket();
 
+      print(_m);
 
       connection!.output.add(Uint8List.fromList(utf8.encode(_m)));
 
       await connection!.output!.allSent;
       //globals.connection!.close();
 
-      Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-        builder: (_) => StopDiagnoseUI(connection: connection,testsStream: testsStream,),
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+          builder: (_) => StopDiagnoseUI(
+            connection: connection,
+            testsStream: testsStream,
+            isLift: _testTypeChoice=="LIFT",
+          ),
         ),
       );
 
@@ -787,9 +810,10 @@ class StopDiagnoseUI extends StatefulWidget {
 
   BluetoothConnection? connection;
   Stream<Uint8List>? testsStream;
+  bool isLift;
 
 
-  StopDiagnoseUI({required this.connection, required this.testsStream});
+  StopDiagnoseUI({required this.connection, required this.testsStream, required this.isLift});
 
   @override
   _StopDiagnoseUIState createState() => _StopDiagnoseUIState();
@@ -801,6 +825,8 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
   String? _runningSignalVoltage;
   String? _current;
   String? _power;
+
+  String? _lift;
 
   bool isConnected = false;
 
@@ -830,6 +856,14 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
         ),
         centerTitle: true,
         leading: Container(),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: <Color>[Colors.blue,Colors.lightGreen]),
+          ),
+        ),
       ),
       body: Container(
 
@@ -837,6 +871,7 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
         //scrollDirection: Axis.vertical,
         child: _stopDiagnoseUI(),
       ),
+
     );
 
   }
@@ -849,6 +884,7 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
       child: StreamBuilder<Uint8List>(
         stream: testsStream,
         builder: (context, snapshot) {
+
           if(snapshot.hasData){
             var data = snapshot.data;
             String _d = utf8.decode(data!);
@@ -865,6 +901,15 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
               _runningSignalVoltage = _diagResponse["signalVoltage"]!.toStringAsFixed(2);
               _current = _diagResponse["current"]!.toStringAsFixed(2);
               _power = _diagResponse["power"]!.toStringAsFixed(2);
+
+              if(_diagResponse.keys.length == 5){
+                //contains lift
+
+                _lift = _diagResponse["lift"]!.toStringAsFixed(2);
+              }
+              else{
+                _lift = null;
+              }
             }
             catch(e){
               print("tests1: ${e.toString()}");
@@ -875,7 +920,7 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
           return Column(
 
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
 
             children: [
               Container(
@@ -897,19 +942,40 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
                   _customRow("Signal Voltage", _runningSignalVoltage),
                   _customRow("Current", _current),
                   _customRow("Power", _power),
+
+                  widget.isLift ?
+                  _customRow("Lift", _lift)
+                  :TableRow(
+                      children: <Widget>[
+                        TableCell(child: Container()),
+                        TableCell(child: Container()),
+                      ]
+                  ),
                 ],
               ),
               Container(
-                height: MediaQuery.of(context).size.height*0.1,
-                width: MediaQuery.of(context).size.width,
-                margin: EdgeInsets.only(top: 10),
+                height: MediaQuery.of(context).size.height*0.05,
+                width: MediaQuery.of(context).size.width*0.9,
+                margin: EdgeInsets.only(top: 40),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: <Color>[Colors.blue,Colors.lightGreen]
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Center(
                   child: ElevatedButton(
                     onPressed: (){
                       _stopDiagnose();
                     },
-                    child: Text("STOP DIAGNOSE"),
-                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).primaryColor)),
+                    child: Text("STOP DIAGNOSE", style: TextStyle(fontWeight: FontWeight.bold),),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
                   ),
                 ),
               ),
