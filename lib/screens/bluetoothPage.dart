@@ -266,9 +266,9 @@ class _BluetoothPageState extends State<BluetoothPage> {
                           globals.isConnected = false;
                           ConnectionProvider().setConnection(false);
 
-                          SnackBar _sb = SnackBarService(message: "Error Pairing", color: Colors.red).snackBar();
+                          //SnackBar _sb = SnackBarService(message: "Error Pairing", color: Colors.red).snackBar();
 
-                          ScaffoldMessenger.of(context).showSnackBar(_sb);
+                          //ScaffoldMessenger.of(context).showSnackBar(_sb);
                         }
                       } else {
                         print('Connect -> no device selected');

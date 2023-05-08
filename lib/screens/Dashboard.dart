@@ -10,6 +10,9 @@ import 'package:flyer/screens/status.dart';
 import 'package:flyer/screens/tests.dart';
 import 'package:flyer/screens/utilities.dart';
 import 'package:flyer/globals.dart' as globals;
+import 'package:provider/provider.dart';
+import '../services/provider_service.dart';
+import '../services/snackbar_service.dart';
 import 'popup_calc.dart';
 
 class DashboardScaffold extends StatefulWidget {
@@ -27,6 +30,8 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
   int _selectedIndex = 0;
   BluetoothConnection? connection;
   Stream<Uint8List>? multiStream; //for multiple stream
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -63,6 +68,20 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+
+    widget.connection.finish();
+    widget.connection.close();
+    widget.connection.dispose();
+
+    ConnectionProvider().clearSettings();
+    Provider.of<ConnectionProvider>(context,listen: false).clearSettings();
+
+    super.dispose();
+  }
+
 
 
 
@@ -87,6 +106,7 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
   Widget build(BuildContext context) {
 
 
+
     final List<Widget> _pages = <Widget>[
       //checks if the device is a phone or tablet based on screen size
       MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
@@ -98,13 +118,15 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
 
 
     return Scaffold(
-      appBar: appBar(),
+      key: _scaffoldKey,
+      appBar: appBar(_scaffoldKey),
       bottomNavigationBar: navigationBar(),
       body: _pages[_selectedIndex],
+      drawer: DrawerPage(),
     );
   }
 
-  AppBar appBar(){
+  AppBar appBar(GlobalKey<ScaffoldState> _scaffoldKey){
 
     return AppBar(
       title: const Text("Flyer Frame"),
@@ -116,10 +138,29 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
       leading: IconButton(
         icon: Icon(Icons.bluetooth,color: Colors.white,),
         onPressed: (){
+          widget.connection.finish();
+          widget.connection.close();
+          widget.connection.dispose();
+
+          ConnectionProvider().clearSettings();
+          Provider.of<ConnectionProvider>(context,listen: false).clearSettings();
+
+          SnackBar _sb = SnackBarService(message: "Pair Again", color: Colors.green).snackBar();
+
+          ScaffoldMessenger.of(context).showSnackBar(_sb);
+
           Navigator.of(context).pop();
         },
       ),
 
+      actions: [
+        IconButton(
+            onPressed: (){
+              _scaffoldKey.currentState?.openDrawer();
+            },
+            icon: Icon(Icons.more_vert),
+        ),
+      ],
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -128,6 +169,8 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
               colors: <Color>[Colors.blue,Colors.lightGreen]),
         ),
       ),
+
+
     );
   }
 

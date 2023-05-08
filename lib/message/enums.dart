@@ -91,6 +91,7 @@ extension MotorIdExtension on MotorId{
 
 
 
+
 enum Information {
   impaired,
   requestSettings,
@@ -100,6 +101,7 @@ enum Information {
   diagnosticResponse,
   updateRTF,
   machineState,
+  changeName,
 }
 
 extension InformationExtension on Information{
@@ -123,12 +125,11 @@ extension InformationExtension on Information{
         return "06";
       case Information.updateRTF:
         return "07";
-
+      case Information.changeName:
+        return "08";
     }
   }
 }
-
-
 
 enum Substate{
   idle,
@@ -159,6 +160,89 @@ extension SubstateExtension on Substate{
         return "05";
       default:
         return "06";
+    }
+  }
+}
+
+
+enum Homing {
+  leftLiftDistance,
+  rightLiftDistance,
+}
+
+extension homingExtension on Homing{
+
+  String get hexVal {
+    switch (this){
+
+      case Homing.rightLiftDistance:
+        return "02";
+      case Homing.leftLiftDistance:
+        return "01";
+      default:
+        return "00";
+    }
+  }
+}
+
+
+
+enum Running{
+  leftLiftDistance,
+  rightLiftDistance,
+  layers,
+}
+
+extension runningExtension on Running{
+
+  String get hexVal {
+    switch (this) {
+      case Running.leftLiftDistance:
+        return "01";
+      case Running.rightLiftDistance:
+        return "02";
+      case Running.layers:
+        return "03";
+      default:
+        return "00";
+    }
+  }
+}
+
+enum Error{
+  information,
+  source,
+  action
+}
+
+extension errorExtension on Error{
+
+  String get hexVal {
+    switch (this) {
+      case Error.information:
+        return "01";
+      case Error.source:
+        return "02";
+      case Error.action:
+        return "03";
+      default:
+        return "00";
+    }
+  }
+}
+
+enum Pause{
+  reason,
+}
+
+extension pauseExtension on Pause{
+
+  String get hexVal {
+    switch (this) {
+      case Pause.reason:
+        return "01";
+      default:
+        return "00";
     }
   }
 }

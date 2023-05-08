@@ -25,3 +25,7 @@ Map<String,List> settingsLimits = {
    "rampdownTime":[5,20],
    "changeLayerTime": [200,2500],
 };
+
+Map<String,List<int>> diagnosticLimits = {
+   "bedTravelDistance": [1,200],
+};

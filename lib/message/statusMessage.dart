@@ -9,14 +9,18 @@ class StatusMessage{
 
     //decodes packet for status
 
+    //example 7E28060403010842DC70A4020842DE0000000400007E
 
     Map<String, String> _settings = Map<String, String>();
 
     String sof = packet.substring(0,2); //7E start of frame
+
     int len = int.parse(packet.substring(2,4),radix: 16); //Packet Length
 
+    print(len);
+
     String _machineState = packet.substring(4,6);
-    String _ss = packet.substring(6,8); //not necessary
+    String _ss = packet.substring(6,8);
 
     int _attributeLength = int.parse(packet.substring(8,10)); //should be 3
 
@@ -29,8 +33,11 @@ class StatusMessage{
       throw FormatException("Status Message: Invalid Start Of Frame");
     }
 
-    if(substateName(_ss) != ""){
-      _settings["substate"] = substateName(_ss);
+    String _ssn = substateName(_ss);
+
+    if(_ssn != ""){
+      _settings["substate"] = _ssn;
+
     }
     else{
       throw FormatException("Status Message: Invalid Substate");
@@ -41,7 +48,7 @@ class StatusMessage{
       throw FormatException("Status Message: Invalid Request Settings Code");
     }
 
-    /*
+
     for(int i=start; i<end;){
 
       String t = packet.substring(i,i+2);
@@ -51,12 +58,14 @@ class StatusMessage{
 
       String val = packet.substring(i+4,i+4+l);
 
-      String key = attributeName(t);
+      String key = attributeName(_ssn,t);
 
       double v; //int or double
 
       if(key == ""){
-        throw FormatException("Invalid Attribute Type");
+        i=i+4+l;
+        continue;
+        //throw FormatException("Invalid Attribute Type");
       }
 
       if(l==4){
@@ -72,7 +81,7 @@ class StatusMessage{
       i=i+4+l;
     }
 
-     */
+
 
     print(_settings);
     return _settings;
@@ -94,48 +103,37 @@ class StatusMessage{
     return "0";
   }
 
-  String attributeName(String t){
+  String attributeName(String ss,String t){
 
-    //CHANGE THIS TO STATUSattribute -> Create New Enum
+    //chooses attribute based on substate
 
-    if(t==SettingsAttribute.spindleSpeed.hexVal){
-      return SettingsAttribute.spindleSpeed.name;
+
+    if(ss==Substate.homing.name && t==Homing.rightLiftDistance.hexVal){
+      return Homing.rightLiftDistance.name;
     }
-    else if(t==SettingsAttribute.draft.hexVal){
-      return SettingsAttribute.draft.name;
+    else if(ss==Substate.homing.name && t==Homing.leftLiftDistance.hexVal){
+      return Homing.leftLiftDistance.name;
     }
-    else if(t==SettingsAttribute.draft.hexVal){
-      return SettingsAttribute.draft.name;
+    else if(ss==Substate.running.name && t==Running.leftLiftDistance.hexVal){
+      return Running.leftLiftDistance.name;
     }
-    else if(t==SettingsAttribute.twistPerInch.hexVal){
-      return SettingsAttribute.twistPerInch.name;
+    else if(ss==Substate.running.name && t==Running.rightLiftDistance.hexVal){
+      return Running.rightLiftDistance.name;
     }
-    else if(t==SettingsAttribute.RTF.hexVal){
-      return SettingsAttribute.RTF.name;
+    else if(ss==Substate.running.name && t==Running.layers.hexVal){
+      return Running.layers.name;
     }
-    else if(t==SettingsAttribute.layers.hexVal){
-      return SettingsAttribute.layers.name;
+    else if(ss==Substate.pause.name && t==Pause.reason.hexVal){
+      return Pause.reason.name;
     }
-    else if(t==SettingsAttribute.maxHeightOfContent.hexVal){
-      return SettingsAttribute.maxHeightOfContent.name;
+    else if(ss==Substate.error.name && t==Error.information.hexVal){
+      return Error.information.name;
     }
-    else if(t==SettingsAttribute.rovingWidth.hexVal){
-      return SettingsAttribute.rovingWidth.name;
+    else if(ss==Substate.error.name && t==Error.source.hexVal){
+      return Error.source.name;
     }
-    else if(t==SettingsAttribute.deltaBobbinDia.hexVal){
-      return SettingsAttribute.deltaBobbinDia.name;
-    }
-    else if(t==SettingsAttribute.bareBobbinDia.hexVal){
-      return SettingsAttribute.bareBobbinDia.name;
-    }
-    else if(t==SettingsAttribute.rampupTime.hexVal){
-      return SettingsAttribute.rampupTime.name;
-    }
-    else if(t==SettingsAttribute.rampdownTime.hexVal){
-      return SettingsAttribute.rampdownTime.name;
-    }
-    else if(t==SettingsAttribute.changeLayerTime.hexVal){
-      return SettingsAttribute.changeLayerTime.name;
+    else if(ss==Substate.error.name && t==Error.action.hexVal){
+      return Error.action.name;
     }
     else{
       return "";

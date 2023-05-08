@@ -29,8 +29,11 @@ class RequestSettings{
       throw FormatException("Invalid Start Of Frame");
     }
 
+
+
     if(_requestSettings!="02"){
       print(packet);
+
       throw FormatException("Invalid Request Settings Code");
     }
 

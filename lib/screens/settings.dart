@@ -157,110 +157,7 @@ class _SettingsPageState extends State<SettingsPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
 
-              children: [
-                IconButton(
-                    onPressed: () async {
-                      _requestSettings();
-                    },
-                    icon: Icon(Icons.input, color: Theme.of(context).primaryColor,)
-                ),
-                IconButton(
-                  onPressed: (){
-                    //hard coded change
-                    _spindleSpeed.text =  "650";
-                    _draft.text =  "8.8";
-                    _twistPerInch.text = "1.4";
-                    _RTF.text = "1";
-                    _layers.text="50";
-                    _maxHeightOfContent.text = "280";
-                    _rovingWidth.text = "1.2";
-                    _deltaBobbinDia.text = "1.1";
-                    _bareBobbinDia.text = "48";
-                    _rampupTime.text= "12";
-                    _rampdownTime.text = "12";
-                    _changeLayerTime.text = "800";
-
-                    SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
-
-                    ConnectionProvider().setSettings(_sm.toMap());
-                    Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
-
-                  },
-                  icon: Icon(Icons.settings_backup_restore,color: Theme.of(context).primaryColor,),
-                ),
-                IconButton(
-                  onPressed: () async {
-                    String _valid = isValidForm();
-                    if(_valid == "valid"){
-                      SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
-                      String _msg = _sm.createPacket();
-
-                      connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
-                      await connection!.output!.allSent.then((v) {});
-                      await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
-
-                      if(newDataReceived){
-                        String _d = _data.last;
-
-                        if(_d == Acknowledgement().createPacket()){
-                          //no eeprom error , acknowledge
-                          SnackBar _sb = SnackBarService(message: "Settings Saved", color: Colors.green).snackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(_sb);
-
-                        }
-                        else{
-                          //failed acknowledgement
-                          SnackBar _sb = SnackBarService(message: "Settings Not Saved", color: Colors.red).snackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(_sb);
-                        }
-                        
-                        newDataReceived = false;
-                        setState(() {
-                        });
-                      }
-
-                    }
-                    else{
-                      SnackBar _sb = SnackBarService(message: _valid, color: Colors.red).snackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(_sb);
-                    }
-                  },
-                  icon: Icon(Icons.save,color: Theme.of(context).primaryColor,),
-                ),
-
-                IconButton(
-                    onPressed: (){
-                      try{
-
-                        String _err = isValidForm();
-
-                        if(_err!="valid"){
-                          //if error in form
-                          SnackBar _snack = SnackBarService(message: _err, color: Colors.red).snackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(_snack);
-
-                          throw FormatException(_err);
-                        }
-
-                        SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
-
-                        ConnectionProvider().setSettings(_sm.toMap());
-                        Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
-
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return _popUpUI();
-                            }
-                        );
-                      }
-                      catch(e){
-                        print("Settings: search icon button: ${e.toString()}");
-                      }
-                    },
-                    icon: Icon(Icons.search,color: Theme.of(context).primaryColor,),
-                ),
-              ],
+              children: _settingsButtons(),
             ),
           ),
         ],
@@ -268,6 +165,118 @@ class _SettingsPageState extends State<SettingsPage> {
     );
 
 
+  }
+
+  List<IconButton> _settingsButtons(){
+
+    if(Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed){
+      return [
+        IconButton(
+            onPressed: () async {
+              _requestSettings();
+            },
+            icon: Icon(Icons.input, color: Theme.of(context).primaryColor,)
+        ),
+        IconButton(
+          onPressed: (){
+            //hard coded change
+            _spindleSpeed.text =  "650";
+            _draft.text =  "8.8";
+            _twistPerInch.text = "1.4";
+            _RTF.text = "1";
+            _layers.text="50";
+            _maxHeightOfContent.text = "280";
+            _rovingWidth.text = "1.2";
+            _deltaBobbinDia.text = "1.1";
+            _bareBobbinDia.text = "48";
+            _rampupTime.text= "12";
+            _rampdownTime.text = "12";
+            _changeLayerTime.text = "800";
+
+            SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+
+            ConnectionProvider().setSettings(_sm.toMap());
+            Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+
+          },
+          icon: Icon(Icons.settings_backup_restore,color: Theme.of(context).primaryColor,),
+        ),
+        IconButton(
+          onPressed: () async {
+            String _valid = isValidForm();
+            if(_valid == "valid"){
+              SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+              String _msg = _sm.createPacket();
+
+              connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
+              await connection!.output!.allSent.then((v) {});
+              await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
+
+              if(newDataReceived){
+                String _d = _data.last;
+
+                if(_d == Acknowledgement().createPacket()){
+                  //no eeprom error , acknowledge
+                  SnackBar _sb = SnackBarService(message: "Settings Saved", color: Colors.green).snackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+                }
+                else{
+                  //failed acknowledgement
+                  SnackBar _sb = SnackBarService(message: "Settings Not Saved", color: Colors.red).snackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(_sb);
+                }
+
+                newDataReceived = false;
+                setState(() {
+                });
+              }
+
+            }
+            else{
+              SnackBar _sb = SnackBarService(message: _valid, color: Colors.red).snackBar();
+              ScaffoldMessenger.of(context).showSnackBar(_sb);
+            }
+          },
+          icon: Icon(Icons.save,color: Theme.of(context).primaryColor,),
+        ),
+        IconButton(
+          onPressed: (){
+            try{
+
+              String _err = isValidForm();
+
+              if(_err!="valid"){
+                //if error in form
+                SnackBar _snack = SnackBarService(message: _err, color: Colors.red).snackBar();
+                ScaffoldMessenger.of(context).showSnackBar(_snack);
+
+                throw FormatException(_err);
+              }
+
+              SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+
+              ConnectionProvider().setSettings(_sm.toMap());
+              Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return _popUpUI();
+                  }
+              );
+            }
+            catch(e){
+              print("Settings: search icon button: ${e.toString()}");
+            }
+          },
+          icon: Icon(Icons.search,color: Theme.of(context).primaryColor,),
+        ),
+      ];
+    }
+    else{
+      return [];
+    }
   }
 
 
@@ -293,8 +302,17 @@ class _SettingsPageState extends State<SettingsPage> {
         throw FormatException('Invalid Packet');
       }
 
-      _data.add(_d);
-      newDataReceived = true;
+      if(_d.substring(4,6)=="02" || _d == Acknowledgement().createPacket() || _d == Acknowledgement().createPacket(error: true)){
+
+        //Allow if:
+        //request settins data
+        // or if acknowledgement (error or no error )
+
+        _data.add(_d);
+        newDataReceived = true;
+      }
+
+      //else ignore data
 
     }
     catch (e){
@@ -540,7 +558,7 @@ class _SettingsPageState extends State<SettingsPage> {
       connection!.output.add(Uint8List.fromList(utf8.encode(RequestSettings().createPacket())));
 
       await connection!.output!.allSent;
-      await Future.delayed(Duration(milliseconds: 500)); //wait for acknowlegement
+      await Future.delayed(Duration(seconds: 1)); //wait for acknowlegement
       /*SnackBar _sb = SnackBarService(
           message: "Sent Request for Settings!", color: Colors.green)
           .snackBar();*/
@@ -580,12 +598,19 @@ class _SettingsPageState extends State<SettingsPage> {
         Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
 
+        SnackBar _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
+        ScaffoldMessenger.of(context).showSnackBar(_sb);
+
         setState(() {
 
         });
       }
-      SnackBar _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
-      ScaffoldMessenger.of(context).showSnackBar(_sb);
+      else{
+        SnackBar _sb = SnackBarService(message: "Settings Not Received", color: Colors.red).snackBar();
+        ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+      }
+
     }
     catch(e){
       print("Settings!: ${e.toString()}");

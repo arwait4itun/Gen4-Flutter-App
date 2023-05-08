@@ -6,6 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/enums.dart';
 import 'package:flyer/message/statusMessage.dart';
+import 'package:provider/provider.dart';
+
+import '../services/provider_service.dart';
 
 class PhoneStatusPageUI extends StatefulWidget {
 
@@ -19,15 +22,25 @@ class PhoneStatusPageUI extends StatefulWidget {
 
 class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
 
-  String _substate = "";
+  String _substate = "pause";
 
-  String _errorValue = "None";
-  String _errorInformation = "None";
+  String _errorSource = "";
+  String _errorAction = "";
+  String _errorInformation = "";
+
+  String _layer = "";
+
+  String _pauseReason = "UHFSLIUEGAHF";
+
 
 
   bool hasError = false;
   bool running = false;
   bool homing = false;
+  bool pause = true;
+
+  double _liftLeft = 0;
+  double _liftRight = 0;
 
 
   Stream<Uint8List>? statusStream;
@@ -83,11 +96,50 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
                 case "error":
                   hasError = true;
                   break;
+                case "pause":
+                  pause = true;
+                  break;
                 default:
                   break;
               }
 
+              if(running || homing){
+
+                //disable settings and diagnostic pages when running to prevent errors
+
+                if( Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed){
+                  Provider.of<ConnectionProvider>(context,listen: false).setSettingsChangeAllowed(false);
+                }
+
+              }
+              else{
+
+                if(!Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed){
+                  Provider.of<ConnectionProvider>(context,listen: false).setSettingsChangeAllowed(true);
+                }
+
+              }
+
+              if(_statusResponse.containsKey("leftLiftDistance") && _statusResponse.containsKey("rightLiftDistance")){
+                _liftLeft = double.parse(_statusResponse["leftLiftDistance"]!);
+                _liftRight = double.parse(_statusResponse["rightLiftDistance"]!);
+              }
+
+              if(hasError){
+
+                _errorInformation = _statusResponse["errorInformation"]!;
+                _errorSource = _statusResponse["errorSource"]!;
+                _errorAction = _statusResponse["errorAction"]!;
+
+              }
+              else if(running){
+                _layer = _statusResponse["layer"]!;
+              }
+              else if(pause){
+                _pauseReason = _statusResponse["pauseReason"]!;
+              }
             }
+
             catch(e){
               print("status1: ${e.toString()}");
             }
@@ -96,121 +148,369 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
           return Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            child: Column(
-              mainAxisAlignment: hasError? MainAxisAlignment.spaceEvenly : MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-
-              children: [
-
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Status",
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height*0.06,
-                      width: MediaQuery.of(context).size.width*0.9,
-                      padding: EdgeInsets.all(10),
-                      margin: EdgeInsets.only(top: 10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: Text(
-                        _substate.toUpperCase(),
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-
-                running || homing? _liftAnimation(0.1,0.1): Container(),
-
-
-                hasError?
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Error Value",
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height*0.08,
-                      width: MediaQuery.of(context).size.width*0.9,
-                      padding: EdgeInsets.all(10),
-                      margin: EdgeInsets.only(top: 10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: Text(
-                        _errorValue,
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-                :Container(),
-
-                hasError?
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Error Information",
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height*0.15,
-                      width: MediaQuery.of(context).size.width*0.9,
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.only(top: 10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: Text(
-                        _errorInformation,
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-                    :Container(),
-              ],
-            ),
+            child: _mainUI(),
           );
         }
     );
 
+  }
+
+
+  Widget _mainUI(){
+    //decides which ui should be used based on substate
+
+    if(hasError){
+      return _errorUI();
+    }
+    else if(running){
+      return _runUI();
+    }
+    else if(homing){
+      return _homingUI();
+    }
+    else if(pause){
+      return _pauseUI();
+    }
+    else{
+      return Container();
+    }
+  }
+
+  Widget _runUI(){
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.center,
+
+      children: [
+
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Status",
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height*0.06,
+              width: MediaQuery.of(context).size.width*0.9,
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Text(
+                _substate.toUpperCase(),
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Layer",
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height*0.06,
+              width: MediaQuery.of(context).size.width*0.9,
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Text(
+                _layer,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        _liftAnimation(_liftLeft,_liftRight),
+
+      ],
+    );
+  }
+
+  Widget _homingUI(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.center,
+
+      children: [
+
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Status",
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height*0.06,
+              width: MediaQuery.of(context).size.width*0.9,
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Text(
+                _substate.toUpperCase(),
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        _liftAnimation(_liftLeft,_liftRight),
+
+      ],
+    );
+  }
+
+  Widget _pauseUI(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+
+      children: [
+
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Status",
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height*0.06,
+              width: MediaQuery.of(context).size.width*0.9,
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Text(
+                _substate.toUpperCase(),
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Reason For Pause",
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height*0.08,
+              width: MediaQuery.of(context).size.width*0.9,
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Text(
+                _pauseReason,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+      ],
+    );
+  }
+
+  Widget _errorUI(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+
+      children: [
+
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Status",
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height*0.06,
+              width: MediaQuery.of(context).size.width*0.9,
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Text(
+                _substate.toUpperCase(),
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Error Information",
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height*0.06,
+              width: MediaQuery.of(context).size.width*0.9,
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Text(
+                _errorInformation,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Error Source",
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height*0.06,
+              width: MediaQuery.of(context).size.width*0.9,
+              padding: EdgeInsets.all(5),
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Text(
+                _errorSource,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Error Action",
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height*0.15,
+              width: MediaQuery.of(context).size.width*0.9,
+              padding: EdgeInsets.all(5),
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Text(
+                _errorAction,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
+        )
+
+      ],
+    );
   }
 
   Widget _liftAnimation(double left, double right){
@@ -219,17 +519,9 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
     //dir = -ve if r > l
     //dir = 0 if r==l
 
-    double direction;
+    double direction = (left-right)/4;
 
-    if(left>right){
-      direction = 1;
-    }
-    else if(right > left){
-      direction = -1;
-    }
-    else{
-      direction = 0;
-    }
+
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -237,7 +529,7 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
 
       children: [
         Text(
-          'title'
+            'title'
         ),
 
         SizedBox(
@@ -253,7 +545,7 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
 
           child: Transform.rotate(
 
-            angle: direction*math.pi/40,
+            angle: (direction)*math.pi/40,
             child: Container(
               height: MediaQuery.of(context).size.height*0.05,
               width: MediaQuery.of(context).size.width*0.95,

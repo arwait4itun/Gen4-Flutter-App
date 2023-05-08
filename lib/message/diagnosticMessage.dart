@@ -54,7 +54,7 @@ class DiagnosticMessage{
 
       String _motorId;
 
-      switch(motorDirection){
+      switch(motorNameChoice){
 
         case "FLYER":
           _motorId = MotorId.flyer.hexVal;
@@ -135,9 +135,12 @@ class DiagnosticMessage{
 
       String _liftID;
 
+      String _controlType = ControlType.openLoop.hexVal;
+
       switch(motorDirection) {
         case "BOTH":
           _liftID = MotorId.lift.hexVal;
+          _controlType = ControlType.closedLoop.hexVal;
           break;
         case "LEFT":
           _liftID = MotorId.liftLeft.hexVal;
@@ -149,17 +152,17 @@ class DiagnosticMessage{
 
       packet += attribute(DiagnosticAttributeType.motorID.hexVal,"02",_liftID);
 
-      String _controlType = ControlType.closedLoop.hexVal;
+
 
       packet += attribute(DiagnosticAttributeType.kindOfTest.hexVal,"02",_controlType);
 
       String _bedDirectionId;
 
       if(bedDirectionChoice=="UP"){
-        _bedDirectionId = "00";
+        _bedDirectionId = "01";
       }
       else{
-        _bedDirectionId = "01";
+        _bedDirectionId = "00";
       }
 
       packet += attribute(DiagnosticAttributeType.motorDirection.hexVal, "02", padding(_bedDirectionId,2));
@@ -178,7 +181,7 @@ class DiagnosticMessage{
 
     packet = Separator.sof.hexVal+packetLength+packet;
 
-    print(packet.toUpperCase());
+    print("here!!!!!!!!!!!!!!!! ${packet.toUpperCase()}");
 
     return packet.toUpperCase();
   }
@@ -272,6 +275,12 @@ class DiagnosticMessageResponse{
         throw FormatException("Diagnostic Message: Invalid Attribute Type");
       }
 
+      if(_settings.containsKey(key)){
+        //for drafting, winding and lift both we use two motors so key value will repeat
+
+        key += "1";
+      }
+
       if(l==4){
 
         v = int.parse(val,radix: 16).toDouble();
@@ -313,7 +322,7 @@ class DiagnosticMessageResponse{
   }
 }
 
-class StopDignostics{
+class StopDiagnostics{
 
   String stopDiagnosePacket(){
 
