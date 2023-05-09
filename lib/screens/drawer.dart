@@ -16,6 +16,10 @@ import '../services/snackbar_service.dart';
 
 class DrawerPage extends StatefulWidget {
 
+  BluetoothConnection connection;
+
+  DrawerPage({required this.connection});
+
 
   @override
   _DrawerPageState createState() => _DrawerPageState();
@@ -28,6 +32,8 @@ class _DrawerPageState extends State<DrawerPage> {
   late TextEditingController _passwordController;
   late TextEditingController _deviceNameController;
 
+  late BluetoothConnection connection;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -37,6 +43,8 @@ class _DrawerPageState extends State<DrawerPage> {
 
     _deviceName = "";
     _deviceNameController = new TextEditingController();
+
+    connection = widget.connection;
     super.initState();
   }
 
@@ -66,7 +74,9 @@ class _DrawerPageState extends State<DrawerPage> {
 
   void _changeDeviceName(){
 
+    print("change name");
 
+    _displayChangeName(context);
   }
 
 

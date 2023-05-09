@@ -349,14 +349,7 @@ class _TestPageState extends State<TestPage> {
                   ]
               ),
 
-              _testTypeChoice=="MOTOR" ?
-              _testTimeRow("Run Time (%)")
-                  :TableRow(
-                  children: <Widget>[
-                    TableCell(child: Container()),
-                    TableCell(child: Container()),
-                  ]
-              ),
+
 
               //if "MOTOR", is open Loop put target Duty, if Closed loop put targetRPM
               // if LIFT put empty container.
@@ -418,6 +411,15 @@ class _TestPageState extends State<TestPage> {
                 TableCell(child: Container()),
                 TableCell(child: Container()),
                 ]
+              ),
+
+              _testTypeChoice=="MOTOR" ?
+              _testTimeRow("Run Time (%)")
+                  :TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
               ),
 
               //if "MOTOR", is open Loop put target Duty, if Closed loop put targetRPM
@@ -698,21 +700,23 @@ class _TestPageState extends State<TestPage> {
           verticalAlignment: TableCellVerticalAlignment.middle,
           child: Container(
             width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(left:0),
-            margin: EdgeInsets.only(left: 0, right: 0),
-            child: Slider(
-              value: _target,
-              max: 90.0,
-              min: 10.0,
-              activeColor: Theme.of(context).primaryColor,
-              onChanged: (val){
-                setState(() {
-                  _target = (val/5).ceil()*5;
-                  _targetRPM = getTargetRPM(_target.toString());
-                  _dutyPerc = ((val/5).ceil()*5).toString()+"%";
-                });
-              },
-            ),
+            padding: EdgeInsets.only(right: 2.5),
+            margin: EdgeInsets.only(right: 2.5),
+            child: Expanded(
+              child: Slider(
+                value: _target,
+                max: 90.0,
+                min: 10.0,
+                activeColor: Theme.of(context).primaryColor,
+                onChanged: (val){
+                  setState(() {
+                    _target = (val/5).ceil()*5;
+                    _targetRPM = getTargetRPM(_target.toString());
+                    _dutyPerc = ((val/5).ceil()*5).toString()+"%";
+                  });
+                },
+              ),
+            )
           ),
         ),
 
@@ -738,23 +742,25 @@ class _TestPageState extends State<TestPage> {
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.middle,
           child: Container(
-            padding: EdgeInsets.only(left:0),
-            margin: EdgeInsets.only(left: 0, right: 10),
-            child: Slider(
-              value: _testRuntimeval,
-              max: 310.0,
-              min: 20.0,
-              activeColor: Theme.of(context).primaryColor,
-             // label: _testRuntime.toString(),
-              onChanged: (val){
-                setState(() {
-                  _testRuntimeval = (val/10).ceil()*10;
-                  _testRuntime = _testRuntimeval.toInt().toString();
-                  if(_testRuntimeval>300){
-                    _testRuntime = "infinity";
-                  }
-                });
-              },
+            padding: EdgeInsets.only(right: 2.5),
+            margin: EdgeInsets.only(right: 2.5),
+            child: Expanded(
+              child: Slider(
+                value: _testRuntimeval,
+                max: 310.0,
+                min: 20.0,
+                activeColor: Theme.of(context).primaryColor,
+                // label: _testRuntime.toString(),
+                onChanged: (val){
+                  setState(() {
+                    _testRuntimeval = (val/10).ceil()*10;
+                    _testRuntime = _testRuntimeval.toInt().toString();
+                    if(_testRuntimeval>300){
+                      _testRuntime = "infinity";
+                    }
+                  });
+                },
+              ),
             ),
           ),
         ),

@@ -6,15 +6,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/enums.dart';
 import 'package:flyer/message/statusMessage.dart';
+import 'package:flyer/screens/running_carousel.dart';
 import 'package:provider/provider.dart';
 
 import '../services/provider_service.dart';
 
 class PhoneStatusPageUI extends StatefulWidget {
 
-  Stream<Uint8List>? statusStream;
 
-  PhoneStatusPageUI({required this.statusStream});
+  BluetoothConnection connection;
+  Stream<Uint8List> statusStream;
+
+  PhoneStatusPageUI({required this.connection,required this.statusStream});
 
   @override
   _PhoneStatusPageUIState createState() => _PhoneStatusPageUIState();
@@ -22,28 +25,31 @@ class PhoneStatusPageUI extends StatefulWidget {
 
 class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
 
-  String _substate = "pause";
+  String _substate = "";
 
   String _errorSource = "";
   String _errorAction = "";
   String _errorInformation = "";
+  String _errorCode = "";
 
   String _layer = "";
 
-  String _pauseReason = "UHFSLIUEGAHF";
+  String _pauseReason = "";
 
 
 
   bool hasError = false;
   bool running = false;
   bool homing = false;
-  bool pause = true;
+  bool pause = false;
+  bool idle = false;
 
   double _liftLeft = 0;
   double _liftRight = 0;
 
 
-  Stream<Uint8List>? statusStream;
+  late Stream<Uint8List> statusStream;
+  late BluetoothConnection connection;
 
   @override
   void initState() {
@@ -51,13 +57,13 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
     super.initState();
 
     statusStream = widget.statusStream;
+    connection = widget.connection;
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
 
-    statusStream = null;
     super.dispose();
   }
 
@@ -74,70 +80,87 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
             print(snapshot.data);
 
 
-            try{
+            try {
 
-              hasError = false;
-              running = false;
-              homing = false;
-
-              Map<String,String> _statusResponse = StatusMessage().decode(_d);
+              print("here status!!!!!: $_d");
+              Map<String, String> _statusResponse = StatusMessage().decode(_d);
               print("HERE!!!!!!!!!!!!!!: $_statusResponse");
 
-              _substate = _statusResponse["substate"]!;
+              if (!_statusResponse.isEmpty) {
 
-              switch(_substate){
+                _substate = _statusResponse["substate"]!;
 
-                case "run":
-                  running = true;
-                  break;
-                case "homing":
-                  homing = true;
-                  break;
-                case "error":
-                  hasError = true;
-                  break;
-                case "pause":
-                  pause = true;
-                  break;
-                default:
-                  break;
-              }
-
-              if(running || homing){
-
-                //disable settings and diagnostic pages when running to prevent errors
-
-                if( Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed){
-                  Provider.of<ConnectionProvider>(context,listen: false).setSettingsChangeAllowed(false);
+                switch (_substate) {
+                  case "running":
+                    hasError = false;
+                    running = true;
+                    homing = false;
+                    pause = false;
+                    idle = false;
+                    break;
+                  case "homing":
+                    hasError = false;
+                    running = false;
+                    homing = true;
+                    pause = false;
+                    idle = false;
+                    break;
+                  case "error":
+                    hasError = true;
+                    running = false;
+                    homing = false;
+                    pause = false;
+                    idle = false;
+                    break;
+                  case "pause":
+                    hasError = false;
+                    running = false;
+                    homing = false;
+                    pause = true;
+                    idle = false;
+                    break;
+                  default:
+                    hasError = false;
+                    running = false;
+                    homing = false;
+                    pause = false;
+                    idle = true;
+                    break;
                 }
 
-              }
-              else{
+                if (running || homing || pause || hasError) {
+                  //disable settings and diagnostic pages when running to prevent errors
 
-                if(!Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed){
-                  Provider.of<ConnectionProvider>(context,listen: false).setSettingsChangeAllowed(true);
+                  if (Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
+                    Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
+                  }
+                }
+                else {
+                  if (!Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
+                    Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
+                  }
                 }
 
+                if (_statusResponse.containsKey("leftLiftDistance") && _statusResponse.containsKey("rightLiftDistance")) {
+                  _liftLeft = double.parse(_statusResponse["leftLiftDistance"]!);
+                  _liftRight = double.parse(_statusResponse["rightLiftDistance"]!);
+                }
+
+                if (hasError) {
+
+                  _errorInformation = _statusResponse["errorReason"]!;
+                  _errorCode = _statusResponse["errorCode"]!;
+                  _errorSource = _statusResponse["errorSource"]!;
+                  _errorAction = "Action";
+                }
+                else if (running) {
+                  _layer = double.parse(_statusResponse["layers"]!).toInt().toString();
+                }
+                else if (pause) {
+                  _pauseReason = _statusResponse["pauseReason"]!;
+                }
               }
 
-              if(_statusResponse.containsKey("leftLiftDistance") && _statusResponse.containsKey("rightLiftDistance")){
-                _liftLeft = double.parse(_statusResponse["leftLiftDistance"]!);
-                _liftRight = double.parse(_statusResponse["rightLiftDistance"]!);
-              }
-
-              if(hasError){
-
-                _errorInformation = _statusResponse["errorInformation"]!;
-                _errorSource = _statusResponse["errorSource"]!;
-                _errorAction = _statusResponse["errorAction"]!;
-
-              }
-              else if(running){
-                _layer = _statusResponse["layer"]!;
-              }
-              else if(pause){
-                _pauseReason = _statusResponse["pauseReason"]!;
-              }
             }
 
             catch(e){
@@ -172,7 +195,50 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
       return _pauseUI();
     }
     else{
-      return Container();
+      //idle
+      return Container(
+        margin: EdgeInsets.only(top: 15),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+
+          children: [
+
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Status",
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height*0.06,
+                  width: MediaQuery.of(context).size.width*0.9,
+                  padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(top: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: Text(
+                    _substate.toUpperCase(),
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -243,6 +309,7 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 14,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -251,6 +318,7 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
 
         _liftAnimation(_liftLeft,_liftRight),
 
+        RunningCarousel(connection: connection, multistream: statusStream),
       ],
     );
   }
@@ -303,13 +371,16 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
 
   Widget _pauseUI(){
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
 
       children: [
 
+        SizedBox(
+          height: 15,
+        ),
         Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -341,6 +412,10 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
           ],
         ),
 
+        SizedBox(
+          height: 50,
+        ),
+
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -366,7 +441,8 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 14,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -438,11 +514,12 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
                 border: Border.all(color: Colors.grey),
               ),
               child: Text(
-                _errorInformation,
+                "$_errorInformation (${_errorCode})",
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 14,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -473,6 +550,8 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -503,11 +582,14 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ],
         )
+
 
       ],
     );

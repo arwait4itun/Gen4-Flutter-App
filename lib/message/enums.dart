@@ -59,7 +59,7 @@ enum MotorId{
   winding,
   lift,
   liftLeft,
-  liftRight
+  liftRight,
 }
 
 extension MotorIdExtension on MotorId{
@@ -85,6 +85,7 @@ extension MotorIdExtension on MotorId{
         return "08";
       case MotorId.liftRight:
         return "09";
+
     }
   }
 }
@@ -99,8 +100,8 @@ enum Information {
   settingsToApp,
   diagnostics,
   diagnosticResponse,
-  updateRTF,
   machineState,
+  carouselInfo,
   changeName,
 }
 
@@ -123,7 +124,7 @@ extension InformationExtension on Information{
         return "05";
       case Information.machineState:
         return "06";
-      case Information.updateRTF:
+      case Information.carouselInfo:
         return "07";
       case Information.changeName:
         return "08";
@@ -152,7 +153,7 @@ extension SubstateExtension on Substate{
         return "01";
       case Substate.pause:
         return "02";
-      case Substate.stop:
+      case Substate.error:
         return "03";
       case Substate.homing:
         return "04";
@@ -191,6 +192,12 @@ enum Running{
   leftLiftDistance,
   rightLiftDistance,
   layers,
+  motorTemp,
+  MOSFETTemp,
+  current,
+  RPM,
+  outputMtrs,
+  whatInfo,
 }
 
 extension runningExtension on Running{
@@ -203,6 +210,18 @@ extension runningExtension on Running{
         return "02";
       case Running.layers:
         return "03";
+      case Running.motorTemp:
+        return "04";
+      case Running.MOSFETTemp:
+        return "05";
+      case Running.current:
+        return "06";
+      case Running.RPM:
+        return "07";
+      case Running.outputMtrs:
+        return "08";
+      case Running.whatInfo:
+        return "09";
       default:
         return "00";
     }
@@ -232,20 +251,41 @@ extension errorExtension on Error{
 }
 
 enum Pause{
-  reason,
+  pauseReason,
 }
 
 extension pauseExtension on Pause{
 
   String get hexVal {
     switch (this) {
-      case Pause.reason:
+      case Pause.pauseReason:
         return "01";
       default:
         return "00";
     }
   }
 }
+
+enum pauseReason{
+  userPaused,
+  creelSliverCut,
+}
+
+extension pauseReasonExtension on pauseReason{
+
+  String get hexVal {
+    switch (this) {
+      case pauseReason.userPaused:
+        return "01";
+      case pauseReason.creelSliverCut:
+        return "02";
+      default:
+        return "00";
+    }
+  }
+}
+
+
 
 
 enum ControlType{

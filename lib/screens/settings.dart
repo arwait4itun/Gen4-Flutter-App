@@ -154,7 +154,7 @@ class _SettingsPageState extends State<SettingsPage> {
             width: MediaQuery.of(context).size.width,
 
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: _settingsButtons().length==1? MainAxisAlignment.end: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
 
               children: _settingsButtons(),
@@ -275,7 +275,41 @@ class _SettingsPageState extends State<SettingsPage> {
       ];
     }
     else{
-      return [];
+      return [
+
+        IconButton(
+          onPressed: (){
+            try{
+
+              String _err = isValidForm();
+
+              if(_err!="valid"){
+                //if error in form
+                SnackBar _snack = SnackBarService(message: _err, color: Colors.red).snackBar();
+                ScaffoldMessenger.of(context).showSnackBar(_snack);
+
+                throw FormatException(_err);
+              }
+
+              SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+
+              ConnectionProvider().setSettings(_sm.toMap());
+              Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return _popUpUI();
+                  }
+              );
+            }
+            catch(e){
+              print("Settings: search icon button: ${e.toString()}");
+            }
+          },
+          icon: Icon(Icons.search,color: Theme.of(context).primaryColor,),
+        ),
+      ];
     }
   }
 

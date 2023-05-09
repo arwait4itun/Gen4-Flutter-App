@@ -44,8 +44,6 @@ class _StatusPageState extends State<StatusPage> {
 
     _data = List<Data>.empty(growable: true);
 
-    Timer _everySecond;
-    bool _ignore_timer = false;
 
     BluetoothConnection.toAddress(globals.selectedDevice?.address).then((_connection) {
       print('Connected to the device');

@@ -28,8 +28,8 @@ class DashboardScaffold extends StatefulWidget {
 class _DashboardScaffoldState extends State<DashboardScaffold> {
 
   int _selectedIndex = 0;
-  BluetoothConnection? connection;
-  Stream<Uint8List>? multiStream; //for multiple stream
+  late BluetoothConnection connection;
+  late Stream<Uint8List> multiStream; //for multiple stream
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -110,7 +110,7 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
     final List<Widget> _pages = <Widget>[
       //checks if the device is a phone or tablet based on screen size
       MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
-      PhoneStatusPageUI(statusStream: multiStream,) : StatusPage(),
+      PhoneStatusPageUI(connection: connection,statusStream: multiStream,) : StatusPage(),
       SettingsPage(connection: connection, settingsStream: multiStream,),
       TestPage(connection: connection, testsStream: multiStream,),
     ];
@@ -122,7 +122,7 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
       appBar: appBar(_scaffoldKey),
       bottomNavigationBar: navigationBar(),
       body: _pages[_selectedIndex],
-      drawer: DrawerPage(),
+      drawer: DrawerPage(connection: connection,),
     );
   }
 

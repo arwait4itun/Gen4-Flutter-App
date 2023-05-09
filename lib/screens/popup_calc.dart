@@ -29,6 +29,7 @@ class _popUpUIState extends State<popUpUI> {
   late double _rovingWidth;
 
   late double _deltaBobbinDia,_bareBobbinDia,_rampupTime,_rampdownTime,_changeLayerTime;
+  late double _strokeDistperSec;
 
 
 
@@ -113,6 +114,15 @@ class _popUpUIState extends State<popUpUI> {
               TextStyle(color: Colors.black, fontSize:  15),
             ),
           ),
+          Padding(
+            padding: EdgeInsets.all(15.0),
+            child: Text(
+              'Stroke Velocity:\t\t${_strokeDistperSec.toStringAsFixed(2)??"-"} mm/s',
+              style:
+              TextStyle(color: Colors.black, fontSize:  15),
+            ),
+          ),
+          
           Padding(
             padding: EdgeInsets.all(15.0),
             child: Text(
@@ -226,9 +236,9 @@ class _popUpUIState extends State<popUpUI> {
     bobbinMotorRPM = bobbinRPM * 1.476;
 
     var strokeHeight = _maxHeightOfContent - (_rovingWidth * layerNo);
-    var strokeDistperSec = (deltaRpm_Spindle_Bobbin * _rovingWidth)/60.0;
-    var strokeTime = strokeHeight/strokeDistperSec;
-    liftMotorRPM = (strokeDistperSec *60.0/4)*15.3;
+    _strokeDistperSec = (deltaRpm_Spindle_Bobbin * _rovingWidth)/60.0;
+    var strokeTime = strokeHeight/_strokeDistperSec;
+    liftMotorRPM = (_strokeDistperSec *60.0/4)*15.3;
     
     //calculate time for input layers
 

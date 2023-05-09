@@ -1,4 +1,5 @@
 
+import 'package:flyer/message/errorMessage.dart';
 import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
@@ -30,22 +31,33 @@ class StatusMessage{
     int end = start + len-8;
 
     if(sof!="7E"){
-      throw FormatException("Status Message: Invalid Start Of Frame");
+      print("Status Message: Invalid Start Of Frame");
+      return Map<String, String>();
+
+      //throw FormatException("Status Message: Invalid Start Of Frame");
     }
 
     String _ssn = substateName(_ss);
 
     if(_ssn != ""){
       _settings["substate"] = _ssn;
-
     }
     else{
-      throw FormatException("Status Message: Invalid Substate");
+      print("Status Message: Invalid Substate");
+      return Map<String, String>();
+      //throw FormatException("Status Message: Invalid Substate");
+    }
+
+    if(_ssn=="error"){
+      //written as a separate class -> errorMessage.dart
+      return ErrorMessage().decode(packet);
     }
 
     if(_machineState!=Information.machineState.hexVal){
-      print(packet);
-      throw FormatException("Status Message: Invalid Request Settings Code");
+      print("Status Message: Invalid Request Settings Code");
+      return Map<String, String>();
+
+      //throw FormatException("Status Message: Invalid Request Settings Code");
     }
 
 
@@ -74,6 +86,24 @@ class StatusMessage{
       else{
         v = convert(val);
       }
+
+      if(key==Pause.pauseReason.name){
+
+        var _r = pauseReason.userPaused.hexVal.padLeft(4,"0");
+
+        if(val==_r){
+
+          _settings[key] = "User Paused";
+        }
+        else{
+          _settings[key] = "Creel Sliver Cut";
+        }
+
+        i=i+4+l;
+        continue;
+      }
+
+
 
       //print("t: $t, l: $l, v: $val");
       _settings[key] = v.toString();
@@ -123,8 +153,8 @@ class StatusMessage{
     else if(ss==Substate.running.name && t==Running.layers.hexVal){
       return Running.layers.name;
     }
-    else if(ss==Substate.pause.name && t==Pause.reason.hexVal){
-      return Pause.reason.name;
+    else if(ss==Substate.pause.name && t==Pause.pauseReason.hexVal){
+      return Pause.pauseReason.name;
     }
     else if(ss==Substate.error.name && t==Error.information.hexVal){
       return Error.information.name;
