@@ -6,10 +6,21 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/diagnosticMessage.dart';
 
 import 'package:flyer/globals.dart' as globals;
+import 'package:flyer/services/snackbar_service.dart';
+import 'package:provider/provider.dart';
+
+import '../services/provider_service.dart';
 
 
 class TestPage extends StatefulWidget {
-  const TestPage({Key? key}) : super(key: key);
+
+  BluetoothConnection? connection;
+
+  Stream<Uint8List>? testsStream;
+
+
+  TestPage({required this.connection, this.testsStream});
+
 
   @override
   _TestPageState createState() => _TestPageState();
@@ -52,30 +63,29 @@ class _TestPageState extends State<TestPage> {
 
 
   BluetoothConnection? connection;
-  bool isConnected = false;
+  Stream<Uint8List>? testsStream;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
+    try{
+      connection = widget.connection;
+      testsStream = widget.testsStream;
+    }
+    catch(e){
+      print("TESTS: Connection init: ${e.toString()}");
+    }
 
-    BluetoothConnection.toAddress(globals.selectedDevice!.address).then((_connection) {
-      print('Connected to the device');
-
-      connection = _connection;
-      isConnected = true;
-      setState(() {
-
-      });
-    });
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    connection?.dispose();
-    connection = null;
+
+
+    testsStream = null;
     super.dispose();
   }
 
@@ -271,7 +281,7 @@ class _TestPageState extends State<TestPage> {
                     height: MediaQuery.of(context).size.height*0.05,
                     width: MediaQuery.of(context).size.width*0.2,
                     margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
-                    child: Text("CLOSED LOOP"),
+                    child: _liftMotorsChoice=="BOTH"? Text("CLOSED LOOP"):Text("OPEN LOOP"),
                   ),
                 ),
               ]),
@@ -339,14 +349,7 @@ class _TestPageState extends State<TestPage> {
                   ]
               ),
 
-              _testTypeChoice=="MOTOR" ?
-              _testTimeRow("Run Time (%)")
-                  :TableRow(
-                  children: <Widget>[
-                    TableCell(child: Container()),
-                    TableCell(child: Container()),
-                  ]
-              ),
+
 
               //if "MOTOR", is open Loop put target Duty, if Closed loop put targetRPM
               // if LIFT put empty container.
@@ -408,6 +411,15 @@ class _TestPageState extends State<TestPage> {
                 TableCell(child: Container()),
                 TableCell(child: Container()),
                 ]
+              ),
+
+              _testTypeChoice=="MOTOR" ?
+              _testTimeRow("Run Time (%)")
+                  :TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
               ),
 
               //if "MOTOR", is open Loop put target Duty, if Closed loop put targetRPM
@@ -561,18 +573,35 @@ class _TestPageState extends State<TestPage> {
 
             ],
           ),
+
+          Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed ?
           Container(
-            height: MediaQuery.of(context).size.height*0.1,
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.only(top: 10),
+            height: MediaQuery.of(context).size.height*0.05,
+            width: MediaQuery.of(context).size.width*0.9,
+            margin: EdgeInsets.only(top: 40),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[Colors.blue,Colors.lightGreen]
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Center(
               child: ElevatedButton(
                 onPressed: runDiagnose,
-                child: Text("RUN DIAGNOSE"),
-                style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).primaryColor)),
+                child: Text("RUN DIAGNOSE",style: TextStyle(fontWeight: FontWeight.bold),),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+
               ),
             ),
-          ),
+          )
+          :Container(),
 
         ],
       ),
@@ -636,11 +665,11 @@ class _TestPageState extends State<TestPage> {
               controller: controller,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: '0',
+                hintText: '',
               ),
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.phone,
               inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
               ],
             ),
           ),
@@ -670,21 +699,24 @@ class _TestPageState extends State<TestPage> {
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.middle,
           child: Container(
-            padding: EdgeInsets.only(left:0),
-            margin: EdgeInsets.only(left: 0, right: 0),
-            child: Slider(
-              value: _target,
-              max: 90.0,
-              min: 10.0,
-              activeColor: Theme.of(context).primaryColor,
-              onChanged: (val){
-                setState(() {
-                  _target = (val/5).ceil()*5;
-                  _targetRPM = getTargetRPM(_target.toString());
-                  _dutyPerc = ((val/5).ceil()*5).toString()+"%";
-                });
-              },
-            ),
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.only(right: 2.5),
+            margin: EdgeInsets.only(right: 2.5),
+            child: Expanded(
+              child: Slider(
+                value: _target,
+                max: 90.0,
+                min: 10.0,
+                activeColor: Theme.of(context).primaryColor,
+                onChanged: (val){
+                  setState(() {
+                    _target = (val/5).ceil()*5;
+                    _targetRPM = getTargetRPM(_target.toString());
+                    _dutyPerc = ((val/5).ceil()*5).toString()+"%";
+                  });
+                },
+              ),
+            )
           ),
         ),
 
@@ -710,23 +742,25 @@ class _TestPageState extends State<TestPage> {
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.middle,
           child: Container(
-            padding: EdgeInsets.only(left:0),
-            margin: EdgeInsets.only(left: 0, right: 10),
-            child: Slider(
-              value: _testRuntimeval,
-              max: 310.0,
-              min: 20.0,
-              activeColor: Theme.of(context).primaryColor,
-             // label: _testRuntime.toString(),
-              onChanged: (val){
-                setState(() {
-                  _testRuntimeval = (val/10).ceil()*10;
-                  _testRuntime = _testRuntimeval.toInt().toString();
-                  if(_testRuntimeval>300){
-                    _testRuntime = "infinity";
-                  }
-                });
-              },
+            padding: EdgeInsets.only(right: 2.5),
+            margin: EdgeInsets.only(right: 2.5),
+            child: Expanded(
+              child: Slider(
+                value: _testRuntimeval,
+                max: 310.0,
+                min: 20.0,
+                activeColor: Theme.of(context).primaryColor,
+                // label: _testRuntime.toString(),
+                onChanged: (val){
+                  setState(() {
+                    _testRuntimeval = (val/10).ceil()*10;
+                    _testRuntime = _testRuntimeval.toInt().toString();
+                    if(_testRuntimeval>300){
+                      _testRuntime = "infinity";
+                    }
+                  });
+                },
+              ),
             ),
           ),
         ),
@@ -738,12 +772,23 @@ class _TestPageState extends State<TestPage> {
 
   void runDiagnose() async {
 
-    try {
 
-      if(!isConnected || connection==null){
-        connection = reconnect();
-        isConnected = true;
+
+    if(_bedTravelDistance!=null && _bedTravelDistance.text!="" && _bedTravelDistance.text!=" "){
+
+      String val = _bedTravelDistance.text;
+
+      if(double.parse(val) < globals.diagnosticLimits["bedTravelDistance"]![0] || double.parse(val) > globals.diagnosticLimits["bedTravelDistance"]![1]){
+        SnackBar _sb = SnackBarService(message: "Bed Travel Distance Range ${globals.diagnosticLimits["bedTravelDistance"]}", color: Colors.red).snackBar();
+
+        ScaffoldMessenger.of(context).showSnackBar(_sb);
+        return;
       }
+
+
+    }
+
+    try {
 
       DiagnosticMessage _dm = DiagnosticMessage(
           testTypeChoice: _testTypeChoice,
@@ -752,20 +797,58 @@ class _TestPageState extends State<TestPage> {
           target: _target.toString(),
           targetRPM: _targetRPM,
           testRuntime: _testRuntimeval.toString(),
-          motorDirection: _motorDirectionChoice.toString()
+          motorDirection: _testTypeChoice!="LIFT" ? _motorDirectionChoice.toString() : _liftMotorsChoice.toString() ,
+          bedDirectionChoice: _bedDirectionChoice.toString(),
+          bedTravelDistance: _bedTravelDistance.text.toString(),
       );
 
 
       String _m = _dm.createPacket();
 
+      print(_m);
 
       connection!.output.add(Uint8List.fromList(utf8.encode(_m)));
 
       await connection!.output!.allSent;
       //globals.connection!.close();
 
-      Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-        builder: (_) => StopDiagnoseUI(connection: connection,),
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+          builder: (_){
+
+            if(_testTypeChoice=="MOTOR" &&(_motorNameChoice=="DRAFTING" || _motorNameChoice=="WINDING") || _testTypeChoice=="LIFT"&&_liftMotorsChoice=="BOTH"){
+
+              String leftTitle,rightTitle;
+
+              if(_testTypeChoice=="MOTOR" &&(_motorNameChoice=="DRAFTING")){
+                leftTitle = "FR";
+                rightTitle = "BR";
+              }
+              else if(_testTypeChoice=="MOTOR" &&(_motorNameChoice=="WINDING")){
+                leftTitle = "Flyer";
+                rightTitle = "Bobbin";
+              }
+              else{
+                leftTitle = "Left";
+                rightTitle = "Right";
+              }
+
+              return StopDiagnoseDoubleUI(
+                connection: connection,
+                testsStream: testsStream,
+                isLift: _testTypeChoice=="LIFT",
+                leftTitle: leftTitle,
+                rightTitle: rightTitle,
+              );
+            }
+            else{
+              return StopDiagnoseSingleUI(
+                connection: connection,
+                testsStream: testsStream,
+                isLift: _testTypeChoice=="LIFT",
+              );
+            }
+          }
         ),
       );
 
@@ -778,38 +861,37 @@ class _TestPageState extends State<TestPage> {
   }
 
 
-  BluetoothConnection? reconnect(){
-    BluetoothConnection.toAddress(globals.selectedDevice!.address).then((_connection) {
-      print('Reconnected to the device');
-
-      connection = _connection;
-      return connection;
-    });
-  }
 
 
 }
 
-class StopDiagnoseUI extends StatefulWidget {
+class StopDiagnoseSingleUI extends StatefulWidget {
 
   BluetoothConnection? connection;
+  Stream<Uint8List>? testsStream;
+  bool isLift;
 
-  StopDiagnoseUI({required this.connection});
+
+  StopDiagnoseSingleUI({required this.connection, required this.testsStream, required this.isLift});
 
   @override
-  _StopDiagnoseUIState createState() => _StopDiagnoseUIState();
+  _StopDiagnoseSingleUIState createState() => _StopDiagnoseSingleUIState();
 }
 
-class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
+class _StopDiagnoseSingleUIState extends State<StopDiagnoseSingleUI> {
 
   String? _runningRPM;
   String? _runningSignalVoltage;
   String? _current;
   String? _power;
 
+  String? _lift;
+
   bool isConnected = false;
 
+
   BluetoothConnection? connection;
+  Stream<Uint8List>? testsStream;
 
   @override
   void initState() {
@@ -817,6 +899,7 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
     super.initState();
 
     connection = widget.connection;
+    testsStream = widget.testsStream;
   }
 
   @override
@@ -832,6 +915,14 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
         ),
         centerTitle: true,
         leading: Container(),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: <Color>[Colors.blue,Colors.lightGreen]),
+          ),
+        ),
       ),
       body: Container(
 
@@ -839,6 +930,7 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
         //scrollDirection: Axis.vertical,
         child: _stopDiagnoseUI(),
       ),
+
     );
 
   }
@@ -849,8 +941,9 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
       width: MediaQuery.of(context).size.width,
 
       child: StreamBuilder<Uint8List>(
-        stream: connection!.input,
+        stream: testsStream,
         builder: (context, snapshot) {
+
           if(snapshot.hasData){
             var data = snapshot.data;
             String _d = utf8.decode(data!);
@@ -863,10 +956,19 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
               Map<String,double> _diagResponse = DiagnosticMessageResponse().decode(_d);
               print("HERE!!!!!!!!!!!!!!: $_diagResponse");
 
-              _runningRPM = _diagResponse["speedRPM"]!.toStringAsFixed(2);
-              _runningSignalVoltage = _diagResponse["signalVoltage"]!.toStringAsFixed(2);
+              _runningRPM = _diagResponse["speedRPM"]!.toString();
+              _runningSignalVoltage = _diagResponse["signalVoltage"]!.toString();
               _current = _diagResponse["current"]!.toStringAsFixed(2);
               _power = _diagResponse["power"]!.toStringAsFixed(2);
+
+              if(_diagResponse.keys.length == 5){
+                //contains lift
+
+                _lift = _diagResponse["lift"]!.toStringAsFixed(2);
+              }
+              else{
+                _lift = null;
+              }
             }
             catch(e){
               print("tests1: ${e.toString()}");
@@ -877,7 +979,7 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
           return Column(
 
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
 
             children: [
               Container(
@@ -895,23 +997,44 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
                 },
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: <TableRow>[
-                  _customRow("Speed in RPM", _runningRPM),
-                  _customRow("Signal Voltage", _runningSignalVoltage),
-                  _customRow("Current", _current),
-                  _customRow("Power", _power),
+                  _customRow("Speed (RPM)", _runningRPM),
+                  _customRow("PWM ", _runningSignalVoltage),
+                  _customRow("Current (A)", _current),
+                  _customRow("Power (W)", _power),
+
+                  widget.isLift ?
+                  _customRow("Lift (mm)", _lift)
+                      :TableRow(
+                      children: <Widget>[
+                        TableCell(child: Container()),
+                        TableCell(child: Container()),
+                      ]
+                  ),
                 ],
               ),
               Container(
-                height: MediaQuery.of(context).size.height*0.1,
-                width: MediaQuery.of(context).size.width,
-                margin: EdgeInsets.only(top: 10),
+                height: MediaQuery.of(context).size.height*0.05,
+                width: MediaQuery.of(context).size.width*0.9,
+                margin: EdgeInsets.only(top: 40),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: <Color>[Colors.blue,Colors.lightGreen]
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Center(
                   child: ElevatedButton(
                     onPressed: (){
                       _stopDiagnose();
                     },
-                    child: Text("STOP DIAGNOSE"),
-                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).primaryColor)),
+                    child: Text("STOP DIAGNOSE", style: TextStyle(fontWeight: FontWeight.bold),),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
                   ),
                 ),
               ),
@@ -927,9 +1050,11 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
     try{
       setState(() {
 
-        String _sd = StopDignostics().stopDiagnosePacket();
+        String _sd = StopDiagnostics().stopDiagnosePacket();
 
         connection!.output.add(Uint8List.fromList(utf8.encode(_sd)));
+
+        testsStream = null;
         isConnected = false;
 
       });
@@ -976,5 +1101,264 @@ class _StopDiagnoseUIState extends State<StopDiagnoseUI> {
 }
 
 
+class StopDiagnoseDoubleUI extends StatefulWidget {
 
+  BluetoothConnection? connection;
+  Stream<Uint8List>? testsStream;
+  bool isLift;
+
+  String leftTitle,rightTitle;
+
+
+  StopDiagnoseDoubleUI({required this.connection, required this.testsStream, required this.isLift, required this.leftTitle, required this.rightTitle});
+
+  @override
+  _StopDiagnoseDoubleUIState createState() => _StopDiagnoseDoubleUIState();
+}
+
+class _StopDiagnoseDoubleUIState extends State<StopDiagnoseDoubleUI> {
+
+  //call this UI when there are two motors
+
+  String? _runningRPM1, _runningRPM2;
+  String? _runningSignalVoltage1,_runningSignalVoltage2;
+  String? _current1,_current2;
+  String? _power1,_power2;
+
+  String? _lift1,_lift2;
+
+  bool isConnected = false;
+
+
+  BluetoothConnection? connection;
+  Stream<Uint8List>? testsStream;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    connection = widget.connection;
+    testsStream = widget.testsStream;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text(
+          "Flyer Frame",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+        leading: Container(),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: <Color>[Colors.blue,Colors.lightGreen]),
+          ),
+        ),
+      ),
+      body: Container(
+
+        padding: EdgeInsets.only(left: 10,top: 7,bottom: 7, right: 7),
+        //scrollDirection: Axis.vertical,
+        child: _stopDiagnoseUI(),
+      ),
+
+    );
+
+  }
+
+  Widget _stopDiagnoseUI(){
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+
+      child: StreamBuilder<Uint8List>(
+        stream: testsStream,
+        builder: (context, snapshot) {
+
+          if(snapshot.hasData){
+            var data = snapshot.data;
+            String _d = utf8.decode(data!);
+            print("\nTESTS: run diagnose data: "+_d);
+            print(snapshot.data);
+
+
+            try{
+
+              Map<String,double> _diagResponse = DiagnosticMessageResponse().decode(_d);
+              print("HERE!!!!!!!!!!!!!!: $_diagResponse");
+
+              _runningRPM1 = _diagResponse["speedRPM"]!.toString();
+              _runningSignalVoltage1 = _diagResponse["signalVoltage"]!.toString();
+              _current1 = _diagResponse["current"]!.toStringAsFixed(2);
+              _power1 = _diagResponse["power"]!.toStringAsFixed(2);
+
+              _runningRPM2 = _diagResponse["speedRPM1"]!.toString();
+              _runningSignalVoltage2 = _diagResponse["signalVoltage1"]!.toString();
+              _current2 = _diagResponse["current1"]!.toStringAsFixed(2);
+              _power2 = _diagResponse["power1"]!.toStringAsFixed(2);
+
+              if(_diagResponse.keys.length == 10){
+                //contains lift
+
+                _lift1 = _diagResponse["lift"]!.toStringAsFixed(2);
+                _lift2 = _diagResponse["lift1"]!.toStringAsFixed(2);
+              }
+              else{
+                _lift1 = null;
+                _lift2 = null;
+              }
+            }
+            catch(e){
+              print("tests1: ${e.toString()}");
+            }
+          }
+
+
+          return Column(
+
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height*0.1,
+                width: MediaQuery.of(context).size.width,
+
+                child: Center(
+                  child: Text("TEST RESULTS",style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20,color: Theme.of(context).primaryColor),),
+                ),
+              ),
+              Table(
+                columnWidths: const <int, TableColumnWidth>{
+                  0: FractionColumnWidth(0.4),
+                  1: FractionColumnWidth(0.3),
+                  2: FractionColumnWidth(0.3),
+                },
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: <TableRow>[
+                  _customRow("", widget.leftTitle, widget.rightTitle),
+                  _customRow("Speed (RPM)", _runningRPM1, _runningRPM2),
+                  _customRow("PWM ", _runningSignalVoltage1, _runningSignalVoltage2),
+                  _customRow("Current (A)", _current1, _current2),
+                  _customRow("Power (W)", _power1, _power2),
+
+                  widget.isLift ?
+                  _customRow("Lift (mm)", _lift1, _lift2)
+                      :TableRow(
+                      children: <Widget>[
+                        TableCell(child: Container()),
+                        TableCell(child: Container()),
+                        TableCell(child: Container()),
+                      ]
+                  ),
+                ],
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height*0.05,
+                width: MediaQuery.of(context).size.width*0.9,
+                margin: EdgeInsets.only(top: 40),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: <Color>[Colors.blue,Colors.lightGreen]
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: (){
+                      _stopDiagnose();
+                    },
+                    child: Text("STOP DIAGNOSE", style: TextStyle(fontWeight: FontWeight.bold),),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _stopDiagnose() async {
+
+    try{
+      setState(() {
+
+        String _sd = StopDiagnostics().stopDiagnosePacket();
+
+        connection!.output.add(Uint8List.fromList(utf8.encode(_sd)));
+
+        testsStream = null;
+        isConnected = false;
+
+      });
+
+      Navigator.of(context).pop();
+    }
+    catch(e){
+      print("Tests3: ${e.toString()}");
+    }
+  }
+
+  TableRow _customRow(String label,String? attribute, String? attribute2){
+
+    //attribute will change
+    return TableRow(
+      children: <Widget>[
+
+        TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child: Container(
+            margin: EdgeInsets.only(left: 5, right: 5),
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ),
+        TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child:
+          Container(
+
+            height: MediaQuery.of(context).size.height*0.05,
+            width: MediaQuery.of(context).size.width*0.2,
+            margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
+            padding: EdgeInsets.only(left: 5, top: 11),
+            child: Text(attribute ?? "--", ),
+          ),
+        ),
+        TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child:
+          Container(
+
+            height: MediaQuery.of(context).size.height*0.05,
+            width: MediaQuery.of(context).size.width*0.2,
+            margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
+            padding: EdgeInsets.only(left: 5, top: 11),
+            child: Text(attribute2 ?? "--", ),
+          ),
+        ),
+
+      ],
+    );
+  }
+}
 

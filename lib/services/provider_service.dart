@@ -47,4 +47,11 @@ class ConnectionProvider extends ChangeNotifier{
     notifyListeners();
   }
 
+  void clearSettings(){
+    _settings.clear();
+    _settingsEmpty = true;
+
+    notifyListeners();
+  }
+
 }

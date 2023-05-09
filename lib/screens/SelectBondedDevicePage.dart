@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
+import '../services/snackbar_service.dart';
 import 'temp/BluetoothDeviceListEntry.dart';
 
 class SelectBondedDevicePage extends StatefulWidget {
@@ -139,7 +140,14 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> {
                   onPressed: _restartDiscovery,
                 )
         ],
-        backgroundColor: Theme.of(context).primaryColor,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: <Color>[Colors.blue,Colors.lightGreen]),
+          ),
+        ),
       ),
       body: ListView(children: list),
     );

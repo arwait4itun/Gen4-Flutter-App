@@ -10,16 +10,20 @@ class DiagnosticMessage{
   String targetRPM;
   String testRuntime;
   String motorDirection;
+  String bedDirectionChoice;
+  String bedTravelDistance;
 
 
   DiagnosticMessage({
-  required this.testTypeChoice,
-  required this.motorNameChoice,
-  required this.controlTypeChoice,
-  required this.target,
-  required this.targetRPM,
-  required this.testRuntime,
-  required this.motorDirection,
+    required this.testTypeChoice,
+    required this.motorNameChoice,
+    required this.controlTypeChoice,
+    required this.target,
+    required this.targetRPM,
+    required this.testRuntime,
+    required this.motorDirection,
+    required this.bedDirectionChoice,
+    required this.bedTravelDistance,
   });
 
   String createPacket(){
@@ -27,15 +31,15 @@ class DiagnosticMessage{
     String packet = "";
 
     String packetLength = "";
-    String attributeCount =  DiagnosticAttributeType.values.length.toString();
+    int attributeCount =  DiagnosticAttributeType.values.length;
 
     int bit2 = 2;
 
   //  packet += packetLength;
 
     packet += Information.diagnostics.hexVal;
-    packet += Substate.run.hexVal; // doesnt matter for this usecase
-    packet += padding(attributeCount,bit2);
+    packet += Substate.running.hexVal; // doesnt matter for this usecase
+
 
 
   
@@ -44,6 +48,9 @@ class DiagnosticMessage{
 
     if(testTypeChoice == "MOTOR"){
 
+      attributeCount = attributeCount-1; //no bed travel distance
+
+      packet += padding(attributeCount.toString(),bit2);
 
       String _motorId;
 
@@ -122,8 +129,50 @@ class DiagnosticMessage{
     }
     else{
 
-      //finish this
-      packet += attribute(DiagnosticAttributeType.kindOfTest.hexVal, "01", "01"); //01 subassembly
+      attributeCount = attributeCount-2; //no target and target run for lift
+
+      packet += padding(attributeCount.toString(),bit2);
+
+      String _liftID;
+
+      String _controlType = ControlType.openLoop.hexVal;
+
+      switch(motorDirection) {
+        case "BOTH":
+          _liftID = MotorId.lift.hexVal;
+          _controlType = ControlType.closedLoop.hexVal;
+          break;
+        case "LEFT":
+          _liftID = MotorId.liftLeft.hexVal;
+          break;
+        default:
+          _liftID = MotorId.liftRight.hexVal;
+          break;
+      }
+
+      packet += attribute(DiagnosticAttributeType.motorID.hexVal,"02",_liftID);
+
+
+
+      packet += attribute(DiagnosticAttributeType.kindOfTest.hexVal,"02",_controlType);
+
+      String _bedDirectionId;
+
+      if(bedDirectionChoice=="UP"){
+        _bedDirectionId = "01";
+      }
+      else{
+        _bedDirectionId = "00";
+      }
+
+      packet += attribute(DiagnosticAttributeType.motorDirection.hexVal, "02", padding(_bedDirectionId,2));
+
+      packet += attribute(DiagnosticAttributeType.bedDistance.hexVal, "04", padding(bedTravelDistance,4));
+
+
+
+
+
     }
 
     packet += Separator.eof.hexVal;
@@ -132,7 +181,7 @@ class DiagnosticMessage{
 
     packet = Separator.sof.hexVal+packetLength+packet;
 
-    print(packet.toUpperCase());
+    print("here!!!!!!!!!!!!!!!! ${packet.toUpperCase()}");
 
     return packet.toUpperCase();
   }
@@ -226,6 +275,12 @@ class DiagnosticMessageResponse{
         throw FormatException("Diagnostic Message: Invalid Attribute Type");
       }
 
+      if(_settings.containsKey(key)){
+        //for drafting, winding and lift both we use two motors so key value will repeat
+
+        key += "1";
+      }
+
       if(l==4){
 
         v = int.parse(val,radix: 16).toDouble();
@@ -258,13 +313,16 @@ class DiagnosticMessageResponse{
     else if(t==DiagnosticResponse.power.hexVal){
       return DiagnosticResponse.power.name;
     }
+    else if(t==DiagnosticResponse.lift.hexVal){
+      return DiagnosticResponse.lift.name;
+    }
     else{
       return "";
     }
   }
 }
 
-class StopDignostics{
+class StopDiagnostics{
 
   String stopDiagnosePacket(){
 

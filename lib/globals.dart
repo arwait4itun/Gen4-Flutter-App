@@ -16,7 +16,7 @@ Map<String,List> settingsLimits = {
    "draft":[5,9.9],
    "twistPerInch":[1,1.6],
    "RTF":[0.25,2],
-   "lengthLimit":[100,6000],
+   "layers":[1,100],
    "maxHeightOfContent":[250,300],
    "rovingWidth":[1,4],
    "deltaBobbinDia":[1,2.5],
@@ -24,4 +24,8 @@ Map<String,List> settingsLimits = {
    "rampupTime":[5,20],
    "rampdownTime":[5,20],
    "changeLayerTime": [200,2500],
+};
+
+Map<String,List<int>> diagnosticLimits = {
+   "bedTravelDistance": [1,200],
 };

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/screens/bluetoothPage.dart';
 
 import 'package:crypto/crypto.dart';
@@ -14,7 +15,11 @@ import 'package:provider/provider.dart';
 import '../services/snackbar_service.dart';
 
 class DrawerPage extends StatefulWidget {
-  const DrawerPage({Key? key}) : super(key: key);
+
+  BluetoothConnection connection;
+
+  DrawerPage({required this.connection});
+
 
   @override
   _DrawerPageState createState() => _DrawerPageState();
@@ -23,7 +28,11 @@ class DrawerPage extends StatefulWidget {
 class _DrawerPageState extends State<DrawerPage> {
 
   late String _password;
+  late String _deviceName;
   late TextEditingController _passwordController;
+  late TextEditingController _deviceNameController;
+
+  late BluetoothConnection connection;
 
   @override
   void initState() {
@@ -31,6 +40,11 @@ class _DrawerPageState extends State<DrawerPage> {
 
     _password = "";
     _passwordController = new TextEditingController();
+
+    _deviceName = "";
+    _deviceNameController = new TextEditingController();
+
+    connection = widget.connection;
     super.initState();
   }
 
@@ -56,6 +70,13 @@ class _DrawerPageState extends State<DrawerPage> {
   void _exitApp(){
     print("exit");
     SystemNavigator.pop();
+  }
+
+  void _changeDeviceName(){
+
+    print("change name");
+
+    _displayChangeName(context);
   }
 
 
@@ -85,11 +106,11 @@ class _DrawerPageState extends State<DrawerPage> {
                   Container(
                     width: 30,
                   ),
-                  Text("Bluetooth",style: TextStyle(fontWeight: FontWeight.w400,color: Theme.of(context).primaryColor),)
+                  Text("Change Device Name",style: TextStyle(fontWeight: FontWeight.w400,color: Theme.of(context).primaryColor),)
                 ],
               ),
               onPressed: () {
-                _bluetooth();
+                _changeDeviceName();
               },
             ),
             Divider(),
@@ -158,6 +179,59 @@ class _DrawerPageState extends State<DrawerPage> {
                       ScaffoldMessenger.of(context).showSnackBar(_sb);
 
                       print("wrong password");
+                    }
+
+                  });
+                },
+              ),
+
+            ],
+          );
+        });
+  }
+
+
+  Future<void> _displayChangeName(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Change Name of Device:'),
+            content: TextField(
+              onChanged: (value) {
+                setState(() {
+                  _deviceName = value;
+                });
+              },
+              controller: _deviceNameController,
+              decoration: InputDecoration(hintText: "Enter New Device Name"),
+            ),
+            actions: <Widget>[
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).primaryColor),
+                ),
+                child: Text('OK'),
+                onPressed: () {
+                  setState(() {
+
+                    if(_deviceName=="" || _deviceName==" " || _deviceName.length > 10){
+
+
+                      SnackBar _sb = SnackBarService(message: "Invalid Name", color: Colors.red).snackBar();
+
+
+                      ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+                      Navigator.pop(context);
+                    }
+                    else{
+
+
+                      SnackBar _sb = SnackBarService(message: "Device Name Changed", color: Colors.red).snackBar();
+
+                      ScaffoldMessenger.of(context).showSnackBar(_sb);
+
                     }
 
                   });

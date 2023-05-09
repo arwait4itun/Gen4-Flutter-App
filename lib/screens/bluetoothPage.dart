@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/im_paired.dart';
+import 'package:flyer/screens/Dashboard.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
@@ -101,9 +102,9 @@ class _BluetoothPageState extends State<BluetoothPage> {
       body: Container(
         child: ListView(
           children: <Widget>[
-            ListTile(title: const Text('General',style: TextStyle(color: Colors.lightGreen, fontWeight: FontWeight.w400),)),
+            ListTile(title: const Text('General',style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400),)),
             SwitchListTile(
-              title: const Text('Enable Bluetooth'),
+              title: const Text('Enable Bluetooth', style: TextStyle(color: Colors.lightGreen, fontWeight: FontWeight.w400),),
               value: _bluetoothState.isEnabled,
               onChanged: (bool value) {
                 // Do the request and update with the true value then
@@ -120,53 +121,36 @@ class _BluetoothPageState extends State<BluetoothPage> {
                 });
               },
               activeColor: Colors.lightGreen,
-            ),
-            ListTile(
-              title: const Text('Adapter address',),
-              subtitle: Text(_address),
-            ),
-            ListTile(
-              title: const Text('Adapter name',),
-              subtitle: Text(_name),
-              onLongPress: null,
+              inactiveThumbColor: Colors.blue,
             ),
             Divider(),
-            ListTile(title: const Text('Device Settings', style: TextStyle(color: Colors.lightGreen, fontWeight: FontWeight.w400),)),
-            SwitchListTile(
-              title: const Text('Auto-try specific pin when pairing'),
-              subtitle: const Text('Pin 1234'),
-              value: _autoAcceptPairingRequests,
-              onChanged: (bool value) {
-                setState(() {
-                  _autoAcceptPairingRequests = value;
-                });
-                if (value) {
-                  FlutterBluetoothSerial.instance.setPairingRequestHandler(
-                          (BluetoothPairingRequest request) {
-                        print("Trying to auto-pair with Pin 1234");
-                        if (request.pairingVariant == PairingVariant.Pin) {
-                          return Future.value("1234");
-                        }
-                        return Future.value(null);
-                      });
-                } else {
-                  FlutterBluetoothSerial.instance
-                      .setPairingRequestHandler(null);
-                }
-              },
-              activeColor: Colors.lightGreen,
-            ),
+            ListTile(title: const Text('Device Settings', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400),)),
 
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
 
               children: [
 
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.25,
+                Container(
+                  height: MediaQuery.of(context).size.height*0.05,
+                  width: MediaQuery.of(context).size.width*0.9,
+                  padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+        gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: <Color>[Colors.blue,Colors.lightGreen]
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
                   child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.lightGreen),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
                       onPressed: () async {
 
 
@@ -199,7 +183,11 @@ class _BluetoothPageState extends State<BluetoothPage> {
 
                           await ScaffoldMessenger.of(context).showSnackBar(_sb);
 
-                          Navigator.of(context).pushNamed("/dashboard");
+                          Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context){
+                                return DashboardScaffold(connection: connection);
+                              })
+                          );
 
                         } else {
                           print('Discovery -> no device selected');
@@ -212,66 +200,87 @@ class _BluetoothPageState extends State<BluetoothPage> {
                       },
                       child: const Text('Discover Devices')
                   ),
+
                 ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.25,
+
+                Container(
+                  height: MediaQuery.of(context).size.height*0.05,
+                  width: MediaQuery.of(context).size.width*0.9,
+                  padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: <Color>[Colors.blue,Colors.lightGreen]
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: ElevatedButton(
-                  child: const Text('Paired Devices'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.lightGreen),
-                  onPressed: () async {
+                    child: const Text('Paired Devices'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    onPressed: () async {
 
-                    final BluetoothDevice? selectedDevice =
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return SelectBondedDevicePage(checkAvailability: false);
-                        },
-                      ),
-                    );
+                      final BluetoothDevice? selectedDevice =
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return SelectBondedDevicePage(checkAvailability: false);
+                          },
+                        ),
+                      );
 
-                    if (selectedDevice != null) {
+                      if (selectedDevice != null) {
 
-                      try {
-                        print('Connect -> selected ' + selectedDevice.address);
-                        globals.isConnected = true;
-                        ConnectionProvider().setConnection(true);
-                        globals.selectedDevice = selectedDevice;
-                        BluetoothConnection connection = await BluetoothConnection.toAddress(selectedDevice.address);
+                        try {
+                          print('Connect -> selected ' + selectedDevice.address);
+                          globals.isConnected = true;
+                          ConnectionProvider().setConnection(true);
+                          globals.selectedDevice = selectedDevice;
+                          BluetoothConnection connection = await BluetoothConnection.toAddress(selectedDevice.address);
 
-                        //im paired message
-                        connection!.output!.add(ascii.encode(ImPaired().createPacket()));
-                        await connection!.output.allSent;
+                          //im paired message
+                          connection!.output!.add(ascii.encode(ImPaired().createPacket()));
+                          await connection!.output.allSent;
 
-                        Provider.of<ConnectionProvider>(context,listen: false).setConnection(true);
+                          Provider.of<ConnectionProvider>(context,listen: false).setConnection(true);
 
-                        SnackBar _sb = SnackBarService(message: "Connected!", color: Colors.green).snackBar();
+                          SnackBar _sb = SnackBarService(message: "Connected!", color: Colors.green).snackBar();
 
-                        await ScaffoldMessenger.of(context).showSnackBar(_sb);
+                          await ScaffoldMessenger.of(context).showSnackBar(_sb);
 
-                        Navigator.of(context).pushNamed("/dashboard");
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context){
+                              return DashboardScaffold(connection: connection);
+                            })
+                          );
 
-                      }
-                      catch(e){
+                        }
+                        catch(e){
 
-                        print("Error pairing: paired devices: "+e.toString());
-                        globals.isConnected = false;
-                        ConnectionProvider().setConnection(false);
+                          print("Error pairing: paired devices: "+e.toString());
+                          globals.isConnected = false;
+                          ConnectionProvider().setConnection(false);
 
-                        SnackBar _sb = SnackBarService(message: "Error Pairing", color: Colors.red).snackBar();
+                          //SnackBar _sb = SnackBarService(message: "Error Pairing", color: Colors.red).snackBar();
+
+                          //ScaffoldMessenger.of(context).showSnackBar(_sb);
+                        }
+                      } else {
+                        print('Connect -> no device selected');
+
+                        SnackBar _sb = SnackBarService(message: "No Device Selected!", color: Colors.red).snackBar();
 
                         ScaffoldMessenger.of(context).showSnackBar(_sb);
                       }
-                    } else {
-                      print('Connect -> no device selected');
-
-                      SnackBar _sb = SnackBarService(message: "No Device Selected!", color: Colors.red).snackBar();
-
-                      ScaffoldMessenger.of(context).showSnackBar(_sb);
-                    }
 
 
-                  },
-                ),
+                    },
+                  ),
                 ),
               ],
             ),
@@ -310,7 +319,9 @@ class _BluetoothPageState extends State<BluetoothPage> {
         ),
       ),
     );
+
   }
+
 
 
 
@@ -322,8 +333,16 @@ class _BluetoothPageState extends State<BluetoothPage> {
       elevation: 1.0,
       shadowColor: Theme.of(context).highlightColor,
       centerTitle: true,
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: <Color>[Colors.blue,Colors.lightGreen]),
+        ),
+      ),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back),
+        icon: Icon(Icons.close),
         onPressed: (){
           print("exit");
           SystemNavigator.pop();

@@ -59,7 +59,7 @@ enum MotorId{
   winding,
   lift,
   liftLeft,
-  liftRight
+  liftRight,
 }
 
 extension MotorIdExtension on MotorId{
@@ -85,9 +85,11 @@ extension MotorIdExtension on MotorId{
         return "08";
       case MotorId.liftRight:
         return "09";
+
     }
   }
 }
+
 
 
 
@@ -98,8 +100,9 @@ enum Information {
   settingsToApp,
   diagnostics,
   diagnosticResponse,
-  updateRTF,
   machineState,
+  carouselInfo,
+  changeName,
 }
 
 extension InformationExtension on Information{
@@ -121,18 +124,17 @@ extension InformationExtension on Information{
         return "05";
       case Information.machineState:
         return "06";
-      case Information.updateRTF:
+      case Information.carouselInfo:
         return "07";
-
+      case Information.changeName:
+        return "08";
     }
   }
 }
 
-
-
 enum Substate{
   idle,
-  run,
+  running,
   pause,
   stop,
   homing,
@@ -147,11 +149,11 @@ extension SubstateExtension on Substate{
 
       case Substate.idle:
         return "00";
-      case Substate.run:
+      case Substate.running:
         return "01";
       case Substate.pause:
         return "02";
-      case Substate.stop:
+      case Substate.error:
         return "03";
       case Substate.homing:
         return "04";
@@ -162,6 +164,128 @@ extension SubstateExtension on Substate{
     }
   }
 }
+
+
+enum Homing {
+  leftLiftDistance,
+  rightLiftDistance,
+}
+
+extension homingExtension on Homing{
+
+  String get hexVal {
+    switch (this){
+
+      case Homing.rightLiftDistance:
+        return "02";
+      case Homing.leftLiftDistance:
+        return "01";
+      default:
+        return "00";
+    }
+  }
+}
+
+
+
+enum Running{
+  leftLiftDistance,
+  rightLiftDistance,
+  layers,
+  motorTemp,
+  MOSFETTemp,
+  current,
+  RPM,
+  outputMtrs,
+  whatInfo,
+}
+
+extension runningExtension on Running{
+
+  String get hexVal {
+    switch (this) {
+      case Running.leftLiftDistance:
+        return "01";
+      case Running.rightLiftDistance:
+        return "02";
+      case Running.layers:
+        return "03";
+      case Running.motorTemp:
+        return "04";
+      case Running.MOSFETTemp:
+        return "05";
+      case Running.current:
+        return "06";
+      case Running.RPM:
+        return "07";
+      case Running.outputMtrs:
+        return "08";
+      case Running.whatInfo:
+        return "09";
+      default:
+        return "00";
+    }
+  }
+}
+
+enum Error{
+  information,
+  source,
+  action
+}
+
+extension errorExtension on Error{
+
+  String get hexVal {
+    switch (this) {
+      case Error.information:
+        return "01";
+      case Error.source:
+        return "02";
+      case Error.action:
+        return "03";
+      default:
+        return "00";
+    }
+  }
+}
+
+enum Pause{
+  pauseReason,
+}
+
+extension pauseExtension on Pause{
+
+  String get hexVal {
+    switch (this) {
+      case Pause.pauseReason:
+        return "01";
+      default:
+        return "00";
+    }
+  }
+}
+
+enum pauseReason{
+  userPaused,
+  creelSliverCut,
+}
+
+extension pauseReasonExtension on pauseReason{
+
+  String get hexVal {
+    switch (this) {
+      case pauseReason.userPaused:
+        return "01";
+      case pauseReason.creelSliverCut:
+        return "02";
+      default:
+        return "00";
+    }
+  }
+}
+
+
 
 
 enum ControlType{
@@ -191,6 +315,7 @@ enum DiagnosticAttributeType{
   motorDirection,
   targetPercent,
   testTime,
+  bedDistance,
 }
 
 extension DiagnosticAttributeTypeExtension on DiagnosticAttributeType{
@@ -208,6 +333,8 @@ extension DiagnosticAttributeTypeExtension on DiagnosticAttributeType{
         return "42";
       case DiagnosticAttributeType.testTime:
         return "43";
+      case DiagnosticAttributeType.bedDistance:
+        return "45";
     }
   }
 }
@@ -217,7 +344,7 @@ enum SettingsAttribute{
   draft,
   twistPerInch,
   RTF,
-  lengthLimit,
+  layers,
   maxHeightOfContent,
   rovingWidth,
   deltaBobbinDia,
@@ -239,7 +366,7 @@ extension SettingsAttributeTypeExtension on SettingsAttribute{
         return "52";
       case SettingsAttribute.RTF:
         return "53";
-      case SettingsAttribute.lengthLimit:
+      case SettingsAttribute.layers:
         return "54";
       case SettingsAttribute.maxHeightOfContent:
         return "55";
@@ -264,6 +391,7 @@ enum DiagnosticResponse{
   signalVoltage,
   current,
   power,
+  lift,
 }
 
 extension DiagnosticResponseExtension on DiagnosticResponse{
@@ -279,6 +407,8 @@ extension DiagnosticResponseExtension on DiagnosticResponse{
         return "03";
       case DiagnosticResponse.power:
         return "04";
+      case DiagnosticResponse.lift:
+        return "05";
     }
   }
 }

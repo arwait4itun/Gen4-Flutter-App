@@ -29,7 +29,11 @@ class RequestSettings{
       throw FormatException("Invalid Start Of Frame");
     }
 
+
+
     if(_requestSettings!="02"){
+      print(packet);
+
       throw FormatException("Invalid Request Settings Code");
     }
 
@@ -95,8 +99,8 @@ class RequestSettings{
     else if(t==SettingsAttribute.RTF.hexVal){
       return SettingsAttribute.RTF.name;
     }
-    else if(t==SettingsAttribute.lengthLimit.hexVal){
-      return SettingsAttribute.lengthLimit.name;
+    else if(t==SettingsAttribute.layers.hexVal){
+      return SettingsAttribute.layers.name;
     }
     else if(t==SettingsAttribute.maxHeightOfContent.hexVal){
       return SettingsAttribute.maxHeightOfContent.name;

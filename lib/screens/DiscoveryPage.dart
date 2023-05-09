@@ -95,7 +95,14 @@ class _DiscoveryPage extends State<DiscoveryPage> {
                   onPressed: _restartDiscovery,
                 )
         ],
-        backgroundColor: Theme.of(context).primaryColor,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: <Color>[Colors.blue,Colors.lightGreen]),
+          ),
+        ),
       ),
       body: ListView.builder(
         itemCount: results.length,
