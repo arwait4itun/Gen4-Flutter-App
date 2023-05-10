@@ -18,9 +18,9 @@ import '../services/snackbar_service.dart';
 
 class SettingsPage extends StatefulWidget {
 
-  BluetoothConnection? connection;
+  BluetoothConnection connection;
 
-  Stream<Uint8List>? settingsStream;
+  Stream<Uint8List> settingsStream;
 
   SettingsPage({required this.connection, required this.settingsStream});
 
@@ -47,8 +47,8 @@ class _SettingsPageState extends State<SettingsPage> {
   List<String> _data = List<String>.empty(growable: true);
   bool newDataReceived = false;
 
-  BluetoothConnection? connection;
-  Stream<Uint8List>? settingsStream;
+  late BluetoothConnection connection;
+  late Stream<Uint8List> settingsStream;
 
 
   @override
@@ -101,7 +101,6 @@ class _SettingsPageState extends State<SettingsPage> {
   void dispose() {
     // TODO: implement dispose
     _data.clear();
-    settingsStream = null;
 
     super.dispose();
   }
@@ -112,57 +111,64 @@ class _SettingsPageState extends State<SettingsPage> {
     double screenHt  = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
 
-    bool _enabled = Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed;
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.only(left:screenHt *0.02,top: screenHt*0.05 ,bottom: screenHt*0.01, right: screenWidth*0.02),
-      scrollDirection: Axis.vertical,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.start,
+    if(connection!.isConnected){
+      bool _enabled = Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed;
 
-        children: [
-          Table(
-            columnWidths: const <int, TableColumnWidth>{
-              0: FractionColumnWidth(0.55),
-              1: FractionColumnWidth(0.35),
-            },
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            children: <TableRow>[
-              _customRow("Spindle Speed (RPM)", _spindleSpeed, isFloat: false,defaultValue: "",enabled: _enabled),
-              _customRow("Draft", _draft,defaultValue: "",enabled: _enabled),
-              _customRow("Twists Per Inch", _twistPerInch,defaultValue: "",enabled: _enabled),
-              _customRow("Initial RTF", _RTF,defaultValue: "",enabled: _enabled),
-              _customRow("Layers (mtrs)", _layers, isFloat: false,defaultValue: "",enabled: _enabled),
-              _customRow("Max Content Ht (mm)", _maxHeightOfContent, isFloat: false,defaultValue: "",enabled: _enabled),
-              _customRow("Roving Width", _rovingWidth, defaultValue: "",enabled: _enabled),
-              _customRow("Delta Bobbin-dia (mm)", _deltaBobbinDia,defaultValue: "",enabled: _enabled),
-              _customRow("Bare Bobbin-dia (mm)", _bareBobbinDia, isFloat: false, defaultValue: "",enabled: _enabled),
-              _customRow("Ramp Up Time (s)", _rampupTime, isFloat: false,defaultValue: "",enabled: _enabled),
-              _customRow("Ramp Down Time (s)", _rampdownTime, isFloat: false, defaultValue: "",enabled: _enabled),
-              _customRow("Change Layer Time (ms)", _changeLayerTime, isFloat: false, defaultValue: "",enabled: _enabled),
-            ],
-          ),
+      return SingleChildScrollView(
+        padding: EdgeInsets.only(left:screenHt *0.02,top: screenHt*0.05 ,bottom: screenHt*0.01, right: screenWidth*0.02),
+        scrollDirection: Axis.vertical,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
 
-          Container(
-
-            width: MediaQuery.of(context).size.width,
-          ),
-          Container(
-            margin: EdgeInsets.all(10),
-            height: MediaQuery.of(context).size.height*0.1,
-            width: MediaQuery.of(context).size.width,
-
-            child: Row(
-              mainAxisAlignment: _settingsButtons().length==1? MainAxisAlignment.end: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-
-              children: _settingsButtons(),
+          children: [
+            Table(
+              columnWidths: const <int, TableColumnWidth>{
+                0: FractionColumnWidth(0.55),
+                1: FractionColumnWidth(0.35),
+              },
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              children: <TableRow>[
+                _customRow("Spindle Speed (RPM)", _spindleSpeed, isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Draft", _draft,defaultValue: "",enabled: _enabled),
+                _customRow("Twists Per Inch", _twistPerInch,defaultValue: "",enabled: _enabled),
+                _customRow("Initial RTF", _RTF,defaultValue: "",enabled: _enabled),
+                _customRow("Layers (mtrs)", _layers, isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Max Content Ht (mm)", _maxHeightOfContent, isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Roving Width", _rovingWidth, defaultValue: "",enabled: _enabled),
+                _customRow("Delta Bobbin-dia (mm)", _deltaBobbinDia,defaultValue: "",enabled: _enabled),
+                _customRow("Bare Bobbin-dia (mm)", _bareBobbinDia, isFloat: false, defaultValue: "",enabled: _enabled),
+                _customRow("Ramp Up Time (s)", _rampupTime, isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Ramp Down Time (s)", _rampdownTime, isFloat: false, defaultValue: "",enabled: _enabled),
+                _customRow("Change Layer Time (ms)", _changeLayerTime, isFloat: false, defaultValue: "",enabled: _enabled),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
+
+            Container(
+
+              width: MediaQuery.of(context).size.width,
+            ),
+            Container(
+              margin: EdgeInsets.all(10),
+              height: MediaQuery.of(context).size.height*0.1,
+              width: MediaQuery.of(context).size.width,
+
+              child: Row(
+                mainAxisAlignment: _settingsButtons().length==1? MainAxisAlignment.end: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+
+                children: _settingsButtons(),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    else{
+      return _checkConnection();
+    }
+
 
 
   }
@@ -663,6 +669,35 @@ class _SettingsPageState extends State<SettingsPage> {
 
     }
 
+  }
+
+  Container _checkConnection(){
+
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+
+          children: [
+            SizedBox(
+              height: 40,
+              width: 40,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text("Please Reconnect...", style: TextStyle(color: Theme.of(context).highlightColor, fontSize: 15),),
+          ],
+        ),
+      ),
+    );
   }
 }
 

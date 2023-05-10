@@ -14,12 +14,12 @@ import '../services/provider_service.dart';
 
 class TestPage extends StatefulWidget {
 
-  BluetoothConnection? connection;
+  BluetoothConnection connection;
 
-  Stream<Uint8List>? testsStream;
+  Stream<Uint8List> testsStream;
 
 
-  TestPage({required this.connection, this.testsStream});
+  TestPage({required this.connection, required this.testsStream});
 
 
   @override
@@ -62,8 +62,8 @@ class _TestPageState extends State<TestPage> {
   String prev="0";
 
 
-  BluetoothConnection? connection;
-  Stream<Uint8List>? testsStream;
+  late BluetoothConnection connection;
+  late Stream<Uint8List> testsStream;
 
   @override
   void initState() {
@@ -84,24 +84,55 @@ class _TestPageState extends State<TestPage> {
   void dispose() {
     // TODO: implement dispose
 
-
-    testsStream = null;
     super.dispose();
   }
 
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+
+    if(connection.isConnected){
+      return Container(
         padding: EdgeInsets.only(left: 10,top: 7,bottom: 7, right: 7),
         //scrollDirection: Axis.vertical,
         child: _runDiagnoseUI(),
-    );
+      );
+    }
+    else{
+      return _checkConnection();
+    }
 
   }
 
 
+  Container _checkConnection(){
 
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+
+          children: [
+            SizedBox(
+              height: 40,
+              width: 40,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text("Please Reconnect...", style: TextStyle(color: Theme.of(context).highlightColor, fontSize: 15),),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _runDiagnoseUI(){
     return Container(
@@ -1360,5 +1391,7 @@ class _StopDiagnoseDoubleUIState extends State<StopDiagnoseDoubleUI> {
       ],
     );
   }
+
+
 }
 

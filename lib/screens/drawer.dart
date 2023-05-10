@@ -227,6 +227,7 @@ class _DrawerPageState extends State<DrawerPage> {
                     }
                     else{
 
+                      FlutterBluetoothSerial.instance.changeName(_deviceName);
 
                       SnackBar _sb = SnackBarService(message: "Device Name Changed", color: Colors.red).snackBar();
 

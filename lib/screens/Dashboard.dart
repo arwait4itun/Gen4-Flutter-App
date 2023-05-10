@@ -105,25 +105,42 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
   @override
   Widget build(BuildContext context) {
 
+    if(connection.isConnected){
+      final List<Widget> _pages = <Widget>[
+        //checks if the device is a phone or tablet based on screen size
+        MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
+        PhoneStatusPageUI(connection: connection,statusStream: multiStream,) : StatusPage(),
+        SettingsPage(connection: connection, settingsStream: multiStream,),
+        TestPage(connection: connection, testsStream: multiStream,),
+      ];
 
 
-    final List<Widget> _pages = <Widget>[
-      //checks if the device is a phone or tablet based on screen size
-      MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
-      PhoneStatusPageUI(connection: connection,statusStream: multiStream,) : StatusPage(),
-      SettingsPage(connection: connection, settingsStream: multiStream,),
-      TestPage(connection: connection, testsStream: multiStream,),
-    ];
 
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: appBar(_scaffoldKey),
+        bottomNavigationBar: navigationBar(),
+        body: _pages[_selectedIndex],
+        drawer: DrawerPage(connection: connection,),
+      );
+    }
+    else{
 
+      final List<Widget> _pages = <Widget>[
+        //checks if the device is a phone or tablet based on screen size
+        _checkConnection(),
+        _checkConnection(),
+        _checkConnection(),
+      ];
 
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: appBar(_scaffoldKey),
-      bottomNavigationBar: navigationBar(),
-      body: _pages[_selectedIndex],
-      drawer: DrawerPage(connection: connection,),
-    );
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: appBar(_scaffoldKey),
+        bottomNavigationBar: navigationBar(),
+        body: _pages[_selectedIndex],
+        drawer: DrawerPage(connection: connection,),
+      );
+    }
   }
 
   AppBar appBar(GlobalKey<ScaffoldState> _scaffoldKey){
@@ -177,8 +194,6 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
 
 
 
-
-
   BottomNavigationBar navigationBar(){
     return BottomNavigationBar(
       currentIndex: _selectedIndex,
@@ -192,5 +207,34 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
     );
   }
 
+
+  Container _checkConnection(){
+
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+
+          children: [
+            SizedBox(
+              height: 40,
+              width: 40,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text("Please Reconnect...", style: TextStyle(color: Theme.of(context).highlightColor, fontSize: 15),),
+          ],
+        ),
+      ),
+    );
+  }
 }
 

@@ -69,112 +69,117 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Uint8List>(
-        stream: statusStream,
-        builder: (context, snapshot) {
+    if(connection.isConnected){
+      return StreamBuilder<Uint8List>(
+          stream: statusStream,
+          builder: (context, snapshot) {
 
-          if(snapshot.hasData){
-            var data = snapshot.data;
-            String _d = utf8.decode(data!);
-            print("\nStatus: data: "+_d);
-            print(snapshot.data);
+            if(snapshot.hasData){
+              var data = snapshot.data;
+              String _d = utf8.decode(data!);
+              print("\nStatus: data: "+_d);
+              print(snapshot.data);
 
 
-            try {
+              try {
 
-              print("here status!!!!!: $_d");
-              Map<String, String> _statusResponse = StatusMessage().decode(_d);
-              print("HERE!!!!!!!!!!!!!!: $_statusResponse");
+                print("here status!!!!!: $_d");
+                Map<String, String> _statusResponse = StatusMessage().decode(_d);
+                print("HERE!!!!!!!!!!!!!!: $_statusResponse");
 
-              if (!_statusResponse.isEmpty) {
+                if (!_statusResponse.isEmpty) {
 
-                _substate = _statusResponse["substate"]!;
+                  _substate = _statusResponse["substate"]!;
 
-                switch (_substate) {
-                  case "running":
-                    hasError = false;
-                    running = true;
-                    homing = false;
-                    pause = false;
-                    idle = false;
-                    break;
-                  case "homing":
-                    hasError = false;
-                    running = false;
-                    homing = true;
-                    pause = false;
-                    idle = false;
-                    break;
-                  case "error":
-                    hasError = true;
-                    running = false;
-                    homing = false;
-                    pause = false;
-                    idle = false;
-                    break;
-                  case "pause":
-                    hasError = false;
-                    running = false;
-                    homing = false;
-                    pause = true;
-                    idle = false;
-                    break;
-                  default:
-                    hasError = false;
-                    running = false;
-                    homing = false;
-                    pause = false;
-                    idle = true;
-                    break;
-                }
+                  switch (_substate) {
+                    case "running":
+                      hasError = false;
+                      running = true;
+                      homing = false;
+                      pause = false;
+                      idle = false;
+                      break;
+                    case "homing":
+                      hasError = false;
+                      running = false;
+                      homing = true;
+                      pause = false;
+                      idle = false;
+                      break;
+                    case "error":
+                      hasError = true;
+                      running = false;
+                      homing = false;
+                      pause = false;
+                      idle = false;
+                      break;
+                    case "pause":
+                      hasError = false;
+                      running = false;
+                      homing = false;
+                      pause = true;
+                      idle = false;
+                      break;
+                    default:
+                      hasError = false;
+                      running = false;
+                      homing = false;
+                      pause = false;
+                      idle = true;
+                      break;
+                  }
 
-                if (running || homing || pause || hasError) {
-                  //disable settings and diagnostic pages when running to prevent errors
+                  if (running || homing || pause || hasError) {
+                    //disable settings and diagnostic pages when running to prevent errors
 
-                  if (Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
-                    Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
+                    if (Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
+                      Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
+                    }
+                  }
+                  else {
+                    if (!Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
+                      Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
+                    }
+                  }
+
+                  if (_statusResponse.containsKey("leftLiftDistance") && _statusResponse.containsKey("rightLiftDistance")) {
+                    _liftLeft = double.parse(_statusResponse["leftLiftDistance"]!);
+                    _liftRight = double.parse(_statusResponse["rightLiftDistance"]!);
+                  }
+
+                  if (hasError) {
+
+                    _errorInformation = _statusResponse["errorReason"]!;
+                    _errorCode = _statusResponse["errorCode"]!;
+                    _errorSource = _statusResponse["errorSource"]!;
+                    _errorAction = "Action";
+                  }
+                  else if (running) {
+                    _layer = double.parse(_statusResponse["layers"]!).toInt().toString();
+                  }
+                  else if (pause) {
+                    _pauseReason = _statusResponse["pauseReason"]!;
                   }
                 }
-                else {
-                  if (!Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
-                    Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
-                  }
-                }
 
-                if (_statusResponse.containsKey("leftLiftDistance") && _statusResponse.containsKey("rightLiftDistance")) {
-                  _liftLeft = double.parse(_statusResponse["leftLiftDistance"]!);
-                  _liftRight = double.parse(_statusResponse["rightLiftDistance"]!);
-                }
-
-                if (hasError) {
-
-                  _errorInformation = _statusResponse["errorReason"]!;
-                  _errorCode = _statusResponse["errorCode"]!;
-                  _errorSource = _statusResponse["errorSource"]!;
-                  _errorAction = "Action";
-                }
-                else if (running) {
-                  _layer = double.parse(_statusResponse["layers"]!).toInt().toString();
-                }
-                else if (pause) {
-                  _pauseReason = _statusResponse["pauseReason"]!;
-                }
               }
 
+              catch(e){
+                print("status1: ${e.toString()}");
+              }
             }
 
-            catch(e){
-              print("status1: ${e.toString()}");
-            }
+            return Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: _mainUI(),
+            );
           }
-
-          return Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: _mainUI(),
-          );
-        }
-    );
+      );
+    }
+    else{
+      return _checkConnection();
+    }
 
   }
 
@@ -676,6 +681,35 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
         ),
 
       ],
+    );
+  }
+
+  Container _checkConnection(){
+
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+
+          children: [
+            SizedBox(
+              height: 40,
+              width: 40,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text("Please Reconnect...", style: TextStyle(color: Theme.of(context).highlightColor, fontSize: 15),),
+          ],
+        ),
+      ),
     );
   }
 }
