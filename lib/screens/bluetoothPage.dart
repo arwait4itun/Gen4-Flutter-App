@@ -11,8 +11,8 @@ import 'package:flyer/services/provider_service.dart';
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
 
-import 'DiscoveryPage.dart';
-import 'SelectBondedDevicePage.dart';
+import 'bluetoothFiles/DiscoveryPage.dart';
+import 'bluetoothFiles/SelectBondedDevicePage.dart';
 import 'package:flyer/globals.dart' as globals;
 
 
@@ -132,19 +132,20 @@ class _BluetoothPageState extends State<BluetoothPage> {
 
               children: [
 
+                /*
                 Container(
                   height: MediaQuery.of(context).size.height*0.05,
                   width: MediaQuery.of(context).size.width*0.9,
                   padding: EdgeInsets.all(10),
                   margin: EdgeInsets.all(5),
                   decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: <Color>[Colors.blue,Colors.lightGreen]
-        ),
-        borderRadius: BorderRadius.circular(10),
-      ),
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: <Color>[Colors.blue,Colors.lightGreen]
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
@@ -202,6 +203,8 @@ class _BluetoothPageState extends State<BluetoothPage> {
                   ),
 
                 ),
+
+                 */
 
                 Container(
                   height: MediaQuery.of(context).size.height*0.05,
@@ -285,36 +288,6 @@ class _BluetoothPageState extends State<BluetoothPage> {
               ],
             ),
 
-            /*
-            ListTile(
-              title: ElevatedButton(
-                child: const Text('send'),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.lightGreen),
-                onPressed: () async {
-
-
-                  //final BluetoothConnection? connection = globals.connection;
-
-                  /*
-                  globals.connection!.input!.listen((data) {
-                    print('Data incoming!!!!!!!!!!!!!!!: ${ascii.decode(data)}');
-                  });
-
-                   */
-
-
-
-                  globals.connection!.output.add(Uint8List.fromList(utf8.encode("hahaha")));
-
-                  await globals.connection!.output!.allSent;
-
-
-
-                },
-              ),
-            ),
-
-             */
           ],
         ),
       ),

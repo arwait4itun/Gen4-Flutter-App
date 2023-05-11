@@ -4,7 +4,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/message/enums.dart';
 import 'package:flyer/message/statusMessage.dart';
 import 'package:flyer/screens/running_carousel.dart';
 import 'package:provider/provider.dart';
@@ -44,7 +43,7 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
   bool pause = false;
   bool idle = false;
 
-  double _liftLeft = 0;
+  double _liftLeft = 2;
   double _liftRight = 0;
 
 
@@ -210,7 +209,7 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
           children: [
 
             Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -330,42 +329,45 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
 
   Widget _homingUI(){
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
 
       children: [
 
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Status",
-              style: TextStyle(
-                color: Theme.of(context).primaryColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height*0.06,
-              width: MediaQuery.of(context).size.width*0.9,
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.only(top: 10),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-              ),
-              child: Text(
-                _substate.toUpperCase(),
-                textAlign: TextAlign.start,
+        Container(
+          padding: EdgeInsets.only(top: 10, bottom: 30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Status",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 17,
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-          ],
+              Container(
+                height: MediaQuery.of(context).size.height*0.06,
+                width: MediaQuery.of(context).size.width*0.9,
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: Text(
+                  _substate.toUpperCase(),
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
 
         _liftAnimation(_liftLeft,_liftRight),
@@ -615,8 +617,28 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
       crossAxisAlignment: CrossAxisAlignment.center,
 
       children: [
+
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height*0.01,
+        ),
+
         Text(
-            'title'
+            'Δ (mm) = ${(left-right).toStringAsFixed(2)}',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        Padding(
+          padding: EdgeInsets.only(top: 5),
+          child: Text(
+            '(Δ = L - R)',
+            style: TextStyle(
+              fontSize: 12,
+            ),
+          ),
         ),
 
         SizedBox(
@@ -655,11 +677,12 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.arrow_downward_sharp,
+                  Text(
+                    "L",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    "L: $left",
+                    left.toStringAsFixed(2),
                   )
                 ],
               ),
@@ -667,12 +690,12 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.arrow_downward_sharp,
+                  Text(
+                    "R",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    "R: $right",
-
+                    right.toStringAsFixed(2),
                   )
                 ],
               ),

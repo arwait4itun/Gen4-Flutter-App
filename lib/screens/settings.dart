@@ -116,13 +116,28 @@ class _SettingsPageState extends State<SettingsPage> {
       bool _enabled = Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed;
 
       return SingleChildScrollView(
-        padding: EdgeInsets.only(left:screenHt *0.02,top: screenHt*0.05 ,bottom: screenHt*0.01, right: screenWidth*0.02),
+        padding: EdgeInsets.only(left:screenHt *0.02,top: screenHt*0.01 ,bottom: screenHt*0.02, right: screenWidth*0.02),
         scrollDirection: Axis.vertical,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
 
           children: [
+
+            Container(
+              margin: EdgeInsets.only(bottom: 5),
+              child: Center(
+                child: Text(
+                  "Settings",
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+
             Table(
               columnWidths: const <int, TableColumnWidth>{
                 0: FractionColumnWidth(0.55),
@@ -134,7 +149,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 _customRow("Draft", _draft,defaultValue: "",enabled: _enabled),
                 _customRow("Twists Per Inch", _twistPerInch,defaultValue: "",enabled: _enabled),
                 _customRow("Initial RTF", _RTF,defaultValue: "",enabled: _enabled),
-                _customRow("Layers (mtrs)", _layers, isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Layers (m)", _layers, isFloat: false,defaultValue: "",enabled: _enabled),
                 _customRow("Max Content Ht (mm)", _maxHeightOfContent, isFloat: false,defaultValue: "",enabled: _enabled),
                 _customRow("Roving Width", _rovingWidth, defaultValue: "",enabled: _enabled),
                 _customRow("Delta Bobbin-dia (mm)", _deltaBobbinDia,defaultValue: "",enabled: _enabled),
@@ -173,111 +188,189 @@ class _SettingsPageState extends State<SettingsPage> {
 
   }
 
-  List<IconButton> _settingsButtons(){
+  List<Widget> _settingsButtons(){
 
     if(Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed){
       return [
-        IconButton(
-            onPressed: () async {
-              _requestSettings();
-            },
-            icon: Icon(Icons.input, color: Theme.of(context).primaryColor,)
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+                onPressed: () async {
+                  _requestSettings();
+                },
+                icon: Icon(Icons.input, color: Theme.of(context).primaryColor,)
+            ),
+            Text(
+              "Input",
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ],
         ),
-        IconButton(
-          onPressed: (){
-            //hard coded change
-            _spindleSpeed.text =  "650";
-            _draft.text =  "8.8";
-            _twistPerInch.text = "1.4";
-            _RTF.text = "1";
-            _layers.text="50";
-            _maxHeightOfContent.text = "280";
-            _rovingWidth.text = "1.2";
-            _deltaBobbinDia.text = "1.1";
-            _bareBobbinDia.text = "48";
-            _rampupTime.text= "12";
-            _rampdownTime.text = "12";
-            _changeLayerTime.text = "800";
 
-            SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+              onPressed: (){
+                //hard coded change
+                _spindleSpeed.text =  "650";
+                _draft.text =  "8.8";
+                _twistPerInch.text = "1.4";
+                _RTF.text = "1";
+                _layers.text="50";
+                _maxHeightOfContent.text = "280";
+                _rovingWidth.text = "1.2";
+                _deltaBobbinDia.text = "1.1";
+                _bareBobbinDia.text = "48";
+                _rampupTime.text= "12";
+                _rampdownTime.text = "12";
+                _changeLayerTime.text = "800";
 
-            ConnectionProvider().setSettings(_sm.toMap());
-            Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+                SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
 
-          },
-          icon: Icon(Icons.settings_backup_restore,color: Theme.of(context).primaryColor,),
+                ConnectionProvider().setSettings(_sm.toMap());
+                Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+
+              },
+              icon: Icon(Icons.settings_backup_restore,color: Theme.of(context).primaryColor,),
+            ),
+            Text(
+              "Default",
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ],
         ),
-        IconButton(
-          onPressed: () async {
-            String _valid = isValidForm();
-            if(_valid == "valid"){
-              SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
-              String _msg = _sm.createPacket();
 
-              connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
-              await connection!.output!.allSent.then((v) {});
-              await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+              onPressed: () async {
+                String _valid = isValidForm();
+                if(_valid == "valid"){
 
-              if(newDataReceived){
-                String _d = _data.last;
+                  //run calculate to prevent rpm from exceeding limit
+                  try{
+                    calculate();
+                  }
+                  on CustomException catch(e){
 
-                if(_d == Acknowledgement().createPacket()){
-                  //no eeprom error , acknowledge
-                  SnackBar _sb = SnackBarService(message: "Settings Saved", color: Colors.green).snackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(_sb);
+                    //handle these exceptions separately
+
+                    print("Settings: onSave custom: ${e.toString()}");
+
+                    SnackBar _sb = SnackBarService(message: e.toString(), color: Colors.red).snackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(_sb);
+                  }
+                  catch(e){
+                    print("Settings: onSave: ${e.toString()}");
+                    SnackBar _sb = SnackBarService(message: "Settings Not Saved", color: Colors.red).snackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(_sb);
+                  }
+
+
+
+                  SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+                  String _msg = _sm.createPacket();
+
+                  connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
+                  await connection!.output!.allSent.then((v) {});
+                  await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
+
+                  if(newDataReceived){
+                    String _d = _data.last;
+
+                    if(_d == Acknowledgement().createPacket()){
+                      //no eeprom error , acknowledge
+                      SnackBar _sb = SnackBarService(message: "Settings Saved", color: Colors.green).snackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+                    }
+                    else{
+                      //failed acknowledgement
+                      SnackBar _sb = SnackBarService(message: "Settings Not Saved", color: Colors.red).snackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(_sb);
+                    }
+
+                    newDataReceived = false;
+                    setState(() {
+                    });
+                  }
 
                 }
                 else{
-                  //failed acknowledgement
-                  SnackBar _sb = SnackBarService(message: "Settings Not Saved", color: Colors.red).snackBar();
+                  SnackBar _sb = SnackBarService(message: _valid, color: Colors.red).snackBar();
                   ScaffoldMessenger.of(context).showSnackBar(_sb);
                 }
-
-                newDataReceived = false;
-                setState(() {
-                });
-              }
-
-            }
-            else{
-              SnackBar _sb = SnackBarService(message: _valid, color: Colors.red).snackBar();
-              ScaffoldMessenger.of(context).showSnackBar(_sb);
-            }
-          },
-          icon: Icon(Icons.save,color: Theme.of(context).primaryColor,),
+              },
+              icon: Icon(Icons.save,color: Theme.of(context).primaryColor,),
+            ),
+            Text(
+              "Save",
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ],
         ),
-        IconButton(
-          onPressed: (){
-            try{
 
-              String _err = isValidForm();
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+              onPressed: (){
+                try{
 
-              if(_err!="valid"){
-                //if error in form
-                SnackBar _snack = SnackBarService(message: _err, color: Colors.red).snackBar();
-                ScaffoldMessenger.of(context).showSnackBar(_snack);
+                  String _err = isValidForm();
 
-                throw FormatException(_err);
-              }
+                  if(_err!="valid"){
+                    //if error in form
+                    SnackBar _snack = SnackBarService(message: _err, color: Colors.red).snackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(_snack);
 
-              SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
-
-              ConnectionProvider().setSettings(_sm.toMap());
-              Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
-
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return _popUpUI();
+                    throw FormatException(_err);
                   }
-              );
-            }
-            catch(e){
-              print("Settings: search icon button: ${e.toString()}");
-            }
-          },
-          icon: Icon(Icons.search,color: Theme.of(context).primaryColor,),
+
+                  SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+
+                  ConnectionProvider().setSettings(_sm.toMap());
+                  Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return _popUpUI();
+                      }
+                  );
+                }
+                catch(e){
+                  print("Settings: search icon button: ${e.toString()}");
+                }
+              },
+              icon: Icon(Icons.search,color: Theme.of(context).primaryColor,),
+            ),
+            Text(
+              "Parameters",
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ],
         ),
+
       ];
     }
     else{
@@ -671,6 +764,62 @@ class _SettingsPageState extends State<SettingsPage> {
 
   }
 
+
+  void calculate(){
+
+    //calculates rpm
+    //always run this function in try catch
+    double FR_CIRCUMFERENCE = 94.248;
+    
+    var maxRPM = 1500;
+    var strokeDistLimit = 5.5;
+    
+    var flyerMotorRPM = double.parse(_spindleSpeed.text) * 1.476;
+    var delivery_mtr_min = (double.parse(_spindleSpeed.text)/ double.parse(_twistPerInch.text)) * 0.0254;
+
+    double FR_RPM = (delivery_mtr_min * 1000) / FR_CIRCUMFERENCE;
+
+    var FR_MotorRPM = (FR_RPM * 5);
+
+    var BR_MotorRPM = ((FR_RPM * 23.562) / (double.parse(_draft.text)/ 1.5));
+
+
+    double layerNo = 0; //change this
+
+    var bobbinDia = double.parse(_bareBobbinDia.text)+ layerNo * double.parse(_deltaBobbinDia.text);
+
+    var deltaRpm_Spindle_Bobbin = (delivery_mtr_min * 1000) /
+        (bobbinDia * 3.14159);
+
+    var bobbinRPM = double.parse(_spindleSpeed.text) + deltaRpm_Spindle_Bobbin;
+    var bobbinMotorRPM = bobbinRPM * 1.476;
+
+    var strokeHeight = double.parse(_maxHeightOfContent.text) - (double.parse(_rovingWidth.text) * layerNo);
+    var _strokeDistperSec = (deltaRpm_Spindle_Bobbin * double.parse(_rovingWidth.text)) / 60.0; //5.5
+    var liftMotorRPM = (_strokeDistperSec * 60.0 / 4) * 15.3;
+  
+
+    if(flyerMotorRPM > maxRPM){
+      throw CustomException("Flyer Motor RPM (${flyerMotorRPM.toInt()}) Exceeds $maxRPM");
+    }
+    if(FR_MotorRPM > maxRPM){
+      throw CustomException("FR Motor RPM (${FR_MotorRPM.toInt()}) Exceeds $maxRPM");
+    }
+    if(BR_MotorRPM > maxRPM){
+      throw CustomException("BR Motor RPM (${BR_MotorRPM.toInt()}) Exceeds $maxRPM");
+    }
+    if(bobbinMotorRPM > maxRPM){
+      throw CustomException("Bobbin Motor RPM (${bobbinMotorRPM.toInt()}) Exceeds $maxRPM");
+    }
+    if(_strokeDistperSec > strokeDistLimit){
+      throw CustomException("Stroke Dist Per Sec (${_strokeDistperSec.toStringAsFixed(2)}) Exceeds $strokeDistLimit");
+    }
+    if(liftMotorRPM> maxRPM){
+      throw CustomException("Lift Motor RPM (${liftMotorRPM.toInt()}) Exceeds $maxRPM");
+    }
+
+  }
+  
   Container _checkConnection(){
 
     return Container(
@@ -698,6 +847,18 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
     );
+  }
+}
+
+class CustomException implements Exception{
+  String message;
+
+  CustomException(this.message);
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return message;
   }
 }
 

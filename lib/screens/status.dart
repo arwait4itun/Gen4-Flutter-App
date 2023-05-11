@@ -8,10 +8,8 @@ import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
 
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
-
 import 'dart:async';
-import 'dart:math' as math;
+
 
 class Data{
 

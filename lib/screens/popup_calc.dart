@@ -107,9 +107,17 @@ class _popUpUIState extends State<popUpUI> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
+            padding: EdgeInsets.all(20),
+            child: Text(
+              'Internal Parameters',
+              style:
+              TextStyle(color: Colors.black, fontSize:  18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Padding(
             padding: EdgeInsets.all(15.0),
             child: Text(
-              'Delivery Mtrs per Min:\t${delivery_mtr_min.toStringAsFixed(2)??"-"}',
+              'Delivery:\t${delivery_mtr_min.toStringAsFixed(2)??"-"} m/min',
               style:
               TextStyle(color: Colors.black, fontSize:  15),
             ),
@@ -119,7 +127,10 @@ class _popUpUIState extends State<popUpUI> {
             child: Text(
               'Stroke Velocity:\t\t${_strokeDistperSec.toStringAsFixed(2)??"-"} mm/s',
               style:
-              TextStyle(color: Colors.black, fontSize:  15),
+              TextStyle(
+                  color: _strokeDistperSec>5.5? Colors.red: Colors.black,
+                  fontSize:  15,
+              ),
             ),
           ),
           
@@ -202,6 +213,7 @@ class _popUpUIState extends State<popUpUI> {
 
 
   }
+
   
   void calculate(){
 

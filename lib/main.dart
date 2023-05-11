@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flyer/screens/Dashboard.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flyer/screens/bluetoothPage.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
-import 'globals.dart' as globals;
 
 
 
-void main() {
+void main() async {
+
 
   runApp(
     ChangeNotifierProvider(
