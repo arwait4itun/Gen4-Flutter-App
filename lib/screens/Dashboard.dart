@@ -1,19 +1,18 @@
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/screens/drawer.dart';
+import 'package:flyer/screens/motor_gear.dart';
 import 'package:flyer/screens/phone_status_page.dart';
 import 'package:flyer/screens/settings.dart';
 import 'package:flyer/screens/status.dart';
 import 'package:flyer/screens/tests.dart';
-import 'package:flyer/screens/utilities.dart';
+
 import 'package:flyer/globals.dart' as globals;
 import 'package:provider/provider.dart';
 import '../services/provider_service.dart';
 import '../services/snackbar_service.dart';
-import 'popup_calc.dart';
 
 class DashboardScaffold extends StatefulWidget {
 
@@ -91,39 +90,49 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
     });
   }
 
-  void _onTapFloatingActionButton(){
-    showModalBottomSheet(
-        isDismissible: false,
-        context: context,
-        builder: (context){
-          return UtilitiesPage();
-        });
-  }
-
 
 
   @override
   Widget build(BuildContext context) {
 
+    if(connection.isConnected){
+      final List<Widget> _pages = <Widget>[
+        //checks if the device is a phone or tablet based on screen size
+        MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
+        PhoneStatusPageUI(connection: connection,statusStream: multiStream,) : StatusPage(),
+        SettingsPage(connection: connection, settingsStream: multiStream,),
+        TestPage(connection: connection, testsStream: multiStream,),
+        MotorGearPageUI(connection: connection,stream: multiStream,),
+      ];
 
 
-    final List<Widget> _pages = <Widget>[
-      //checks if the device is a phone or tablet based on screen size
-      MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
-      PhoneStatusPageUI(connection: connection,statusStream: multiStream,) : StatusPage(),
-      SettingsPage(connection: connection, settingsStream: multiStream,),
-      TestPage(connection: connection, testsStream: multiStream,),
-    ];
 
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: appBar(_scaffoldKey),
+        bottomNavigationBar: navigationBar(),
+        body: _pages[_selectedIndex],
+        drawer: DrawerPage(connection: connection, stream: multiStream,),
+      );
+    }
+    else{
 
+      final List<Widget> _pages = <Widget>[
+        //checks if the device is a phone or tablet based on screen size
+        _checkConnection(),
+        _checkConnection(),
+        _checkConnection(),
+        _checkConnection(),
+      ];
 
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: appBar(_scaffoldKey),
-      bottomNavigationBar: navigationBar(),
-      body: _pages[_selectedIndex],
-      drawer: DrawerPage(connection: connection,),
-    );
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: appBar(_scaffoldKey),
+        bottomNavigationBar: navigationBar(),
+        body: _pages[_selectedIndex],
+        drawer: DrawerPage(connection: connection, stream: multiStream,),
+      );
+    }
   }
 
   AppBar appBar(GlobalKey<ScaffoldState> _scaffoldKey){
@@ -177,8 +186,6 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
 
 
 
-
-
   BottomNavigationBar navigationBar(){
     return BottomNavigationBar(
       currentIndex: _selectedIndex,
@@ -186,11 +193,41 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
         BottomNavigationBarItem(icon: Icon(Icons.bar_chart,color: Colors.grey,),label: "status"),
         BottomNavigationBarItem(icon: Icon(Icons.settings, color: Colors.grey,),label: "settings"),
         BottomNavigationBarItem(icon: Icon(Icons.build, color: Colors.grey,),label: "tests"),
+        BottomNavigationBarItem(icon: Icon(Icons.engineering, color: Colors.grey,),label: "options"),
       ],
       selectedItemColor: Colors.lightGreen,
       onTap: _onItemTapped,
     );
   }
 
+
+  Container _checkConnection(){
+
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+
+          children: [
+            SizedBox(
+              height: 40,
+              width: 40,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text("Please Reconnect...", style: TextStyle(color: Theme.of(context).highlightColor, fontSize: 15),),
+          ],
+        ),
+      ),
+    );
+  }
 }
 

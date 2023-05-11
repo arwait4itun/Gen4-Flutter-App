@@ -1,6 +1,3 @@
-import 'package:hex/hex.dart';
-
-import 'dart:typed_data';
 
 
 enum Separator {
@@ -103,6 +100,8 @@ enum Information {
   machineState,
   carouselInfo,
   changeName,
+  gearBoxSettingsFromApp,
+  gearBoxSettingsFromMachine,
 }
 
 extension InformationExtension on Information{
@@ -126,8 +125,13 @@ extension InformationExtension on Information{
         return "06";
       case Information.carouselInfo:
         return "07";
-      case Information.changeName:
+      case Information.gearBoxSettingsFromApp:
         return "08";
+
+      case Information.gearBoxSettingsFromMachine:
+        return "09";
+      case Information.changeName:
+        return "10";
     }
   }
 }
@@ -430,3 +434,30 @@ extension MotorDirectionExtension on MotorDirection{
     }
   }
 }
+
+enum GearBoxSettings{
+  start,
+  stop,
+  saveLeft,
+  saveRight,
+}
+
+extension GearBoxSettingsExtension on GearBoxSettings{
+
+  String get hexVal {
+    switch (this){
+
+      case GearBoxSettings.start:
+        return "01";
+      case GearBoxSettings.stop:
+        return "02";
+      case GearBoxSettings.saveLeft:
+        return "03";
+      case GearBoxSettings.saveRight:
+        return "04";
+    }
+  }
+
+}
+
+

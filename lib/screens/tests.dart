@@ -14,12 +14,12 @@ import '../services/provider_service.dart';
 
 class TestPage extends StatefulWidget {
 
-  BluetoothConnection? connection;
+  BluetoothConnection connection;
 
-  Stream<Uint8List>? testsStream;
+  Stream<Uint8List> testsStream;
 
 
-  TestPage({required this.connection, this.testsStream});
+  TestPage({required this.connection, required this.testsStream});
 
 
   @override
@@ -62,8 +62,8 @@ class _TestPageState extends State<TestPage> {
   String prev="0";
 
 
-  BluetoothConnection? connection;
-  Stream<Uint8List>? testsStream;
+  late BluetoothConnection connection;
+  late Stream<Uint8List> testsStream;
 
   @override
   void initState() {
@@ -84,24 +84,55 @@ class _TestPageState extends State<TestPage> {
   void dispose() {
     // TODO: implement dispose
 
-
-    testsStream = null;
     super.dispose();
   }
 
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+
+    if(connection.isConnected){
+      return Container(
         padding: EdgeInsets.only(left: 10,top: 7,bottom: 7, right: 7),
         //scrollDirection: Axis.vertical,
         child: _runDiagnoseUI(),
-    );
+      );
+    }
+    else{
+      return _checkConnection();
+    }
 
   }
 
 
+  Container _checkConnection(){
 
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+
+          children: [
+            SizedBox(
+              height: 40,
+              width: 40,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text("Please Reconnect...", style: TextStyle(color: Theme.of(context).highlightColor, fontSize: 15),),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _runDiagnoseUI(){
     return Container(
@@ -112,6 +143,19 @@ class _TestPageState extends State<TestPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            margin: EdgeInsets.only(top: 10, bottom: 15),
+            child: Center(
+              child: Text(
+                "Tests",
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
           Table(
             columnWidths: const <int, TableColumnWidth>{
               0: FractionColumnWidth(0.50),
@@ -956,8 +1000,8 @@ class _StopDiagnoseSingleUIState extends State<StopDiagnoseSingleUI> {
               Map<String,double> _diagResponse = DiagnosticMessageResponse().decode(_d);
               print("HERE!!!!!!!!!!!!!!: $_diagResponse");
 
-              _runningRPM = _diagResponse["speedRPM"]!.toString();
-              _runningSignalVoltage = _diagResponse["signalVoltage"]!.toString();
+              _runningRPM = _diagResponse["speedRPM"]!.toStringAsFixed(0);
+              _runningSignalVoltage = _diagResponse["signalVoltage"]!.toStringAsFixed(0);
               _current = _diagResponse["current"]!.toStringAsFixed(2);
               _power = _diagResponse["power"]!.toStringAsFixed(2);
 
@@ -998,7 +1042,7 @@ class _StopDiagnoseSingleUIState extends State<StopDiagnoseSingleUI> {
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: <TableRow>[
                   _customRow("Speed (RPM)", _runningRPM),
-                  _customRow("PWM ", _runningSignalVoltage),
+                  _customRow("PWM (0 to 1500)", _runningSignalVoltage),
                   _customRow("Current (A)", _current),
                   _customRow("Power (W)", _power),
 
@@ -1196,13 +1240,13 @@ class _StopDiagnoseDoubleUIState extends State<StopDiagnoseDoubleUI> {
               Map<String,double> _diagResponse = DiagnosticMessageResponse().decode(_d);
               print("HERE!!!!!!!!!!!!!!: $_diagResponse");
 
-              _runningRPM1 = _diagResponse["speedRPM"]!.toString();
-              _runningSignalVoltage1 = _diagResponse["signalVoltage"]!.toString();
+              _runningRPM1 = _diagResponse["speedRPM"]!.toStringAsFixed(0);
+              _runningSignalVoltage1 = _diagResponse["signalVoltage"]!.toStringAsFixed(0);
               _current1 = _diagResponse["current"]!.toStringAsFixed(2);
               _power1 = _diagResponse["power"]!.toStringAsFixed(2);
 
-              _runningRPM2 = _diagResponse["speedRPM1"]!.toString();
-              _runningSignalVoltage2 = _diagResponse["signalVoltage1"]!.toString();
+              _runningRPM2 = _diagResponse["speedRPM1"]!.toStringAsFixed(0);
+              _runningSignalVoltage2 = _diagResponse["signalVoltage1"]!.toStringAsFixed(0);
               _current2 = _diagResponse["current1"]!.toStringAsFixed(2);
               _power2 = _diagResponse["power1"]!.toStringAsFixed(2);
 
@@ -1360,5 +1404,7 @@ class _StopDiagnoseDoubleUIState extends State<StopDiagnoseDoubleUI> {
       ],
     );
   }
+
+
 }
 

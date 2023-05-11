@@ -1,8 +1,9 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flyer/message/acknowledgement.dart';
+import 'package:flyer/message/changeName.dart';
 import 'package:flyer/screens/bluetoothPage.dart';
 
 import 'package:crypto/crypto.dart';
@@ -17,8 +18,9 @@ import '../services/snackbar_service.dart';
 class DrawerPage extends StatefulWidget {
 
   BluetoothConnection connection;
+  Stream<Uint8List> stream;
 
-  DrawerPage({required this.connection});
+  DrawerPage({required this.connection, required this.stream});
 
 
   @override
@@ -27,42 +29,27 @@ class DrawerPage extends StatefulWidget {
 
 class _DrawerPageState extends State<DrawerPage> {
 
-  late String _password;
   late String _deviceName;
-  late TextEditingController _passwordController;
+
+  bool _validate = true;
+  String _validText = "";
+
   late TextEditingController _deviceNameController;
 
   late BluetoothConnection connection;
+  late Stream<Uint8List> stream;
 
   @override
   void initState() {
     // TODO: implement initState
 
-    _password = "";
-    _passwordController = new TextEditingController();
-
     _deviceName = "";
     _deviceNameController = new TextEditingController();
 
     connection = widget.connection;
+    stream = widget.stream;
     super.initState();
   }
-
-  void _bluetooth(){
-    print("bluetooth");
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context){
-        return BluetoothPage();
-      })
-    );
-  }
-
-  void _enablePID(){
-    print("pid");
-
-    _displayTextInputDialog(context);
-  }
-
 
 
 
@@ -76,7 +63,7 @@ class _DrawerPageState extends State<DrawerPage> {
 
     print("change name");
 
-    _displayChangeName(context);
+    _displayChangeName();
   }
 
 
@@ -138,60 +125,9 @@ class _DrawerPageState extends State<DrawerPage> {
     );
   }
 
-  Future<void> _displayTextInputDialog(BuildContext context) async {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Enter Password To Enable PID'),
-            content: TextField(
-              onChanged: (value) {
-                setState(() {
-                  _password = value;
-                });
-              },
-              controller: _passwordController,
-              decoration: InputDecoration(hintText: "Enter Password"),
-            ),
-            actions: <Widget>[
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).primaryColor),
-                ),
-                child: Text('OK'),
-                onPressed: () {
-                  setState(() {
-
-                    if(getHashedPassword(_password) == globals.password){
-                      globals.pidEnabled = true;
-
-                      SnackBar _sb = SnackBarService(message: "PID enabled", color: Colors.green).snackBar();
-
-                      Provider.of<ConnectionProvider>(context,listen: false).setPID(true);
-
-                      ScaffoldMessenger.of(context).showSnackBar(_sb);
-
-                      Navigator.pop(context);
-                    }
-                    else{
-                      SnackBar _sb = SnackBarService(message: "Wrong Password", color: Colors.red).snackBar();
-
-                      ScaffoldMessenger.of(context).showSnackBar(_sb);
-
-                      print("wrong password");
-                    }
-
-                  });
-                },
-              ),
-
-            ],
-          );
-        });
-  }
 
 
-  Future<void> _displayChangeName(BuildContext context) async {
+  Future<void> _displayChangeName() async {
     return showDialog(
         context: context,
         builder: (context) {
@@ -204,7 +140,11 @@ class _DrawerPageState extends State<DrawerPage> {
                 });
               },
               controller: _deviceNameController,
-              decoration: InputDecoration(hintText: "Enter New Device Name"),
+              decoration: InputDecoration(
+                  hintText: "Enter New Device Name",
+                  labelText: 'Enter the Value',
+                  errorText: validateName(_deviceNameController.text),
+              ),
             ),
             actions: <Widget>[
               ElevatedButton(
@@ -212,35 +152,111 @@ class _DrawerPageState extends State<DrawerPage> {
                   backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).primaryColor),
                 ),
                 child: Text('OK'),
-                onPressed: () {
-                  setState(() {
+                onPressed: () async {
 
-                    if(_deviceName=="" || _deviceName==" " || _deviceName.length > 10){
-
-
-                      SnackBar _sb = SnackBarService(message: "Invalid Name", color: Colors.red).snackBar();
+                    if(_deviceNameController.text=="" || _deviceNameController.text==" " || _deviceNameController.text.length > 8){
 
 
-                      ScaffoldMessenger.of(context).showSnackBar(_sb);
+                        setState(() {
 
-                      Navigator.pop(context);
+                        });
                     }
                     else{
 
+                      try {
+                        String _cnm = ChangeName().changeName(_deviceName);
 
-                      SnackBar _sb = SnackBarService(message: "Device Name Changed", color: Colors.red).snackBar();
+                        connection!.output.add(Uint8List.fromList(utf8.encode(_cnm)));
 
-                      ScaffoldMessenger.of(context).showSnackBar(_sb);
+                        await connection!.output!.allSent;
+
+                        await Future.delayed(Duration(milliseconds: 100));
+
+                        stream.listen((data) async {
+
+                          String _d = utf8.decode(data);
+
+                          if(_d==null || _d==""){
+
+                            print("Drawer: Change name: Invalid Packet");
+                            await showMessage("Failed To Change Name");
+
+                            throw FormatException("Failed To Change Name");
+                          }
+
+                          if(_d == Acknowledgement().createPacket()){
+                            Navigator.of(context).pop();
+                            await showMessage("Changed Name Successfully");
+
+                          }
+                          else{
+                            await showMessage("Failed To Change Name");
+                            throw FormatException("Failed To Change Name");
+                          }
+                        }).onError((e){
+                          print(e.toString());
+                        });
+
+
+
+                      }
+                      catch(e){
+                        print("Change Name: ${e.toString()}");
+
+                        await showMessage(e.toString());
+                      }
+
 
                     }
 
-                  });
                 },
               ),
 
             ],
           );
         });
+  }
+
+  String? validateName(String s){
+
+    if(s.length > 8){
+
+      return "Invalid Name";
+
+    }
+    else{
+      return null;
+    }
+  }
+
+  Future<void> showMessage(String message){
+
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: MediaQuery.of(context).size.height*0.25,
+            width: MediaQuery.of(context).size.width*0.8,
+            child: AlertDialog(
+              title: Text('Change Name of Device:'),
+              content: Text(
+                  message,
+              ),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).primaryColor),
+                  ),
+                  child: Text('OK'),
+                  onPressed: ()  {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+    });
+
   }
 
   String getHashedPassword(String p){

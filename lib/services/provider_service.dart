@@ -8,6 +8,8 @@ class ConnectionProvider extends ChangeNotifier{
   bool _PIDEnabled = false;
 
   bool _settingsChangeAllowed = true;
+  bool _gbStart = true;
+
 
   Map<String,String> _settings = new Map<String,String>();
   bool _settingsEmpty = true;
@@ -16,6 +18,7 @@ class ConnectionProvider extends ChangeNotifier{
   bool get PIDEnabled => _PIDEnabled;
   bool get settingsChangeAllowed => _settingsChangeAllowed;
   bool get isSettingsEmpty => _settingsEmpty;
+  bool get hasGBStarted => _gbStart;
 
   Map<String,String> get settings => _settings;
 
@@ -54,4 +57,9 @@ class ConnectionProvider extends ChangeNotifier{
     notifyListeners();
   }
 
+  void setGBStart(bool c){
+
+    _gbStart = c;
+    notifyListeners();
+  }
 }

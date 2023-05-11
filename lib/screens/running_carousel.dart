@@ -116,13 +116,13 @@ class _RunningCarouselState extends State<RunningCarousel> {
                   if(!_carouselResponse.isEmpty) {
                     if (_motorId == "0A") {
                       //for production
-                      production = _carouselResponse["outputMtrs"];
+                      production = double.parse(_carouselResponse["outputMtrs"]!).toStringAsFixed(2);
                     }
                     else {
-                      motorTemp = _carouselResponse["motorTemp"];
-                      MOSFETTemp = _carouselResponse["MOSFETTemp"];
-                      current = _carouselResponse["current"];
-                      RPM = _carouselResponse["RPM"];
+                      motorTemp = double.parse(_carouselResponse["motorTemp"]!).toStringAsFixed(0);
+                      MOSFETTemp = double.parse(_carouselResponse["MOSFETTemp"]!).toStringAsFixed(0);
+                      current = double.parse(_carouselResponse["current"]!).toStringAsFixed(2);
+                      RPM = double.parse(_carouselResponse["RPM"]!).toStringAsFixed(0);
                     }
                   }
 

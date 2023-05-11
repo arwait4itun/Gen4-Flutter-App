@@ -1,6 +1,3 @@
-
-import 'package:flyer/message/hexa_to_double.dart';
-
 import 'enums.dart';
 
 class ErrorMessage{
