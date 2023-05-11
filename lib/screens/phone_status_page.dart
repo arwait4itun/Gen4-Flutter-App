@@ -68,113 +68,146 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
 
   @override
   Widget build(BuildContext context) {
+
+    try{
+      if (running || homing || pause || hasError) {
+        //disable settings and diagnostic pages when running to prevent errors
+
+        if (Provider
+            .of<ConnectionProvider>(context, listen: false)
+            .settingsChangeAllowed) {
+          Provider.of<ConnectionProvider>(context, listen: false)
+              .setSettingsChangeAllowed(false);
+        }
+      }
+      else {
+        if (!Provider
+            .of<ConnectionProvider>(context, listen: false)
+            .settingsChangeAllowed) {
+          try {
+            Provider.of<ConnectionProvider>(
+                context, listen: false)
+                .setSettingsChangeAllowed(true);
+          }
+          catch (e) {
+            print("Status: ${e.toString()}");
+          }
+        }
+      }
+    }
+    catch(e){
+      print("Status: Changing state error: ${e.toString()}");
+    }
+
     if(connection.isConnected){
-      return StreamBuilder<Uint8List>(
-          stream: statusStream,
-          builder: (context, snapshot) {
 
-            if(snapshot.hasData){
-              var data = snapshot.data;
-              String _d = utf8.decode(data!);
-              print("\nStatus: data: "+_d);
-              print(snapshot.data);
+      try {
+        return StreamBuilder<Uint8List>(
+            stream: statusStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                var data = snapshot.data;
+                String _d = utf8.decode(data!);
+                print("\nStatus: data: " + _d);
+                print(snapshot.data);
 
 
-              try {
+                try {
+                  print("here status!!!!!: $_d");
+                  Map<String, String> _statusResponse = StatusMessage().decode(
+                      _d);
+                  print("HERE!!!!!!!!!!!!!!: $_statusResponse");
 
-                print("here status!!!!!: $_d");
-                Map<String, String> _statusResponse = StatusMessage().decode(_d);
-                print("HERE!!!!!!!!!!!!!!: $_statusResponse");
+                  if (!_statusResponse.isEmpty) {
+                    _substate = _statusResponse["substate"]!;
 
-                if (!_statusResponse.isEmpty) {
-
-                  _substate = _statusResponse["substate"]!;
-
-                  switch (_substate) {
-                    case "running":
-                      hasError = false;
-                      running = true;
-                      homing = false;
-                      pause = false;
-                      idle = false;
-                      break;
-                    case "homing":
-                      hasError = false;
-                      running = false;
-                      homing = true;
-                      pause = false;
-                      idle = false;
-                      break;
-                    case "error":
-                      hasError = true;
-                      running = false;
-                      homing = false;
-                      pause = false;
-                      idle = false;
-                      break;
-                    case "pause":
-                      hasError = false;
-                      running = false;
-                      homing = false;
-                      pause = true;
-                      idle = false;
-                      break;
-                    default:
-                      hasError = false;
-                      running = false;
-                      homing = false;
-                      pause = false;
-                      idle = true;
-                      break;
-                  }
-
-                  if (running || homing || pause || hasError) {
-                    //disable settings and diagnostic pages when running to prevent errors
-
-                    if (Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
-                      Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
+                    switch (_substate) {
+                      case "running":
+                        hasError = false;
+                        running = true;
+                        homing = false;
+                        pause = false;
+                        idle = false;
+                        break;
+                      case "homing":
+                        hasError = false;
+                        running = false;
+                        homing = true;
+                        pause = false;
+                        idle = false;
+                        break;
+                      case "error":
+                        hasError = true;
+                        running = false;
+                        homing = false;
+                        pause = false;
+                        idle = false;
+                        break;
+                      case "pause":
+                        hasError = false;
+                        running = false;
+                        homing = false;
+                        pause = true;
+                        idle = false;
+                        break;
+                      default:
+                        hasError = false;
+                        running = false;
+                        homing = false;
+                        pause = false;
+                        idle = true;
+                        break;
                     }
-                  }
-                  else {
-                    if (!Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
-                      Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
+
+
+
+                    if (_statusResponse.containsKey("leftLiftDistance") &&
+                        _statusResponse.containsKey("rightLiftDistance")) {
+                      _liftLeft =
+                          double.parse(_statusResponse["leftLiftDistance"]!);
+                      _liftRight =
+                          double.parse(_statusResponse["rightLiftDistance"]!);
                     }
-                  }
 
-                  if (_statusResponse.containsKey("leftLiftDistance") && _statusResponse.containsKey("rightLiftDistance")) {
-                    _liftLeft = double.parse(_statusResponse["leftLiftDistance"]!);
-                    _liftRight = double.parse(_statusResponse["rightLiftDistance"]!);
-                  }
-
-                  if (hasError) {
-
-                    _errorInformation = _statusResponse["errorReason"]!;
-                    _errorCode = _statusResponse["errorCode"]!;
-                    _errorSource = _statusResponse["errorSource"]!;
-                    _errorAction = "Action";
-                  }
-                  else if (running) {
-                    _layer = double.parse(_statusResponse["layers"]!).toInt().toString();
-                  }
-                  else if (pause) {
-                    _pauseReason = _statusResponse["pauseReason"]!;
+                    if (hasError) {
+                      _errorInformation = _statusResponse["errorReason"]!;
+                      _errorCode = _statusResponse["errorCode"]!;
+                      _errorSource = _statusResponse["errorSource"]!;
+                      _errorAction = "Action";
+                    }
+                    else if (running) {
+                      _layer = double.parse(_statusResponse["layers"]!)
+                          .toInt()
+                          .toString();
+                    }
+                    else if (pause) {
+                      _pauseReason = _statusResponse["pauseReason"]!;
+                    }
                   }
                 }
 
+                catch (e) {
+                  print("status1: ${e.toString()}");
+                }
               }
 
-              catch(e){
-                print("status1: ${e.toString()}");
-              }
+              return Container(
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .height,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                child: _mainUI(),
+              );
             }
-
-            return Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: _mainUI(),
-            );
-          }
-      );
+        );
+      }
+      catch(e){
+        return _placeHolder();
+      }
     }
     else{
       return _checkConnection();
@@ -200,50 +233,54 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
     }
     else{
       //idle
-      return Container(
-        margin: EdgeInsets.only(top: 15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+      return _placeHolder();
+    }
+  }
 
-          children: [
+  Widget _placeHolder(){
+    return Container(
+      margin: EdgeInsets.only(top: 15),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
 
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Status",
+        children: [
+
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Status",
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height*0.06,
+                width: MediaQuery.of(context).size.width*0.9,
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: Text(
+                  _substate.toUpperCase()??"--",
+                  textAlign: TextAlign.start,
                   style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: 18,
+                    color: Colors.black,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Container(
-                  height: MediaQuery.of(context).size.height*0.06,
-                  width: MediaQuery.of(context).size.width*0.9,
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.only(top: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                  ),
-                  child: Text(
-                    _substate.toUpperCase(),
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    }
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _runUI(){

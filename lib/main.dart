@@ -9,7 +9,14 @@ import 'package:provider/provider.dart';
 
 void main() async {
 
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
+  await Future.delayed(Duration(seconds: 5 ));
+
+  FlutterNativeSplash.remove();
+
+  ErrorWidget.builder = (FlutterErrorDetails details) => Container();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ConnectionProvider(),
