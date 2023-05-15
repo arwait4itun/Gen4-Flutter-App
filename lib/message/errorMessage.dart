@@ -118,6 +118,7 @@ class ErrorMessage{
 
   String getReason(String e){
 
+
     const Map<String, String> _errorDict = {
       "2":"Over Current",
       "4":"Over Voltage",
@@ -134,9 +135,10 @@ class ErrorMessage{
       "8192":"Lift Synchronicity Fail",
       "16384":"Lift Out Of Bounds Error",
       "32768":"Eeprom Bad Homing Position",
+      "96": "SMPS Error",
       "97":"Ack Error",
       "98":"Can Cut Error",
-      "99":"Lift Relative Position Error"
+      "99":"Lift Relative Position Error",
     };
 
     if(_errorDict.containsKey(e)){
@@ -149,6 +151,7 @@ class ErrorMessage{
 
   String getErrorSource(String e){
 
+    print("get reason:$e");
     Map<String,String> _errSrc = {
       "0":"Flyer",
       "1":"Bobbin",
@@ -158,7 +161,7 @@ class ErrorMessage{
       "5":"Lift Right",
       "12":"Can Bus",
       "13":"Lifts",
-      "14":"Motors And CAN Bus",
+      "14":"System",
     };
 
     if(_errSrc.containsKey(e)){

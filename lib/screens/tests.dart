@@ -746,21 +746,19 @@ class _TestPageState extends State<TestPage> {
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.only(right: 2.5),
             margin: EdgeInsets.only(right: 2.5),
-            child: Expanded(
-              child: Slider(
-                value: _target,
-                max: 90.0,
-                min: 10.0,
-                activeColor: Theme.of(context).primaryColor,
-                onChanged: (val){
-                  setState(() {
-                    _target = (val/5).ceil()*5;
-                    _targetRPM = getTargetRPM(_target.toString());
-                    _dutyPerc = ((val/5).ceil()*5).toString()+"%";
-                  });
-                },
-              ),
-            )
+            child: Slider(
+              value: _target,
+              max: 90.0,
+              min: 10.0,
+              activeColor: Theme.of(context).primaryColor,
+              onChanged: (val){
+                setState(() {
+                  _target = (val/5).ceil()*5;
+                  _targetRPM = getTargetRPM(_target.toString());
+                  _dutyPerc = ((val/5).ceil()*5).toString()+"%";
+                });
+              },
+            ),
           ),
         ),
 
@@ -788,23 +786,21 @@ class _TestPageState extends State<TestPage> {
           child: Container(
             padding: EdgeInsets.only(right: 2.5),
             margin: EdgeInsets.only(right: 2.5),
-            child: Expanded(
-              child: Slider(
-                value: _testRuntimeval,
-                max: 310.0,
-                min: 20.0,
-                activeColor: Theme.of(context).primaryColor,
-                // label: _testRuntime.toString(),
-                onChanged: (val){
-                  setState(() {
-                    _testRuntimeval = (val/10).ceil()*10;
-                    _testRuntime = _testRuntimeval.toInt().toString();
-                    if(_testRuntimeval>300){
-                      _testRuntime = "infinity";
-                    }
-                  });
-                },
-              ),
+            child: Slider(
+              value: _testRuntimeval,
+              max: 310.0,
+              min: 20.0,
+              activeColor: Theme.of(context).primaryColor,
+              // label: _testRuntime.toString(),
+              onChanged: (val){
+                setState(() {
+                  _testRuntimeval = (val/10).ceil()*10;
+                  _testRuntime = _testRuntimeval.toInt().toString();
+                  if(_testRuntimeval>300){
+                    _testRuntime = "infinity";
+                  }
+                });
+              },
             ),
           ),
         ),
