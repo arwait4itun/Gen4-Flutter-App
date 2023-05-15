@@ -98,8 +98,8 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
     if(connection.isConnected){
       final List<Widget> _pages = <Widget>[
         //checks if the device is a phone or tablet based on screen size
-        MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
-        PhoneStatusPageUI(connection: connection,statusStream: multiStream,) : StatusPage(),
+        //MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
+        PhoneStatusPageUI(connection: connection,statusStream: multiStream,),
         SettingsPage(connection: connection, settingsStream: multiStream,),
         TestPage(connection: connection, testsStream: multiStream,),
         MotorGearPageUI(connection: connection,stream: multiStream,),

@@ -4,10 +4,13 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flyer/screens/bluetoothPage.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 
 
 void main() async {
+
 
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -15,6 +18,36 @@ void main() async {
   await Future.delayed(Duration(seconds: 5 ));
 
   FlutterNativeSplash.remove();
+
+  var status = await Permission.bluetooth.status;
+  if (status.isDenied) {
+
+    await Permission.bluetooth.request();
+  }
+
+  status = await Permission.bluetoothScan.status;
+  if (status.isDenied) {
+
+    await Permission.bluetoothScan.request();
+  }
+
+  status = await Permission.bluetoothAdvertise.status;
+  if (status.isDenied) {
+
+    await Permission.bluetoothAdvertise.request();
+  }
+
+  status = await Permission.bluetoothConnect.status;
+  if (status.isDenied) {
+
+    await Permission.bluetoothConnect.request();
+  }
+
+
+
+  if (await Permission.bluetooth.status.isPermanentlyDenied) {
+    openAppSettings();
+  }
 
   ErrorWidget.builder = (FlutterErrorDetails details) => Container();
   runApp(

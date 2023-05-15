@@ -48,6 +48,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   scoped_model: ^2.0.0
   hex: ^0.2.0
+  permission_handler: ^10.2.0
 
 flutter_native_splash:
   android: true

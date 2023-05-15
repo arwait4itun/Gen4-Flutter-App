@@ -499,11 +499,14 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
 
   Widget _errorUI(){
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
 
       children: [
 
+        SizedBox(
+          height: 15,
+        ),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -535,6 +538,10 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
               ),
             ),
           ],
+        ),
+
+        SizedBox(
+          height: 50,
         ),
 
         Column(
@@ -569,6 +576,11 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
             ),
           ],
         ),
+
+        SizedBox(
+          height: 50,
+        ),
+
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -601,6 +613,7 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
             ),
           ],
         ),
+        /*
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -632,7 +645,9 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
               ),
             ),
           ],
-        )
+        ),
+
+         */
 
 
       ],
