@@ -15,7 +15,7 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  await Future.delayed(Duration(seconds: 5 ));
+  await Future.delayed(Duration(seconds: 3 ));
 
   FlutterNativeSplash.remove();
 

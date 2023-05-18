@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/screens/drawer.dart';
-import 'package:flyer/screens/motor_gear.dart';
+import 'package:flyer/screens/advanced_options.dart';
 import 'package:flyer/screens/phone_status_page.dart';
 import 'package:flyer/screens/settings.dart';
 import 'package:flyer/screens/status.dart';
@@ -102,7 +102,7 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
         PhoneStatusPageUI(connection: connection,statusStream: multiStream,),
         SettingsPage(connection: connection, settingsStream: multiStream,),
         TestPage(connection: connection, testsStream: multiStream,),
-        MotorGearPageUI(connection: connection,stream: multiStream,),
+        AdvancedOptionsUI(connection: connection,stream: multiStream,),
       ];
 
 

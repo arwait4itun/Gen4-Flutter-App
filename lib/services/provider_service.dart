@@ -10,15 +10,22 @@ class ConnectionProvider extends ChangeNotifier{
   bool _settingsChangeAllowed = true;
   bool _gbStart = true;
 
+  bool _loggingEnabled = false;
+
 
   Map<String,String> _settings = new Map<String,String>();
   bool _settingsEmpty = true;
+
+  String? _rtfValue;
 
   bool get isConnected => _isConnected;
   bool get PIDEnabled => _PIDEnabled;
   bool get settingsChangeAllowed => _settingsChangeAllowed;
   bool get isSettingsEmpty => _settingsEmpty;
   bool get hasGBStarted => _gbStart;
+  bool get logEnabled => _loggingEnabled;
+
+  String? get getRTF => _rtfValue;
 
   Map<String,String> get settings => _settings;
 
@@ -60,6 +67,16 @@ class ConnectionProvider extends ChangeNotifier{
   void setGBStart(bool c){
 
     _gbStart = c;
+    notifyListeners();
+  }
+
+  void setLogEnabled(bool c){
+    _loggingEnabled = c;
+    notifyListeners();
+  }
+
+  void setRTF(String? s){
+    _rtfValue = s;
     notifyListeners();
   }
 }
