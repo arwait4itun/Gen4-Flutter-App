@@ -9,3 +9,8 @@ class Acknowledgement {
     return Separator.sof.hexVal+s+Separator.eof.hexVal;
   }
 }
+
+void main(){
+
+  print(Acknowledgement().createPacket());
+}

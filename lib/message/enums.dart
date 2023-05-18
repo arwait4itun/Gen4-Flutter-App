@@ -102,6 +102,8 @@ enum Information {
   changeName,
   gearBoxSettingsFromApp,
   gearBoxSettingsFromMachine,
+  RTF,
+  log,
 }
 
 extension InformationExtension on Information{
@@ -131,7 +133,11 @@ extension InformationExtension on Information{
       case Information.gearBoxSettingsFromMachine:
         return "09";
       case Information.changeName:
-        return "10";
+        return "0A";
+      case Information.RTF:
+        return "0B";
+      case Information.log:
+        return "0C";
     }
   }
 }
@@ -460,4 +466,33 @@ extension GearBoxSettingsExtension on GearBoxSettings{
 
 }
 
+enum RTFAttributes{
+  value,
+}
 
+extension RTFAttributesExtension on RTFAttributes{
+
+  String get hexVal {
+    switch (this) {
+      case RTFAttributes.value:
+        return "01";
+    }
+  }
+}
+
+enum LogAttributes{
+  enable,
+  disable,
+}
+
+extension LogAttributesExtension on LogAttributes{
+
+  String get hexVal {
+    switch (this) {
+      case LogAttributes.enable:
+        return "01";
+      case LogAttributes.disable:
+        return "00";
+    }
+  }
+}
