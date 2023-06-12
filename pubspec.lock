@@ -330,7 +330,7 @@ packages:
       name: permission_handler_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "10.2.0"
+    version: "10.2.1"
   permission_handler_apple:
     dependency: transitive
     description:

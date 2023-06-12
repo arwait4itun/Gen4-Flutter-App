@@ -5,24 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/statusMessage.dart';
-import 'package:flyer/screens/running_carousel.dart';
+import 'package:flyer/screens/FlyerScreens/running_carousel.dart';
 import 'package:provider/provider.dart';
 
-import '../services/provider_service.dart';
+import '../../services/provider_service.dart';
 
-class PhoneStatusPageUI extends StatefulWidget {
+class BlowCardPhoneStatusPageUI extends StatefulWidget {
 
 
   BluetoothConnection connection;
   Stream<Uint8List> statusStream;
 
-  PhoneStatusPageUI({required this.connection,required this.statusStream});
+  BlowCardPhoneStatusPageUI({required this.connection,required this.statusStream});
 
   @override
-  _PhoneStatusPageUIState createState() => _PhoneStatusPageUIState();
+  _BlowCardPhoneStatusPageUIState createState() => _BlowCardPhoneStatusPageUIState();
 }
 
-class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
+class _BlowCardPhoneStatusPageUIState extends State<BlowCardPhoneStatusPageUI> {
 
   String _substate = "";
 
@@ -359,7 +359,7 @@ class _PhoneStatusPageUIState extends State<PhoneStatusPageUI> {
 
         _liftAnimation(_liftLeft,_liftRight),
 
-        RunningCarousel(connection: connection, multistream: statusStream),
+        FlyerRunningCarousel(connection: connection, multistream: statusStream),
       ],
     );
   }

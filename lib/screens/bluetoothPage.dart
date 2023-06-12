@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/im_paired.dart';
-import 'package:flyer/screens/Dashboard.dart';
+import 'package:flyer/screens/FlyerScreens/Dashboard.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
@@ -258,7 +258,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
 
                           Navigator.of(context).push(
                             MaterialPageRoute(builder: (context){
-                              return DashboardScaffold(connection: connection);
+                              return FlyerDashboardScaffold(connection: connection);
                             })
                           );
 

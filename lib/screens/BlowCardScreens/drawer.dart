@@ -13,21 +13,21 @@ import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
 
-import '../services/snackbar_service.dart';
+import '../../services/snackbar_service.dart';
 
-class DrawerPage extends StatefulWidget {
+class BlowCardDrawerPage extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  DrawerPage({required this.connection, required this.stream});
+  BlowCardDrawerPage({required this.connection, required this.stream});
 
 
   @override
-  _DrawerPageState createState() => _DrawerPageState();
+  _BlowCardDrawerPageState createState() => _BlowCardDrawerPageState();
 }
 
-class _DrawerPageState extends State<DrawerPage> {
+class _BlowCardDrawerPageState extends State<BlowCardDrawerPage> {
 
   late String _deviceName;
 

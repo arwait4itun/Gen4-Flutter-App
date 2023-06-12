@@ -8,18 +8,18 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/carouselMessage.dart';
 import 'package:flyer/message/enums.dart';
 
-class RunningCarousel extends StatefulWidget {
+class BlowCardRunningCarousel extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> multistream;
 
-  RunningCarousel({required this.connection, required this.multistream});
+  BlowCardRunningCarousel({required this.connection, required this.multistream});
 
   @override
-  _RunningCarouselState createState() => _RunningCarouselState();
+  _BlowCardRunningCarouselState createState() => _BlowCardRunningCarouselState();
 }
 
-class _RunningCarouselState extends State<RunningCarousel> {
+class _BlowCardRunningCarouselState extends State<BlowCardRunningCarousel> {
 
   List<int> items = [1,2,3,4,5,6,7];
 

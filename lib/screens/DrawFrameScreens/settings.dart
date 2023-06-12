@@ -9,26 +9,26 @@ import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/message/acknowledgement.dart';
 import 'package:flyer/message/request_settings.dart';
 import 'package:flyer/message/settingsMessage.dart';
-import 'package:flyer/screens/popup_calc.dart';
+import 'package:flyer/screens/FlyerScreens/popup_calc.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
 
-import '../services/snackbar_service.dart';
+import '../../services/snackbar_service.dart';
 
 
-class SettingsPage extends StatefulWidget {
+class DrawFrameSettingsPage extends StatefulWidget {
 
   BluetoothConnection connection;
 
   Stream<Uint8List> settingsStream;
 
-  SettingsPage({required this.connection, required this.settingsStream});
+  DrawFrameSettingsPage({required this.connection, required this.settingsStream});
 
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  _DrawFrameSettingsPageState createState() => _DrawFrameSettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
 
   final TextEditingController _spindleSpeed = TextEditingController();
   final TextEditingController _draft = TextEditingController();
@@ -420,7 +420,7 @@ class _SettingsPageState extends State<SettingsPage> {
         height: MediaQuery.of(context).size.height*0.8,
         width: MediaQuery.of(context).size.width*0.9,
         color: Colors.white,
-        child: popUpUI(),
+        child: FlyerPopUpUI(),
       ),
     );
   }

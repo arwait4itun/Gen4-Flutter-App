@@ -2,16 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../services/provider_service.dart';
+import '../../services/provider_service.dart';
 
-class popUpUI extends StatefulWidget {
-  const popUpUI({Key? key}) : super(key: key);
+class RingDoublerPopUpUI extends StatefulWidget {
+  const RingDoublerPopUpUI({Key? key}) : super(key: key);
 
   @override
-  _popUpUIState createState() => _popUpUIState();
+  _RingDoublerPopUpUIState createState() => _RingDoublerPopUpUIState();
 }
 
-class _popUpUIState extends State<popUpUI> {
+class _RingDoublerPopUpUIState extends State<RingDoublerPopUpUI> {
 
   late double delivery_mtr_min;
   late double maxLayers;

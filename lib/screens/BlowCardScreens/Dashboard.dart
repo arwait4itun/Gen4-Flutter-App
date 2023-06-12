@@ -2,29 +2,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/screens/drawer.dart';
-import 'package:flyer/screens/advanced_options.dart';
-import 'package:flyer/screens/phone_status_page.dart';
-import 'package:flyer/screens/settings.dart';
+import 'package:flyer/screens/FlyerScreens/drawer.dart';
+import 'package:flyer/screens/FlyerScreens/advanced_options.dart';
+import 'package:flyer/screens/FlyerScreens/phone_status_page.dart';
+import 'package:flyer/screens/FlyerScreens/settings.dart';
 import 'package:flyer/screens/status.dart';
-import 'package:flyer/screens/tests.dart';
+import 'package:flyer/screens/FlyerScreens/tests.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:provider/provider.dart';
-import '../services/provider_service.dart';
-import '../services/snackbar_service.dart';
+import '../../services/provider_service.dart';
+import '../../services/snackbar_service.dart';
 
-class DashboardScaffold extends StatefulWidget {
+class BlowCardDashboardScaffold extends StatefulWidget {
 
   BluetoothConnection connection;
 
-  DashboardScaffold({required this.connection});
+  BlowCardDashboardScaffold({required this.connection});
 
   @override
-  _DashboardScaffoldState createState() => _DashboardScaffoldState();
+  _BlowCardDashboardScaffoldState createState() => _BlowCardDashboardScaffoldState();
 }
 
-class _DashboardScaffoldState extends State<DashboardScaffold> {
+class _BlowCardDashboardScaffoldState extends State<BlowCardDashboardScaffold> {
 
   int _selectedIndex = 0;
   late BluetoothConnection connection;
@@ -99,10 +99,10 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
       final List<Widget> _pages = <Widget>[
         //checks if the device is a phone or tablet based on screen size
         //MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
-        PhoneStatusPageUI(connection: connection,statusStream: multiStream,),
-        SettingsPage(connection: connection, settingsStream: multiStream,),
-        TestPage(connection: connection, testsStream: multiStream,),
-        AdvancedOptionsUI(connection: connection,stream: multiStream,),
+        FlyerPhoneStatusPageUI(connection: connection,statusStream: multiStream,),
+        FlyerSettingsPage(connection: connection, settingsStream: multiStream,),
+        FlyerTestPage(connection: connection, testsStream: multiStream,),
+        FlyerAdvancedOptionsUI(connection: connection,stream: multiStream,),
       ];
 
 
@@ -112,7 +112,7 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
         appBar: appBar(_scaffoldKey),
         bottomNavigationBar: navigationBar(),
         body: _pages[_selectedIndex],
-        drawer: DrawerPage(connection: connection, stream: multiStream,),
+        drawer: FlyerDrawerPage(connection: connection, stream: multiStream,),
       );
     }
     else{
@@ -130,7 +130,7 @@ class _DashboardScaffoldState extends State<DashboardScaffold> {
         appBar: appBar(_scaffoldKey),
         bottomNavigationBar: navigationBar(),
         body: _pages[_selectedIndex],
-        drawer: DrawerPage(connection: connection, stream: multiStream,),
+        drawer: FlyerDrawerPage(connection: connection, stream: multiStream,),
       );
     }
   }

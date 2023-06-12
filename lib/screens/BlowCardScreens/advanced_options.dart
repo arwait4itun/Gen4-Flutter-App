@@ -12,22 +12,22 @@ import 'package:flyer/message/rtf_message.dart';
 
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
-import '../services/provider_service.dart';
+import '../../services/provider_service.dart';
 
 import 'package:flyer/globals.dart' as globals;
 
-class AdvancedOptionsUI extends StatefulWidget {
+class BlowCardAdvancedOptionsUI extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  AdvancedOptionsUI({required this.connection, required this.stream});
+  BlowCardAdvancedOptionsUI({required this.connection, required this.stream});
 
   @override
-  _AdvancedOptionsUIState createState() => _AdvancedOptionsUIState();
+  _BlowCardAdvancedOptionsUIState createState() => _BlowCardAdvancedOptionsUIState();
 }
 
-class _AdvancedOptionsUIState extends State<AdvancedOptionsUI> {
+class _BlowCardAdvancedOptionsUIState extends State<BlowCardAdvancedOptionsUI> {
 
 
   List<String> _data = List<String>.empty(growable: true);
@@ -168,7 +168,7 @@ class _AdvancedOptionsUIState extends State<AdvancedOptionsUI> {
             const Divider(
               color: Colors.grey,
             ),
-            MotorGearPageUI(connection: widget.connection, stream: widget.stream),
+            BlowCardMotorGearPageUI(connection: widget.connection, stream: widget.stream),
             const Divider(
               color: Colors.grey,
 
@@ -179,7 +179,7 @@ class _AdvancedOptionsUIState extends State<AdvancedOptionsUI> {
               margin: EdgeInsets.only(left: 10),
               child: const Text('RTF Settings', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400, fontSize: 18),),
             ),
-            RTFUI(connection: widget.connection, stream: widget.stream),
+            BlowCardRTFUI(connection: widget.connection, stream: widget.stream),
           ],
         ),
     );
@@ -216,18 +216,18 @@ class _AdvancedOptionsUIState extends State<AdvancedOptionsUI> {
 
 
 
-class MotorGearPageUI extends StatefulWidget {
+class BlowCardMotorGearPageUI extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  MotorGearPageUI({required this.connection, required this.stream});
+  BlowCardMotorGearPageUI({required this.connection, required this.stream});
 
   @override
-  _MotorGearPageUIState createState() => _MotorGearPageUIState();
+  _BlowCardMotorGearPageUIState createState() => _BlowCardMotorGearPageUIState();
 }
 
-class _MotorGearPageUIState extends State<MotorGearPageUI> {
+class _BlowCardMotorGearPageUIState extends State<BlowCardMotorGearPageUI> {
 
   bool start = true;
   bool stop = false;
@@ -747,19 +747,19 @@ class _MotorGearPageUIState extends State<MotorGearPageUI> {
 }
 
 
-class RTFUI extends StatefulWidget {
+class BlowCardRTFUI extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  RTFUI({required this.connection, required this.stream});
+  BlowCardRTFUI({required this.connection, required this.stream});
 
 
   @override
-  _RTFUIState createState() => _RTFUIState();
+  _BlowCardRTFUIState createState() => _BlowCardRTFUIState();
 }
 
-class _RTFUIState extends State<RTFUI> {
+class _BlowCardRTFUIState extends State<BlowCardRTFUI> {
 
   String? _RTFval;
 
