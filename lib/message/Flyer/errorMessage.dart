@@ -153,12 +153,13 @@ class ErrorMessage{
 
     print("get reason:$e");
     Map<String,String> _errSrc = {
-      "0":"Flyer",
-      "1":"Bobbin",
-      "2":"FR",
-      "3":"BR",
-      "4":"Lift Left",
-      "5":"Lift Right",
+      "1":"Flyer",
+      "2":"Bobbin",
+      "3":"FR",
+      "4":"BR",
+      "5":"Lift Left",
+      "6":"Lift Right",
+      "11":"MotherBoard",
       "12":"Can Bus",
       "13":"Lifts",
       "14":"System",

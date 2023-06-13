@@ -9,25 +9,24 @@ import 'package:flyer/message/Flyer/enums.dart';
 import 'package:flyer/message/gearBoxMessage.dart';
 import 'package:flyer/message/logging_message.dart';
 import 'package:flyer/message/Flyer/rtf_message.dart';
+import 'package:flyer/message/Carding/settingsMessage.dart';
 
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
 import '../../services/provider_service.dart';
 
-import 'package:flyer/globals.dart' as globals;
-
-class BlowCardAdvancedOptionsUI extends StatefulWidget {
+class CardingAdvancedOptionsUI extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  BlowCardAdvancedOptionsUI({required this.connection, required this.stream});
+  CardingAdvancedOptionsUI({required this.connection, required this.stream});
 
   @override
-  _BlowCardAdvancedOptionsUIState createState() => _BlowCardAdvancedOptionsUIState();
+  _CardingAdvancedOptionsUIState createState() => _CardingAdvancedOptionsUIState();
 }
 
-class _BlowCardAdvancedOptionsUIState extends State<BlowCardAdvancedOptionsUI> {
+class _CardingAdvancedOptionsUIState extends State<CardingAdvancedOptionsUI> {
 
 
   List<String> _data = List<String>.empty(growable: true);
@@ -168,18 +167,6 @@ class _BlowCardAdvancedOptionsUIState extends State<BlowCardAdvancedOptionsUI> {
             const Divider(
               color: Colors.grey,
             ),
-            BlowCardMotorGearPageUI(connection: widget.connection, stream: widget.stream),
-            const Divider(
-              color: Colors.grey,
-
-            ),
-
-            Container(
-              padding: EdgeInsets.only(left: 10,top: 10,bottom: 5),
-              margin: EdgeInsets.only(left: 10),
-              child: const Text('RTF Settings', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400, fontSize: 18),),
-            ),
-            BlowCardRTFUI(connection: widget.connection, stream: widget.stream),
           ],
         ),
     );
@@ -216,18 +203,18 @@ class _BlowCardAdvancedOptionsUIState extends State<BlowCardAdvancedOptionsUI> {
 
 
 
-class BlowCardMotorGearPageUI extends StatefulWidget {
+class DrawFrameMotorGearPageUI extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  BlowCardMotorGearPageUI({required this.connection, required this.stream});
+  DrawFrameMotorGearPageUI({required this.connection, required this.stream});
 
   @override
-  _BlowCardMotorGearPageUIState createState() => _BlowCardMotorGearPageUIState();
+  _DrawFrameMotorGearPageUIState createState() => _DrawFrameMotorGearPageUIState();
 }
 
-class _BlowCardMotorGearPageUIState extends State<BlowCardMotorGearPageUI> {
+class _DrawFrameMotorGearPageUIState extends State<DrawFrameMotorGearPageUI> {
 
   bool start = true;
   bool stop = false;
@@ -747,19 +734,19 @@ class _BlowCardMotorGearPageUIState extends State<BlowCardMotorGearPageUI> {
 }
 
 
-class BlowCardRTFUI extends StatefulWidget {
+class DrawFrameRTFUI extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  BlowCardRTFUI({required this.connection, required this.stream});
+  DrawFrameRTFUI({required this.connection, required this.stream});
 
 
   @override
-  _BlowCardRTFUIState createState() => _BlowCardRTFUIState();
+  _DrawFrameRTFUIState createState() => _DrawFrameRTFUIState();
 }
 
-class _BlowCardRTFUIState extends State<BlowCardRTFUI> {
+class _DrawFrameRTFUIState extends State<DrawFrameRTFUI> {
 
   String? _RTFval;
 
@@ -943,9 +930,9 @@ class _BlowCardRTFUIState extends State<BlowCardRTFUI> {
 
         _rtfdata += 0.01;
 
-        if(_rtfdata > globals.settingsLimits["RTF"]![1]){
+        if(_rtfdata > settingsLimits["RTF"]![1]){
 
-          SnackBar _sb = SnackBarService(message: "RTF Range ${globals.settingsLimits["RTF"]}", color: Colors.red).snackBar();
+          SnackBar _sb = SnackBarService(message: "RTF Range ${settingsLimits["RTF"]}", color: Colors.red).snackBar();
           ScaffoldMessenger.of(context).showSnackBar(_sb);
         }
         else{
@@ -974,9 +961,9 @@ class _BlowCardRTFUIState extends State<BlowCardRTFUI> {
 
         _rtfdata -= 0.01;
 
-        if(_rtfdata < globals.settingsLimits["RTF"]![0]){
+        if(_rtfdata < settingsLimits["RTF"]![0]){
 
-          SnackBar _sb = SnackBarService(message: "RTF Range ${globals.settingsLimits["RTF"]}", color: Colors.red).snackBar();
+          SnackBar _sb = SnackBarService(message: "RTF Range ${settingsLimits["RTF"]}", color: Colors.red).snackBar();
           ScaffoldMessenger.of(context).showSnackBar(_sb);
         }
         else{

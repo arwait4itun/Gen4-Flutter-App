@@ -4,14 +4,14 @@ import 'package:provider/provider.dart';
 
 import '../../services/provider_service.dart';
 
-class RingDoublerPopUpUI extends StatefulWidget {
-  const RingDoublerPopUpUI({Key? key}) : super(key: key);
+class FlyerPopUpUI extends StatefulWidget {
+  const FlyerPopUpUI({Key? key}) : super(key: key);
 
   @override
-  _RingDoublerPopUpUIState createState() => _RingDoublerPopUpUIState();
+  _FlyerPopUpUIState createState() => _FlyerPopUpUIState();
 }
 
-class _RingDoublerPopUpUIState extends State<RingDoublerPopUpUI> {
+class _FlyerPopUpUIState extends State<FlyerPopUpUI> {
 
   late double delivery_mtr_min;
   late double maxLayers;
@@ -217,44 +217,38 @@ class _RingDoublerPopUpUIState extends State<RingDoublerPopUpUI> {
   
   void calculate(){
 
-    double FR_CIRCUMFERENCE = 94.248;
+    var maxRPM = 1450;
+    var strokeDistLimit = 5.5;
 
-    flyerMotorRPM = _spindleSpeed*1.476;
-    delivery_mtr_min = (_spindleSpeed/_twistPerInch) * 0.0254;
-    
-    double FR_RPM = (delivery_mtr_min*1000)/FR_CIRCUMFERENCE;
-    
-    FR_MotorRPM = (FR_RPM *5);
-    
-    BR_MotorRPM = ((FR_RPM * 23.562)/(_draft/1.5));
+    double frCircumference = 94.248;
+    double frRollerToMotorGearRatio = 4.61;
 
-     var maxLayers_1 = (_maxHeightOfContent/_rovingWidth); // for stroke Ht != 0
-    
-     var maxLayers_2 = ((140 - _bareBobbinDia)/_deltaBobbinDia); // for bobbin Circumference= max Width
-   
+    flyerMotorRPM = _spindleSpeed * 1.476;
+    delivery_mtr_min = (_spindleSpeed/ _twistPerInch) * 0.0254;
+
+    double frRpm = (delivery_mtr_min * 1000) / frCircumference;
+    FR_MotorRPM = (frRpm * frRollerToMotorGearRatio);
+    BR_MotorRPM = ((frRpm * 23.562) / (_draft/ 1.5));
+
+    var maxLayers_1 = (_maxHeightOfContent/_rovingWidth); // for stroke Ht != 0
+    var maxLayers_2 = ((140 - _bareBobbinDia)/_deltaBobbinDia); // for bobbin Circumference= max Width
     if (maxLayers_1 >= maxLayers_2){
       maxLayers = maxLayers_2  - 5;
     }else{
       maxLayers = maxLayers_1  - 5;
     }
+    double layerNo = 0; //layer 0 has highest speed for bobbin RPM so calculate only for that
+    var bobbinDia = _bareBobbinDia+ layerNo * _deltaBobbinDia;
 
-    double layerNo = 0;//change this
-    
-    var bobbinDia = _bareBobbinDia + layerNo * _deltaBobbinDia;
-    
-    var deltaRpm_Spindle_Bobbin = (delivery_mtr_min*1000)/(bobbinDia * 3.14159);
-    
-    var bobbinRPM = _spindleSpeed + deltaRpm_Spindle_Bobbin;
+    var deltaRpmSpindleBobbin = (delivery_mtr_min * 1000) /(bobbinDia * 3.14159);
+    var bobbinRPM = _spindleSpeed + deltaRpmSpindleBobbin;
     bobbinMotorRPM = bobbinRPM * 1.476;
 
     var strokeHeight = _maxHeightOfContent - (_rovingWidth * layerNo);
-    _strokeDistperSec = (deltaRpm_Spindle_Bobbin * _rovingWidth)/60.0;
-    var strokeTime = strokeHeight/_strokeDistperSec;
-    liftMotorRPM = (_strokeDistperSec *60.0/4)*15.3;
-    
+    _strokeDistperSec = (deltaRpmSpindleBobbin * _rovingWidth) / 60.0; //5.5
+    liftMotorRPM = (_strokeDistperSec * 60.0 / 4) * 15.3;
+
     //calculate time for input layers
-
-
     double totalTime_s = 0;
     totalRunTime_Min = 0;
     
@@ -262,9 +256,9 @@ class _RingDoublerPopUpUIState extends State<RingDoublerPopUpUI> {
       bobbinDia = _bareBobbinDia + i*_deltaBobbinDia;
       var deltaRPM = (delivery_mtr_min*1000)/(bobbinDia * 3.14159);
 
-      strokeHeight = _maxHeightOfContent - (_rovingWidth * i);
+      strokeHeight = _maxHeightOfContent - (_rovingWidth * i); // to change this after cone Angle factor is added
       var strokeDist_sec = (deltaRPM * _rovingWidth)/60.0;
-      strokeTime = strokeHeight/strokeDist_sec;
+      double strokeTime = strokeHeight/strokeDist_sec;
       totalTime_s += strokeTime;
     }
     totalRunTime_Min = totalTime_s/60.0;
@@ -274,79 +268,3 @@ class _RingDoublerPopUpUIState extends State<RingDoublerPopUpUI> {
 
 }
 
-
-/*
-
-
-String delivery_mtr_min;
-String maxLayers;
-
-inputLayers:
-strokeTime for input Layers in min: ( use function)
-
-layerNo:(default 0)
-bobbinDia
-strokeDistperSec
-
-
-flyerMotorRPM
-bobbinMotorRPM
-FR_MotorRPM
-BR_MotorRPM
-liftMotorRPM
-
-
-
-/**********************************/
-
-flyerMotorRPM = spindleSpeed*1.476;
-delivery_mtr_min = (spindleSpeed/tpi) * 0.0254;
-FR_RPM = (double)(delivery_mtr_min*1000)/FR_CIRCUMFERENCE;
-FR_MotorRPM = ()(FR_RPM *FRMOTOR_TO_FR_RATIO);
-BR_MotorRPM = ()((FR_RPM * BR_CONSTANT)/(tensionDraft/1.5));
-
- maxLayers_1 = ()(contentHeight/rovingWidth); // for stroke Ht != 0
- maxLayers_2 = ()((MAX_CONTENT_DIA_MM - bareBobbinDia)/deltaBobbinDia); // for bobbin Circumference= max Width
-if (maxLayers_1 >= maxLayers_2){
-maxLayers = maxLayers_2  - 5;
-}else{
-maxLayers = maxLayers_1  - 5;
-}
-
-layerNo = 0;
-bobbinDia = BareBobbinDia + layerNo * deltaBobbinDia;
-deltaRpm_Spindle_Bobbin = delivery_mtr_min*1000)/(bobbinDia * 3.14159);
-bobbinRPM = spindleSpeed + deltaRpm_Spindle_Bobbin;
-bobbinMotorRPM = bobbinRPM * 1.476;
-
-strokeHeight = contentHeight - (rovingWidth * layerNo);
-strokeDistperSec = (deltaRpm_Spindle_Bobbin * rovingWidth)/60.0;
-strokeTime = strokeHeight/strokeDistperSec;
-liftMotorRPM = ()((double)(strokeDistperSec *60.0)/4)*LIFT_MOTOR_TO_LIFT_SCREW_RATIO;
-
-
-
-//
-void CalculateTotalRunTime(machineSettingsTypeDef *ms ,machineParamsTypeDef *mp){
-
-double bobbinDia;
-double deltaRPM;
-
-double strokeHeight;
-double strokeDist_sec;
-double strokeTime;
-double totalTime_s;
-
-totalTime_s = 0;
-for (int i=0;i<maxLayers; i++){
-bobbinDia = bareBobbinDia + i*deltaBobbinDia;
-deltaRPM = (delivery_mtr_min*1000)/(bobbinDia * 3.14159);
-strokeHeight = contentHeight - (rovingWidth * i);
-strokeDist_sec = (deltaRPM * rovingWidth)/60.0;
-strokeTime = strokeHeight/strokeDist_sec;
-totalTime_s += strokeTime;
-}
-totalRunTime_Min = totalTime_s/60.0;
-}
-
- */

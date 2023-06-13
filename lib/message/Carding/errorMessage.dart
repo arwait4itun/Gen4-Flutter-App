@@ -117,8 +117,6 @@ class ErrorMessage{
   }
 
   String getReason(String e){
-
-
     const Map<String, String> _errorDict = {
       "2":"Over Current",
       "4":"Over Voltage",
@@ -150,15 +148,15 @@ class ErrorMessage{
   }
 
   String getErrorSource(String e){
-
     print("get reason:$e");
     Map<String,String> _errSrc = {
-      "0":"Flyer",
-      "1":"Bobbin",
-      "2":"FR",
-      "3":"BR",
-      "4":"Lift Left",
-      "5":"Lift Right",
+      "1":"Cylinder",
+      "2":"Beater",
+      "3":"Cage",
+      "4":"Card Feed",
+      "5":"Beater Feed",
+      "6":"Coiler",
+      "11":"MotherBoard",
       "12":"Can Bus",
       "13":"Lifts",
       "14":"System",

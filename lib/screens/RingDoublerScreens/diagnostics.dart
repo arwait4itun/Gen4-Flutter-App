@@ -12,21 +12,21 @@ import 'package:provider/provider.dart';
 import '../../services/provider_service.dart';
 
 
-class DrawFrameTestPage extends StatefulWidget {
+class FlyerTestPage extends StatefulWidget {
 
   BluetoothConnection connection;
 
   Stream<Uint8List> testsStream;
 
 
-  DrawFrameTestPage({required this.connection, required this.testsStream});
+  FlyerTestPage({required this.connection, required this.testsStream});
 
 
   @override
-  _DrawFrameTestPageState createState() => _DrawFrameTestPageState();
+  _FlyerTestPageState createState() => _FlyerTestPageState();
 }
 
-class _DrawFrameTestPageState extends State<DrawFrameTestPage> {
+class _FlyerTestPageState extends State<FlyerTestPage> {
 
   //run diagnose variables
   List<String> _testType = ["MOTOR","LIFT"];
@@ -873,7 +873,7 @@ class _DrawFrameTestPageState extends State<DrawFrameTestPage> {
                 rightTitle = "Right";
               }
 
-              return DrawFrameStopDiagnoseDoubleUI(
+              return FlyerStopDiagnoseDoubleUI(
                 connection: connection,
                 testsStream: testsStream,
                 isLift: _testTypeChoice=="LIFT",
@@ -882,7 +882,7 @@ class _DrawFrameTestPageState extends State<DrawFrameTestPage> {
               );
             }
             else{
-              return DrawFrameStopDiagnoseSingleUI(
+              return FlyerStopDiagnoseSingleUI(
                 connection: connection,
                 testsStream: testsStream,
                 isLift: _testTypeChoice=="LIFT",
@@ -905,20 +905,20 @@ class _DrawFrameTestPageState extends State<DrawFrameTestPage> {
 
 }
 
-class DrawFrameStopDiagnoseSingleUI extends StatefulWidget {
+class FlyerStopDiagnoseSingleUI extends StatefulWidget {
 
   BluetoothConnection? connection;
   Stream<Uint8List>? testsStream;
   bool isLift;
 
 
-  DrawFrameStopDiagnoseSingleUI({required this.connection, required this.testsStream, required this.isLift});
+  FlyerStopDiagnoseSingleUI({required this.connection, required this.testsStream, required this.isLift});
 
   @override
-  _DrawFrameStopDiagnoseSingleUIState createState() => _DrawFrameStopDiagnoseSingleUIState();
+  _FlyerStopDiagnoseSingleUIState createState() => _FlyerStopDiagnoseSingleUIState();
 }
 
-class _DrawFrameStopDiagnoseSingleUIState extends State<DrawFrameStopDiagnoseSingleUI> {
+class _FlyerStopDiagnoseSingleUIState extends State<FlyerStopDiagnoseSingleUI> {
 
   String? _runningRPM;
   String? _runningSignalVoltage;
@@ -1141,7 +1141,7 @@ class _DrawFrameStopDiagnoseSingleUIState extends State<DrawFrameStopDiagnoseSin
 }
 
 
-class DrawFrameStopDiagnoseDoubleUI extends StatefulWidget {
+class FlyerStopDiagnoseDoubleUI extends StatefulWidget {
 
   BluetoothConnection? connection;
   Stream<Uint8List>? testsStream;
@@ -1150,13 +1150,13 @@ class DrawFrameStopDiagnoseDoubleUI extends StatefulWidget {
   String leftTitle,rightTitle;
 
 
-  DrawFrameStopDiagnoseDoubleUI({required this.connection, required this.testsStream, required this.isLift, required this.leftTitle, required this.rightTitle});
+  FlyerStopDiagnoseDoubleUI({required this.connection, required this.testsStream, required this.isLift, required this.leftTitle, required this.rightTitle});
 
   @override
-  _DrawFrameStopDiagnoseDoubleUIState createState() => _DrawFrameStopDiagnoseDoubleUIState();
+  _FlyerStopDiagnoseDoubleUIState createState() => _FlyerStopDiagnoseDoubleUIState();
 }
 
-class _DrawFrameStopDiagnoseDoubleUIState extends State<DrawFrameStopDiagnoseDoubleUI> {
+class _FlyerStopDiagnoseDoubleUIState extends State<FlyerStopDiagnoseDoubleUI> {
 
   //call this UI when there are two motors
 

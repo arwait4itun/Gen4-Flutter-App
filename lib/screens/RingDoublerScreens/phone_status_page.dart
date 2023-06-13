@@ -10,19 +10,19 @@ import 'package:provider/provider.dart';
 
 import '../../services/provider_service.dart';
 
-class RingDoublerPhoneStatusPageUI extends StatefulWidget {
+class FlyerPhoneStatusPageUI extends StatefulWidget {
 
 
   BluetoothConnection connection;
   Stream<Uint8List> statusStream;
 
-  RingDoublerPhoneStatusPageUI({required this.connection,required this.statusStream});
+  FlyerPhoneStatusPageUI({required this.connection,required this.statusStream});
 
   @override
-  _RingDoublerPhoneStatusPageUIState createState() => _RingDoublerPhoneStatusPageUIState();
+  _FlyerPhoneStatusPageUIState createState() => _FlyerPhoneStatusPageUIState();
 }
 
-class _RingDoublerPhoneStatusPageUIState extends State<RingDoublerPhoneStatusPageUI> {
+class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
 
   String _substate = "";
 

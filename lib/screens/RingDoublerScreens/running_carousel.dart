@@ -6,20 +6,20 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/Flyer/carouselMessage.dart';
-import 'package:flyer/message/Flyer/enums.dart';
+import 'package:flyer/message/Flyer/machineEnums.dart';
 
-class RingDoublerRunningCarousel extends StatefulWidget {
+class FlyerRunningCarousel extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> multistream;
 
-  RingDoublerRunningCarousel({required this.connection, required this.multistream});
+  FlyerRunningCarousel({required this.connection, required this.multistream});
 
   @override
-  _RingDoublerRunningCarouselState createState() => _RingDoublerRunningCarouselState();
+  _FlyerRunningCarouselState createState() => _FlyerRunningCarouselState();
 }
 
-class _RingDoublerRunningCarouselState extends State<RingDoublerRunningCarousel> {
+class _FlyerRunningCarouselState extends State<FlyerRunningCarousel> {
 
   List<int> items = [1,2,3,4,5,6,7];
 

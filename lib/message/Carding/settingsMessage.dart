@@ -1,36 +1,43 @@
 
 import 'package:flyer/message/hexa_to_double.dart';
-
 import 'enums.dart';
+import 'machineEnums.dart';
+
+
+Map<String,List> settingsLimits = {
+  "deliverySpeed":[6,15],
+  "draft":[0.5,1.5],
+  "cylSpeed":[1200,1500],
+  "btrSpeed":[800,1300],
+  "cylFeedSpeed":[0.1,5],
+  "btrFeedSpeed":[0.1,5],
+  "trunkDelay":[1,10],
+  "lengthLimit":[30,300],
+  "rampTimes":[3,10],
+};
 
 class SettingsMessage{
   
-  String spindleSpeed;
+  String deliverySpeed;
   String draft;
-  String twistPerInch;
-  String RTF;
-  String layers;
-  String maxHeightOfContent;
-  String rovingWidth;
-  String deltaBobbinDia;
-  String bareBobbinDia;
-  String rampupTime;
-  String rampdownTime;
-  String changeLayerTime;
-  
+  String cylSpeed;
+  String beaterSpeed;
+  String cylFeedSpeed;
+  String btrFeedSpeed;
+  String trunkDelay;
+  String lengthLimit;
+  String rampTimes;
+
   SettingsMessage({
-  required this.spindleSpeed,
+  required this.deliverySpeed,
   required this.draft,
-  required this.twistPerInch,
-  required this.RTF,
-  required this.layers,
-  required this.maxHeightOfContent,
-  required this.rovingWidth,
-  required this.deltaBobbinDia,
-  required this.bareBobbinDia,
-  required this.rampupTime,
-  required this.rampdownTime,
-  required this.changeLayerTime
+  required this.cylSpeed,
+  required this.beaterSpeed,
+  required this.cylFeedSpeed,
+  required this.btrFeedSpeed,
+  required this.trunkDelay,
+  required this.lengthLimit,
+  required this.rampTimes,
   });
 
   String createPacket(){
@@ -49,33 +56,28 @@ class SettingsMessage{
     int bit2 = 2;
     String bit2s = "02";
 
-
     //  packet += packetLength;
     
     packet += Information.settingsFromApp.hexVal;
     packet += Substate.running.hexVal; // doesnt matter for this usecase
     packet += padding(attributeCount,bit2);
 
-    packet += attribute(SettingsAttribute.spindleSpeed.hexVal,bit4s,padding(spindleSpeed, bit4));
+    packet += attribute(SettingsAttribute.deliverySpeed.hexVal,bit8s,padding(deliverySpeed, bit8));
     packet += attribute(SettingsAttribute.draft.hexVal, bit8s, padding(draft, bit8));
-    packet += attribute(SettingsAttribute.twistPerInch.hexVal, bit8s, padding(twistPerInch, bit8));
-    packet += attribute(SettingsAttribute.RTF.hexVal, bit8s, padding(RTF, bit8));
-    packet += attribute(SettingsAttribute.layers.hexVal,bit4s, padding(layers, bit4));
-    packet += attribute(SettingsAttribute.maxHeightOfContent.hexVal, bit4s, padding(maxHeightOfContent, bit4));
-    packet += attribute(SettingsAttribute.rovingWidth.hexVal, bit8s, padding(rovingWidth, bit8));
-    packet += attribute(SettingsAttribute.deltaBobbinDia.hexVal, bit8s, padding(deltaBobbinDia,bit8));
-    packet += attribute(SettingsAttribute.bareBobbinDia.hexVal, bit4s, padding(bareBobbinDia, bit4));
-    packet += attribute(SettingsAttribute.rampupTime.hexVal, bit4s, padding(rampupTime, bit4));
-    packet += attribute(SettingsAttribute.rampdownTime.hexVal, bit4s, padding(rampdownTime, bit4));
-    packet += attribute(SettingsAttribute.changeLayerTime.hexVal, bit4s, padding(changeLayerTime, bit4));
+    packet += attribute(SettingsAttribute.cylSpeed.hexVal, bit4s, padding(cylSpeed, bit4));
+    packet += attribute(SettingsAttribute.btrSpeed.hexVal, bit4s, padding(beaterSpeed, bit4));
+    packet += attribute(SettingsAttribute.cylFeedSpeed.hexVal, bit8s, padding(cylFeedSpeed, bit8));
+    packet += attribute(SettingsAttribute.btrFeedSpeed.hexVal, bit8s, padding(btrFeedSpeed, bit8));
+    packet += attribute(SettingsAttribute.trunkDelay.hexVal, bit4s, padding(trunkDelay, bit4));
+    packet += attribute(SettingsAttribute.lengthLimit.hexVal, bit4s, padding(lengthLimit, bit4));
+    packet += attribute(SettingsAttribute.rampTimes.hexVal, bit4s, padding(rampTimes, bit4));
 
     packet += Separator.eof.hexVal;
 
     packetLength = padding(packet.length.toString(),2);
 
     packet = Separator.sof.hexVal + packetLength + packet;
-
-    print(packet);
+    //print(packet);
     return packet.toUpperCase();
   }
 
@@ -104,29 +106,23 @@ class SettingsMessage{
       len = s.length;
     }
 
-
     for(int i = 0;i < no-len;i++){
       s = "0"+s;
     }
-
     return s;
   }
 
   Map<String,String> toMap(){
-
     Map<String,String> _settings = {
-      "spindleSpeed": spindleSpeed,
+      "deliverySpeed": deliverySpeed,
       "draft": draft,
-      "twistPerInch": twistPerInch,
-      "RTF": RTF,
-      "layers": layers,
-      "maxHeightOfContent": maxHeightOfContent,
-      "rovingWidth": rovingWidth,
-      "deltaBobbinDia": deltaBobbinDia,
-      "bareBobbinDia": bareBobbinDia,
-      "rampupTime": rampupTime,
-      "rampdownTime": rampdownTime,
-      "changeLayerTime": changeLayerTime,
+      "cylSpeed": cylSpeed,
+      "btrSpeed": beaterSpeed,
+      "cylFeedSpeed": cylFeedSpeed,
+      "btrFeedSpeed": btrFeedSpeed,
+      "trunkDelay": trunkDelay,
+      "lengthLimit": lengthLimit,
+      "rampTimes": rampTimes,
     };
 
     return _settings;

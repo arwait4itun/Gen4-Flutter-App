@@ -132,9 +132,7 @@ class CarouselMessage{
 
 
     if(t==Running.whatInfo.hexVal){
-
       //ensure what info value matches the motor id
-
       return Running.whatInfo.name;
     }
     else if(t==Running.rightLiftDistance.hexVal){

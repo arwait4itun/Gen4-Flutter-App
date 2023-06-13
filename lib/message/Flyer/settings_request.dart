@@ -2,6 +2,7 @@
 import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
+import 'machineEnums.dart';
 
 class RequestSettings{
 
@@ -19,8 +20,7 @@ class RequestSettings{
     String _ss = packet.substring(6,8); //not necessary
 
     int _attributeLength = int.parse(packet.substring(8,10));
-
-    //print(_attributeLength);
+    print(_attributeLength);
 
     int start = 10; //len("7EPL03AL")
     int end = start + len-8;
@@ -28,7 +28,6 @@ class RequestSettings{
     if(sof!="7E"){
       throw FormatException("Invalid Start Of Frame");
     }
-
 
 
     if(_requestSettings!="02"){
@@ -61,12 +60,12 @@ class RequestSettings{
         v = convert(val);
       }
 
-      //print("t: $t, l: $l, v: $val");
+     // print("t: $t, l: $l, v: $val. key: $key");
       _settings[key] = v;
 
       i=i+4+l;
     }
-    print(_settings);
+   // print(_settings);
     return _settings;
   }
 
@@ -83,7 +82,6 @@ class RequestSettings{
 
   String attributeName(String t){
 
-    
     if(t==SettingsAttribute.spindleSpeed.hexVal){
       return SettingsAttribute.spindleSpeed.name;
     }
@@ -122,6 +120,9 @@ class RequestSettings{
     }
     else if(t==SettingsAttribute.changeLayerTime.hexVal){
       return SettingsAttribute.changeLayerTime.name;
+    }
+    else if(t==SettingsAttribute.coneAngleFactor.hexVal){
+      return SettingsAttribute.coneAngleFactor.name;
     }
     else{
       return "";

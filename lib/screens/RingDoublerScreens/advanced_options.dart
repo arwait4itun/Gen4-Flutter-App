@@ -13,21 +13,20 @@ import 'package:flyer/message/Flyer/rtf_message.dart';
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
 import '../../services/provider_service.dart';
+import 'package:flyer/message/Flyer/settingsMessage.dart';
 
-import 'package:flyer/globals.dart' as globals;
-
-class RingDoublerAdvancedOptionsUI extends StatefulWidget {
+class FlyerAdvancedOptionsUI extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  RingDoublerAdvancedOptionsUI({required this.connection, required this.stream});
+  FlyerAdvancedOptionsUI({required this.connection, required this.stream});
 
   @override
-  _RingDoublerAdvancedOptionsUIState createState() => _RingDoublerAdvancedOptionsUIState();
+  _FlyerAdvancedOptionsUIState createState() => _FlyerAdvancedOptionsUIState();
 }
 
-class _RingDoublerAdvancedOptionsUIState extends State<RingDoublerAdvancedOptionsUI> {
+class _FlyerAdvancedOptionsUIState extends State<FlyerAdvancedOptionsUI> {
 
 
   List<String> _data = List<String>.empty(growable: true);
@@ -168,7 +167,7 @@ class _RingDoublerAdvancedOptionsUIState extends State<RingDoublerAdvancedOption
             const Divider(
               color: Colors.grey,
             ),
-            RingDoublerMotorGearPageUI(connection: widget.connection, stream: widget.stream),
+            FlyerMotorGearPageUI(connection: widget.connection, stream: widget.stream),
             const Divider(
               color: Colors.grey,
 
@@ -179,7 +178,7 @@ class _RingDoublerAdvancedOptionsUIState extends State<RingDoublerAdvancedOption
               margin: EdgeInsets.only(left: 10),
               child: const Text('RTF Settings', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400, fontSize: 18),),
             ),
-            RingDoublerRTFUI(connection: widget.connection, stream: widget.stream),
+            FlyerRTFUI(connection: widget.connection, stream: widget.stream),
           ],
         ),
     );
@@ -216,18 +215,18 @@ class _RingDoublerAdvancedOptionsUIState extends State<RingDoublerAdvancedOption
 
 
 
-class RingDoublerMotorGearPageUI extends StatefulWidget {
+class FlyerMotorGearPageUI extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  RingDoublerMotorGearPageUI({required this.connection, required this.stream});
+  FlyerMotorGearPageUI({required this.connection, required this.stream});
 
   @override
-  _RingDoublerMotorGearPageUIState createState() => _RingDoublerMotorGearPageUIState();
+  _FlyerMotorGearPageUIState createState() => _FlyerMotorGearPageUIState();
 }
 
-class _RingDoublerMotorGearPageUIState extends State<RingDoublerMotorGearPageUI> {
+class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
 
   bool start = true;
   bool stop = false;
@@ -747,19 +746,19 @@ class _RingDoublerMotorGearPageUIState extends State<RingDoublerMotorGearPageUI>
 }
 
 
-class RingDoublerRTFUI extends StatefulWidget {
+class FlyerRTFUI extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  RingDoublerRTFUI({required this.connection, required this.stream});
+  FlyerRTFUI({required this.connection, required this.stream});
 
 
   @override
-  _RingDoublerRTFUIState createState() => _RingDoublerRTFUIState();
+  _FlyerRTFUIState createState() => _FlyerRTFUIState();
 }
 
-class _RingDoublerRTFUIState extends State<RingDoublerRTFUI> {
+class _FlyerRTFUIState extends State<FlyerRTFUI> {
 
   String? _RTFval;
 
@@ -943,9 +942,9 @@ class _RingDoublerRTFUIState extends State<RingDoublerRTFUI> {
 
         _rtfdata += 0.01;
 
-        if(_rtfdata > globals.settingsLimits["RTF"]![1]){
+        if(_rtfdata > settingsLimits["RTF"]![1]){
 
-          SnackBar _sb = SnackBarService(message: "RTF Range ${globals.settingsLimits["RTF"]}", color: Colors.red).snackBar();
+          SnackBar _sb = SnackBarService(message: "RTF Range ${settingsLimits["RTF"]}", color: Colors.red).snackBar();
           ScaffoldMessenger.of(context).showSnackBar(_sb);
         }
         else{
@@ -974,9 +973,9 @@ class _RingDoublerRTFUIState extends State<RingDoublerRTFUI> {
 
         _rtfdata -= 0.01;
 
-        if(_rtfdata < globals.settingsLimits["RTF"]![0]){
+        if(_rtfdata < settingsLimits["RTF"]![0]){
 
-          SnackBar _sb = SnackBarService(message: "RTF Range ${globals.settingsLimits["RTF"]}", color: Colors.red).snackBar();
+          SnackBar _sb = SnackBarService(message: "RTF Range ${settingsLimits["RTF"]}", color: Colors.red).snackBar();
           ScaffoldMessenger.of(context).showSnackBar(_sb);
         }
         else{

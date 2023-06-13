@@ -2,6 +2,23 @@
 import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
+import 'machineEnums.dart';
+
+Map<String,List> settingsLimits = {
+  "spindleSpeed":[500,1000],
+  "draft":[5,9.9],
+  "twistPerInch":[1,1.6],
+  "RTF":[0.5,1.5],
+  "layers":[1,100],
+  "maxHeightOfContent":[250,300],
+  "rovingWidth":[1,4],
+  "deltaBobbinDia":[0.5,2.5],
+  "bareBobbinDia":[46,52],
+  "rampupTime":[5,20],
+  "rampdownTime":[5,20],
+  "changeLayerTime": [200,2500],
+  "coneAngleFactor":[0.1,3],
+};
 
 class SettingsMessage{
   
@@ -17,6 +34,7 @@ class SettingsMessage{
   String rampupTime;
   String rampdownTime;
   String changeLayerTime;
+  String coneAngleFactor;
   
   SettingsMessage({
   required this.spindleSpeed,
@@ -30,7 +48,8 @@ class SettingsMessage{
   required this.bareBobbinDia,
   required this.rampupTime,
   required this.rampdownTime,
-  required this.changeLayerTime
+  required this.changeLayerTime,
+  required this.coneAngleFactor
   });
 
   String createPacket(){
@@ -68,6 +87,7 @@ class SettingsMessage{
     packet += attribute(SettingsAttribute.rampupTime.hexVal, bit4s, padding(rampupTime, bit4));
     packet += attribute(SettingsAttribute.rampdownTime.hexVal, bit4s, padding(rampdownTime, bit4));
     packet += attribute(SettingsAttribute.changeLayerTime.hexVal, bit4s, padding(changeLayerTime, bit4));
+    packet += attribute(SettingsAttribute.coneAngleFactor.hexVal, bit8s, padding(coneAngleFactor, bit8));
 
     packet += Separator.eof.hexVal;
 
@@ -127,6 +147,7 @@ class SettingsMessage{
       "rampupTime": rampupTime,
       "rampdownTime": rampdownTime,
       "changeLayerTime": changeLayerTime,
+      "coneAngleFactor": coneAngleFactor,
     };
 
     return _settings;

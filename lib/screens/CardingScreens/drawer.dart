@@ -15,19 +15,19 @@ import 'package:provider/provider.dart';
 
 import '../../services/snackbar_service.dart';
 
-class BlowCardDrawerPage extends StatefulWidget {
+class CardingDrawerPage extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  BlowCardDrawerPage({required this.connection, required this.stream});
+  CardingDrawerPage({required this.connection, required this.stream});
 
 
   @override
-  _BlowCardDrawerPageState createState() => _BlowCardDrawerPageState();
+  _CardingDrawerPageState createState() => _CardingDrawerPageState();
 }
 
-class _BlowCardDrawerPageState extends State<BlowCardDrawerPage> {
+class _CardingDrawerPageState extends State<CardingDrawerPage> {
 
   late String _deviceName;
 

@@ -13,8 +13,7 @@ import 'package:flyer/message/Flyer/rtf_message.dart';
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
 import '../../services/provider_service.dart';
-
-import 'package:flyer/globals.dart' as globals;
+import 'package:flyer/message/Flyer/settingsMessage.dart';
 
 class FlyerAdvancedOptionsUI extends StatefulWidget {
 
@@ -943,9 +942,9 @@ class _FlyerRTFUIState extends State<FlyerRTFUI> {
 
         _rtfdata += 0.01;
 
-        if(_rtfdata > globals.settingsLimits["RTF"]![1]){
+        if(_rtfdata > settingsLimits["RTF"]![1]){
 
-          SnackBar _sb = SnackBarService(message: "RTF Range ${globals.settingsLimits["RTF"]}", color: Colors.red).snackBar();
+          SnackBar _sb = SnackBarService(message: "RTF Range ${settingsLimits["RTF"]}", color: Colors.red).snackBar();
           ScaffoldMessenger.of(context).showSnackBar(_sb);
         }
         else{
@@ -974,9 +973,9 @@ class _FlyerRTFUIState extends State<FlyerRTFUI> {
 
         _rtfdata -= 0.01;
 
-        if(_rtfdata < globals.settingsLimits["RTF"]![0]){
+        if(_rtfdata < settingsLimits["RTF"]![0]){
 
-          SnackBar _sb = SnackBarService(message: "RTF Range ${globals.settingsLimits["RTF"]}", color: Colors.red).snackBar();
+          SnackBar _sb = SnackBarService(message: "RTF Range ${settingsLimits["RTF"]}", color: Colors.red).snackBar();
           ScaffoldMessenger.of(context).showSnackBar(_sb);
         }
         else{

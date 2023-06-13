@@ -15,19 +15,19 @@ import 'package:provider/provider.dart';
 
 import '../../services/snackbar_service.dart';
 
-class RingDoublerDrawerPage extends StatefulWidget {
+class FlyerDrawerPage extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  RingDoublerDrawerPage({required this.connection, required this.stream});
+  FlyerDrawerPage({required this.connection, required this.stream});
 
 
   @override
-  _RingDoublerDrawerPageState createState() => _RingDoublerDrawerPageState();
+  _FlyerDrawerPageState createState() => _FlyerDrawerPageState();
 }
 
-class _RingDoublerDrawerPageState extends State<RingDoublerDrawerPage> {
+class _FlyerDrawerPageState extends State<FlyerDrawerPage> {
 
   late String _deviceName;
 

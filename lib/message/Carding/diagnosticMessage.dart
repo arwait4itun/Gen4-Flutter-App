@@ -1,4 +1,5 @@
 import 'enums.dart';
+import 'machineEnums.dart';
 import '../hexa_to_double.dart';
 
 class DiagnosticMessage{
@@ -41,8 +42,6 @@ class DiagnosticMessage{
     packet += Substate.running.hexVal; // doesnt matter for this usecase
 
 
-
-  
     //attribute count
   //  packet += "5";
 
@@ -55,27 +54,26 @@ class DiagnosticMessage{
       String _motorId;
 
       switch(motorNameChoice){
-
-        case "FLYER":
-          _motorId = MotorId.flyer.hexVal;
+        case "CYLINDER":
+          _motorId = MotorId.cylinder.hexVal;
           break;
-        case "BOBBIN":
-          _motorId = MotorId.bobbin.hexVal;
+        case "BEATER":
+          _motorId = MotorId.beater.hexVal;
           break;
-        case "FRONT ROLLER":
-          _motorId = MotorId.frontRoller.hexVal;
+        case "CAGE":
+          _motorId = MotorId.cage.hexVal;
           break;
-        case "BACK ROLLER":
-          _motorId = MotorId.backRoller.hexVal;
+        case "CARDING FEED":
+          _motorId = MotorId.cylinderFeed.hexVal;
           break;
-        case "DRAFTING":
-          _motorId = MotorId.drafting.hexVal;
+        case "BEATER FEED":
+          _motorId = MotorId.beaterFeed.hexVal;
           break;
-        case "WINDING":
-          _motorId = MotorId.winding.hexVal;
+        case "COILER":
+          _motorId = MotorId.coiler.hexVal;
           break;
         default:
-          _motorId = MotorId.flyer.hexVal;
+          _motorId = MotorId.cylinder.hexVal;
       }
 
       //motor id
@@ -119,59 +117,9 @@ class DiagnosticMessage{
 
       }
 
-
       //control type
       packet += attribute(DiagnosticAttributeType.kindOfTest.hexVal,"02",_controlType);
       packet += subpacket;
-
-
-
-    }
-    else{
-
-      attributeCount = attributeCount-2; //no target and target run for lift
-
-      packet += padding(attributeCount.toString(),bit2);
-
-      String _liftID;
-
-      String _controlType = ControlType.openLoop.hexVal;
-
-      switch(motorDirection) {
-        case "BOTH":
-          _liftID = MotorId.lift.hexVal;
-          _controlType = ControlType.closedLoop.hexVal;
-          break;
-        case "LEFT":
-          _liftID = MotorId.liftLeft.hexVal;
-          break;
-        default:
-          _liftID = MotorId.liftRight.hexVal;
-          break;
-      }
-
-      packet += attribute(DiagnosticAttributeType.motorID.hexVal,"02",_liftID);
-
-
-
-      packet += attribute(DiagnosticAttributeType.kindOfTest.hexVal,"02",_controlType);
-
-      String _bedDirectionId;
-
-      if(bedDirectionChoice=="UP"){
-        _bedDirectionId = "01";
-      }
-      else{
-        _bedDirectionId = "00";
-      }
-
-      packet += attribute(DiagnosticAttributeType.motorDirection.hexVal, "02", padding(_bedDirectionId,2));
-
-      packet += attribute(DiagnosticAttributeType.bedDistance.hexVal, "04", padding(bedTravelDistance,4));
-
-
-
-
 
     }
 
@@ -180,8 +128,6 @@ class DiagnosticMessage{
     packetLength = padding(packet.length.toString(),2);
 
     packet = Separator.sof.hexVal+packetLength+packet;
-
-    print("here!!!!!!!!!!!!!!!! ${packet.toUpperCase()}");
 
     return packet.toUpperCase();
   }

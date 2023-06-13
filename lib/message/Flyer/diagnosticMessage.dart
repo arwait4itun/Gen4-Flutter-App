@@ -1,4 +1,5 @@
 import 'enums.dart';
+import 'machineEnums.dart';
 import '../hexa_to_double.dart';
 
 class DiagnosticMessage{

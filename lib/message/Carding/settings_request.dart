@@ -1,7 +1,7 @@
 
 import 'package:flyer/message/hexa_to_double.dart';
-
 import 'enums.dart';
+import 'machineEnums.dart';
 
 class RequestSettings{
 
@@ -61,7 +61,7 @@ class RequestSettings{
         v = convert(val);
       }
 
-      //print("t: $t, l: $l, v: $val");
+      //print("t: $t, l: $l, v: $val , key: $key");
       _settings[key] = v;
 
       i=i+4+l;
@@ -84,44 +84,32 @@ class RequestSettings{
   String attributeName(String t){
 
     
-    if(t==SettingsAttribute.spindleSpeed.hexVal){
-      return SettingsAttribute.spindleSpeed.name;
+    if(t==SettingsAttribute.deliverySpeed.hexVal){
+      return SettingsAttribute.deliverySpeed.name;
     }
     else if(t==SettingsAttribute.draft.hexVal){
       return SettingsAttribute.draft.name;
     }
-    else if(t==SettingsAttribute.draft.hexVal){
-      return SettingsAttribute.draft.name;
+    else if(t==SettingsAttribute.cylSpeed.hexVal){
+      return SettingsAttribute.cylSpeed.name;
     }
-    else if(t==SettingsAttribute.twistPerInch.hexVal){
-      return SettingsAttribute.twistPerInch.name;
+    else if(t==SettingsAttribute.cylFeedSpeed.hexVal){
+      return SettingsAttribute.cylFeedSpeed.name;
     }
-    else if(t==SettingsAttribute.RTF.hexVal){
-      return SettingsAttribute.RTF.name;
+    else if(t==SettingsAttribute.btrSpeed.hexVal){
+      return SettingsAttribute.btrSpeed.name;
     }
-    else if(t==SettingsAttribute.layers.hexVal){
-      return SettingsAttribute.layers.name;
+    else if(t==SettingsAttribute.btrFeedSpeed.hexVal){
+      return SettingsAttribute.btrFeedSpeed.name;
     }
-    else if(t==SettingsAttribute.maxHeightOfContent.hexVal){
-      return SettingsAttribute.maxHeightOfContent.name;
+    else if(t==SettingsAttribute.trunkDelay.hexVal){
+      return SettingsAttribute.trunkDelay.name;
     }
-    else if(t==SettingsAttribute.rovingWidth.hexVal){
-      return SettingsAttribute.rovingWidth.name;
+    else if(t==SettingsAttribute.lengthLimit.hexVal){
+      return SettingsAttribute.lengthLimit.name;
     }
-    else if(t==SettingsAttribute.deltaBobbinDia.hexVal){
-      return SettingsAttribute.deltaBobbinDia.name;
-    }
-    else if(t==SettingsAttribute.bareBobbinDia.hexVal){
-      return SettingsAttribute.bareBobbinDia.name;
-    }
-    else if(t==SettingsAttribute.rampupTime.hexVal){
-      return SettingsAttribute.rampupTime.name;
-    }
-    else if(t==SettingsAttribute.rampdownTime.hexVal){
-      return SettingsAttribute.rampdownTime.name;
-    }
-    else if(t==SettingsAttribute.changeLayerTime.hexVal){
-      return SettingsAttribute.changeLayerTime.name;
+    else if(t==SettingsAttribute.rampTimes.hexVal){
+      return SettingsAttribute.rampTimes.name;
     }
     else{
       return "";

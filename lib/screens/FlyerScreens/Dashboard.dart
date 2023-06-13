@@ -7,7 +7,7 @@ import 'package:flyer/screens/FlyerScreens/advanced_options.dart';
 import 'package:flyer/screens/FlyerScreens/phone_status_page.dart';
 import 'package:flyer/screens/FlyerScreens/settings.dart';
 import 'package:flyer/screens/status.dart';
-import 'package:flyer/screens/FlyerScreens/tests.dart';
+import 'package:flyer/screens/FlyerScreens/diagnostics.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:provider/provider.dart';

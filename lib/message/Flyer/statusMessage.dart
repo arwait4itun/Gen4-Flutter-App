@@ -88,17 +88,17 @@ class StatusMessage{
       }
 
       if(key==Pause.pauseReason.name){
-
-        var _r = pauseReason.userPaused.hexVal.padLeft(4,"0");
-
-        if(val==_r){
-
+        if(val== pauseReason.userPaused.hexVal.padLeft(4,"0")){
           _settings[key] = "User Paused";
-        }
-        else{
+        }else if (val == pauseReason.creelSliverCut.hexVal.padLeft(4,"0")){
           _settings[key] = "Creel Sliver Cut";
+        }else if(val == pauseReason.coilerSliverCut.hexVal.padLeft(4,"0")){
+          _settings[key] = "Coiler Sliver Cut";
+        }else if(val == pauseReason.lapping.hexVal.padLeft(4,"0")){
+          _settings[key] = "Lapping";
+        }else{
+          _settings[key] = "Unknown Reason for Pause";
         }
-
         i=i+4+l;
         continue;
       }

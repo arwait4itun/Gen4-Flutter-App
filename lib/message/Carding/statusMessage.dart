@@ -1,5 +1,5 @@
 
-import 'package:flyer/message/Flyer/errorMessage.dart';
+import 'package:flyer/message/Carding/errorMessage.dart';
 import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
@@ -18,13 +18,12 @@ class StatusMessage{
 
     int len = int.parse(packet.substring(2,4),radix: 16); //Packet Length
 
-    print(len);
+    //print(len);
 
     String _machineState = packet.substring(4,6);
     String _ss = packet.substring(6,8);
 
     int _attributeLength = int.parse(packet.substring(8,10)); //should be 3
-
     //print(_attributeLength);
 
     int start = 10; //len("7EPL03AL")
@@ -33,7 +32,6 @@ class StatusMessage{
     if(sof!="7E"){
       print("Status Message: Invalid Start Of Frame");
       return Map<String, String>();
-
       //throw FormatException("Status Message: Invalid Start Of Frame");
     }
 
@@ -56,21 +54,16 @@ class StatusMessage{
     if(_machineState!=Information.machineState.hexVal){
       print("Status Message: Invalid Request Settings Code");
       return Map<String, String>();
-
       //throw FormatException("Status Message: Invalid Request Settings Code");
     }
 
 
     for(int i=start; i<end;){
-
       String t = packet.substring(i,i+2);
-
-
       int l = int.parse(packet.substring(i+2,i+4));
-
       String val = packet.substring(i+4,i+4+l);
 
-      String key = attributeName(_ssn,t);
+      String key = attributeName(_ssn,t); //gives attribute name from substate
 
       double v; //int or double
 
@@ -88,26 +81,23 @@ class StatusMessage{
       }
 
       if(key==Pause.pauseReason.name){
-
-        var _r = pauseReason.userPaused.hexVal.padLeft(4,"0");
-
-        if(val==_r){
-
+       if(val== pauseReason.userPaused.hexVal.padLeft(4,"0")){
           _settings[key] = "User Paused";
-        }
-        else{
+        }else if (val == pauseReason.creelSliverCut.hexVal.padLeft(4,"0")){
           _settings[key] = "Creel Sliver Cut";
-        }
-
+        }else if(val == pauseReason.coilerSliverCut.hexVal.padLeft(4,"0")){
+         _settings[key] = "Coiler Sliver Cut";
+       }else if(val == pauseReason.lapping.hexVal.padLeft(4,"0")){
+         _settings[key] = "Lapping";
+       }else{
+         _settings[key] = "Unknown Reason for Pause";
+       }
         i=i+4+l;
         continue;
       }
 
-
-
       //print("t: $t, l: $l, v: $val");
       _settings[key] = v.toString();
-
       i=i+4+l;
     }
 
@@ -129,15 +119,11 @@ class StatusMessage{
         return v.name;
       }
     }
-
     return "0";
   }
 
   String attributeName(String ss,String t){
-
     //chooses attribute based on substate
-
-
     if(ss==Substate.homing.name && t==Homing.rightLiftDistance.hexVal){
       return Homing.rightLiftDistance.name;
     }

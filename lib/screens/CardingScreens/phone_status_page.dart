@@ -4,25 +4,25 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/message/Flyer/statusMessage.dart';
+import 'package:flyer/message/Carding/statusMessage.dart';
 import 'package:flyer/screens/FlyerScreens/running_carousel.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/provider_service.dart';
 
-class BlowCardPhoneStatusPageUI extends StatefulWidget {
+class CardingStatusPageUI extends StatefulWidget {
 
 
   BluetoothConnection connection;
   Stream<Uint8List> statusStream;
 
-  BlowCardPhoneStatusPageUI({required this.connection,required this.statusStream});
+  CardingStatusPageUI({required this.connection,required this.statusStream});
 
   @override
-  _BlowCardPhoneStatusPageUIState createState() => _BlowCardPhoneStatusPageUIState();
+  _CardingStatusPageUIState createState() => _CardingStatusPageUIState();
 }
 
-class _BlowCardPhoneStatusPageUIState extends State<BlowCardPhoneStatusPageUI> {
+class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
 
   String _substate = "";
 
@@ -113,10 +113,8 @@ class _BlowCardPhoneStatusPageUIState extends State<BlowCardPhoneStatusPageUI> {
 
 
                 try {
-                  print("here status!!!!!: $_d");
                   Map<String, String> _statusResponse = StatusMessage().decode(
                       _d);
-                  print("HERE!!!!!!!!!!!!!!: $_statusResponse");
 
                   if (!_statusResponse.isEmpty) {
                     _substate = _statusResponse["substate"]!;
@@ -158,8 +156,6 @@ class _BlowCardPhoneStatusPageUIState extends State<BlowCardPhoneStatusPageUI> {
                         idle = true;
                         break;
                     }
-
-
 
                     if (_statusResponse.containsKey("leftLiftDistance") &&
                         _statusResponse.containsKey("rightLiftDistance")) {

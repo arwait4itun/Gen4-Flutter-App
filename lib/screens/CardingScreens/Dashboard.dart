@@ -2,29 +2,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flyer/screens/CardingScreens/diagnostics.dart';
 import 'package:flyer/screens/FlyerScreens/drawer.dart';
-import 'package:flyer/screens/FlyerScreens/advanced_options.dart';
-import 'package:flyer/screens/FlyerScreens/phone_status_page.dart';
-import 'package:flyer/screens/FlyerScreens/settings.dart';
+import 'package:flyer/screens/DrawFrameScreens/advanced_options.dart';
+import 'package:flyer/screens/CardingScreens/phone_status_page.dart';
+import 'package:flyer/screens/CardingScreens/settings.dart';
 import 'package:flyer/screens/status.dart';
-import 'package:flyer/screens/FlyerScreens/tests.dart';
+
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:provider/provider.dart';
 import '../../services/provider_service.dart';
 import '../../services/snackbar_service.dart';
 
-class BlowCardDashboardScaffold extends StatefulWidget {
+class CardingDashboardScaffold extends StatefulWidget {
 
   BluetoothConnection connection;
 
-  BlowCardDashboardScaffold({required this.connection});
+  CardingDashboardScaffold({required this.connection});
 
   @override
-  _BlowCardDashboardScaffoldState createState() => _BlowCardDashboardScaffoldState();
+  _CardingDashboardScaffoldState createState() => _CardingDashboardScaffoldState();
 }
 
-class _BlowCardDashboardScaffoldState extends State<BlowCardDashboardScaffold> {
+class _CardingDashboardScaffoldState extends State<CardingDashboardScaffold> {
 
   int _selectedIndex = 0;
   late BluetoothConnection connection;
@@ -99,10 +100,10 @@ class _BlowCardDashboardScaffoldState extends State<BlowCardDashboardScaffold> {
       final List<Widget> _pages = <Widget>[
         //checks if the device is a phone or tablet based on screen size
         //MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
-        FlyerPhoneStatusPageUI(connection: connection,statusStream: multiStream,),
-        FlyerSettingsPage(connection: connection, settingsStream: multiStream,),
-        FlyerTestPage(connection: connection, testsStream: multiStream,),
-        FlyerAdvancedOptionsUI(connection: connection,stream: multiStream,),
+        CardingStatusPageUI(connection: connection,statusStream: multiStream,),
+        CardingSettingsPage(connection: connection, settingsStream: multiStream,),
+        CardingTestPage(connection: connection, testsStream: multiStream,),
+        DrawFrameAdvancedOptionsUI(connection: connection,stream: multiStream,),
       ];
 
 
@@ -138,7 +139,7 @@ class _BlowCardDashboardScaffoldState extends State<BlowCardDashboardScaffold> {
   AppBar appBar(GlobalKey<ScaffoldState> _scaffoldKey){
 
     return AppBar(
-      title: const Text("Flyer Frame"),
+      title: const Text("Blow Card"),
       backgroundColor: Theme.of(context).primaryColor,
       elevation: 1.0,
       shadowColor: Theme.of(context).highlightColor,

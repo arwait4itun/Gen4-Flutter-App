@@ -7,24 +7,24 @@ import 'package:flyer/screens/FlyerScreens/advanced_options.dart';
 import 'package:flyer/screens/FlyerScreens/phone_status_page.dart';
 import 'package:flyer/screens/FlyerScreens/settings.dart';
 import 'package:flyer/screens/status.dart';
-import 'package:flyer/screens/FlyerScreens/tests.dart';
+import 'package:flyer/screens/FlyerScreens/diagnostics.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:provider/provider.dart';
 import '../../services/provider_service.dart';
 import '../../services/snackbar_service.dart';
 
-class RingDoublerDashboardScaffold extends StatefulWidget {
+class FlyerDashboardScaffold extends StatefulWidget {
 
   BluetoothConnection connection;
 
-  RingDoublerDashboardScaffold({required this.connection});
+  FlyerDashboardScaffold({required this.connection});
 
   @override
-  _RingDoublerDashboardScaffoldState createState() => _RingDoublerDashboardScaffoldState();
+  _FlyerDashboardScaffoldState createState() => _FlyerDashboardScaffoldState();
 }
 
-class _RingDoublerDashboardScaffoldState extends State<RingDoublerDashboardScaffold> {
+class _FlyerDashboardScaffoldState extends State<FlyerDashboardScaffold> {
 
   int _selectedIndex = 0;
   late BluetoothConnection connection;

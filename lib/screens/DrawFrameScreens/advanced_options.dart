@@ -9,12 +9,11 @@ import 'package:flyer/message/Flyer/enums.dart';
 import 'package:flyer/message/gearBoxMessage.dart';
 import 'package:flyer/message/logging_message.dart';
 import 'package:flyer/message/Flyer/rtf_message.dart';
+import 'package:flyer/message/DrawFrame/settingsMessage.dart';
 
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
 import '../../services/provider_service.dart';
-
-import 'package:flyer/globals.dart' as globals;
 
 class DrawFrameAdvancedOptionsUI extends StatefulWidget {
 
@@ -168,18 +167,6 @@ class _DrawFrameAdvancedOptionsUIState extends State<DrawFrameAdvancedOptionsUI>
             const Divider(
               color: Colors.grey,
             ),
-            DrawFrameMotorGearPageUI(connection: widget.connection, stream: widget.stream),
-            const Divider(
-              color: Colors.grey,
-
-            ),
-
-            Container(
-              padding: EdgeInsets.only(left: 10,top: 10,bottom: 5),
-              margin: EdgeInsets.only(left: 10),
-              child: const Text('RTF Settings', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400, fontSize: 18),),
-            ),
-            DrawFrameRTFUI(connection: widget.connection, stream: widget.stream),
           ],
         ),
     );
@@ -943,9 +930,9 @@ class _DrawFrameRTFUIState extends State<DrawFrameRTFUI> {
 
         _rtfdata += 0.01;
 
-        if(_rtfdata > globals.settingsLimits["RTF"]![1]){
+        if(_rtfdata > settingsLimits["RTF"]![1]){
 
-          SnackBar _sb = SnackBarService(message: "RTF Range ${globals.settingsLimits["RTF"]}", color: Colors.red).snackBar();
+          SnackBar _sb = SnackBarService(message: "RTF Range ${settingsLimits["RTF"]}", color: Colors.red).snackBar();
           ScaffoldMessenger.of(context).showSnackBar(_sb);
         }
         else{
@@ -974,9 +961,9 @@ class _DrawFrameRTFUIState extends State<DrawFrameRTFUI> {
 
         _rtfdata -= 0.01;
 
-        if(_rtfdata < globals.settingsLimits["RTF"]![0]){
+        if(_rtfdata < settingsLimits["RTF"]![0]){
 
-          SnackBar _sb = SnackBarService(message: "RTF Range ${globals.settingsLimits["RTF"]}", color: Colors.red).snackBar();
+          SnackBar _sb = SnackBarService(message: "RTF Range ${settingsLimits["RTF"]}", color: Colors.red).snackBar();
           ScaffoldMessenger.of(context).showSnackBar(_sb);
         }
         else{

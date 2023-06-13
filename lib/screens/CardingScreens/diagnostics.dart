@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/message/Flyer/diagnosticMessage.dart';
+import 'package:flyer/message/Carding/diagnosticMessage.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/services/snackbar_service.dart';
@@ -12,25 +12,24 @@ import 'package:provider/provider.dart';
 import '../../services/provider_service.dart';
 
 
-class BlowCardTestPage extends StatefulWidget {
+class CardingTestPage extends StatefulWidget {
 
   BluetoothConnection connection;
 
   Stream<Uint8List> testsStream;
 
 
-  BlowCardTestPage({required this.connection, required this.testsStream});
+  CardingTestPage({required this.connection, required this.testsStream});
 
 
   @override
-  _BlowCardTestPageState createState() => _BlowCardTestPageState();
+  _CardingTestPageState createState() => _CardingTestPageState();
 }
 
-class _BlowCardTestPageState extends State<BlowCardTestPage> {
+class _CardingTestPageState extends State<CardingTestPage> {
 
   //run diagnose variables
-  List<String> _testType = ["MOTOR","LIFT"];
-  List<String> _motorName = ["FLYER","BOBBIN","FRONT ROLLER","BACK ROLLER","DRAFTING","WINDING"];
+  List<String> _motorName = ["CYLINDER","BEATER","CAGE","CARDING FEED","BEATER FEED","COILER"];
   List<String> _controlType = ["OPEN LOOP","CLOSED LOOP"];
 
   List<String> _motorDirection = ["DEFAULT","REVERSE"];
@@ -40,15 +39,11 @@ class _BlowCardTestPageState extends State<BlowCardTestPage> {
 
   //bedTravelDistance : 2-250 mm
 
-  late String _testTypeChoice = _testType.first;
+  late String _testTypeChoice = "MOTOR"; //HARDCODED TO MOTOR
   late String _motorNameChoice = _motorName.first;
   late String _controlTypeChoice = _controlType.first;
 
   late String _motorDirectionChoice = _motorDirection.first;
-
-  late String _liftMotorsChoice = _liftMotors.first;
-  late String _bedDirectionChoice = _bedDirection.first;
-
 
   late double _target = 10; //10-90%
  // final TextEditingController _targetRPM = new TextEditingController();
@@ -163,51 +158,7 @@ class _BlowCardTestPageState extends State<BlowCardTestPage> {
             },
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children:  <TableRow>[
-              TableRow(
-                children: <Widget>[
-                  TableCell(
-                    verticalAlignment: TableCellVerticalAlignment.middle,
-                    child: Container(
-                      margin: EdgeInsets.only(left: 5, right: 5),
-                      child: Text(
-                        "Test Type",
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                  ),
-                  TableCell(
-                    verticalAlignment: TableCellVerticalAlignment.middle,
-                    child:
-                    Container(
-                      height: MediaQuery.of(context).size.height*0.05,
-                      width: MediaQuery.of(context).size.width*0.2,
-                      margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
-                      child: DropdownButton<String>(
-                        value: _testTypeChoice,
-                        icon: const Icon(Icons.arrow_drop_down),
-                        elevation: 16,
-                        style: const TextStyle(color: Colors.lightGreen),
-                        underline: Container(),
-                        onChanged: (String? value) {
-                          // This is called when the user selects an item.
-                          setState(() {
-                            _testTypeChoice = value!;
-                          });
-                        },
-                        items: _testType.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              // this is motor name if youve selected "MOTOR" or an empty container
-              _testTypeChoice=="MOTOR"?
+              //Motor Name section
               TableRow(
                 children: <Widget>[
 
@@ -252,18 +203,9 @@ class _BlowCardTestPageState extends State<BlowCardTestPage> {
                   ),
 
                 ],
-              )
-              :TableRow(
-                  children: <Widget>[
-                    TableCell(child: Container()),
-                    TableCell(child: Container()),
-                  ]
               ),
 
               // this is the control Type section.
-              //if motor show option to choose control type from dropdown, else
-              //if its lift you just show control type as a fixed close Loop.
-              _testTypeChoice=="MOTOR"?
               TableRow(
                 children: <Widget>[
                   TableCell(
@@ -306,32 +248,9 @@ class _BlowCardTestPageState extends State<BlowCardTestPage> {
                   ),
 
                 ],
-              )
-              :TableRow(children: <Widget>[
-                TableCell(
-                  verticalAlignment: TableCellVerticalAlignment.middle,
-                  child: Container(
-                  margin: EdgeInsets.only(left: 5, right: 5),
-                  child: Text(
-                    "Control Type",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                  ),
-                ),
-                ),
-                TableCell(
-                  verticalAlignment: TableCellVerticalAlignment.middle,
-                  child:
-                  Container(
-                    height: MediaQuery.of(context).size.height*0.05,
-                    width: MediaQuery.of(context).size.width*0.2,
-                    margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
-                    child: _liftMotorsChoice=="BOTH"? Text("CLOSED LOOP"):Text("OPEN LOOP"),
-                  ),
-                ),
-              ]),
+              ),
 
               //This section is for motor direction
-              _testTypeChoice=="MOTOR"?
               TableRow(
                 children: <Widget>[
                   TableCell(
@@ -374,31 +293,14 @@ class _BlowCardTestPageState extends State<BlowCardTestPage> {
                   ),
 
                 ],
-              )
-              :TableRow(
-                  children: <Widget>[
-                    TableCell(child: Container()),
-                    TableCell(child: Container()),
-                  ]
               ),
 
               // this is target% section. If "MOTOR", then put a target Row, a specialized table row,
               //else an empty rable row
-              _testTypeChoice=="MOTOR"?
-              _targetRow("Target(%)")
-                  :  TableRow(
-                  children: <Widget>[
-                    TableCell(child: Container()),
-                    TableCell(child: Container()),
-                  ]
-              ),
-
-
+              _targetRow("Target(%)"),
 
               //if "MOTOR", is open Loop put target Duty, if Closed loop put targetRPM
-              // if LIFT put empty container.
-              _testTypeChoice=="MOTOR" ?
-                _controlTypeChoice!="OPEN LOOP" ?
+              _controlTypeChoice!="OPEN LOOP" ?
                   TableRow(
                     children: <Widget>[
                       TableCell(
@@ -424,8 +326,8 @@ class _BlowCardTestPageState extends State<BlowCardTestPage> {
                       ),
 
                     ],
-                  )
-                  :TableRow(
+                  ) //closedLoop
+                  :TableRow(    //openLoop
                   children: <Widget>[
                     TableCell(
                       verticalAlignment: TableCellVerticalAlignment.middle,
@@ -449,26 +351,12 @@ class _BlowCardTestPageState extends State<BlowCardTestPage> {
                       ),
                     ),
                   ]
-              )
-              :TableRow(
-                children: <Widget>[
-                TableCell(child: Container()),
-                TableCell(child: Container()),
-                ]
               ),
 
-              _testTypeChoice=="MOTOR" ?
-              _testTimeRow("Run Time (%)")
-                  :TableRow(
-                  children: <Widget>[
-                    TableCell(child: Container()),
-                    TableCell(child: Container()),
-                  ]
-              ),
+              //Run Time
+              _testTimeRow("Run Time (%)"),
 
               //if "MOTOR", is open Loop put target Duty, if Closed loop put targetRPM
-              // if LIFT put empty container.
-              _testTypeChoice=="MOTOR" ?
               TableRow(
                 children: <Widget>[
                   TableCell(
@@ -494,127 +382,7 @@ class _BlowCardTestPageState extends State<BlowCardTestPage> {
                   ),
 
                 ],
-              )
-              : TableRow(
-                  children: <Widget>[
-                    TableCell(child: Container()),
-                    TableCell(child: Container()),
-                  ]
               ),
-
-              _testTypeChoice=="LIFT"?
-              TableRow(
-                children: <Widget>[
-
-                  TableCell(
-                    verticalAlignment: TableCellVerticalAlignment.middle,
-                    child: Container(
-                      margin: EdgeInsets.only(left: 5, right: 5),
-                      child: Text(
-                        "Lift Motors",
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                  ),
-                  TableCell(
-                    verticalAlignment: TableCellVerticalAlignment.middle,
-                    child:
-                    Container(
-                      height: MediaQuery.of(context).size.height*0.05,
-                      width: MediaQuery.of(context).size.width*0.2,
-                      margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
-                      child: DropdownButton<String>(
-                        value: _liftMotorsChoice,
-                        icon: const Icon(Icons.arrow_drop_down),
-                        elevation: 16,
-                        style: const TextStyle(color: Colors.lightGreen),
-                        underline: Container(),
-                        onChanged: (String? value) {
-                          // This is called when the user selects an item.
-                          setState(() {
-                            _liftMotorsChoice = value!;
-                          });
-                        },
-                        items: _liftMotors.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-
-                ],
-              )
-                  :TableRow(
-                  children: <Widget>[
-                    TableCell(child: Container()),
-                    TableCell(child: Container()),
-                  ]
-              ),
-
-              _testTypeChoice=="LIFT"?
-              TableRow(
-                children: <Widget>[
-
-                  TableCell(
-                    verticalAlignment: TableCellVerticalAlignment.middle,
-                    child: Container(
-                      margin: EdgeInsets.only(left: 5, right: 5),
-                      child: Text(
-                        "Bed Direction",
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                  ),
-                  TableCell(
-                    verticalAlignment: TableCellVerticalAlignment.middle,
-                    child:
-                    Container(
-                      height: MediaQuery.of(context).size.height*0.05,
-                      width: MediaQuery.of(context).size.width*0.2,
-                      margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
-                      child: DropdownButton<String>(
-                        value: _bedDirectionChoice,
-                        icon: const Icon(Icons.arrow_drop_down),
-                        elevation: 16,
-                        style: const TextStyle(color: Colors.lightGreen),
-                        underline: Container(),
-                        onChanged: (String? value) {
-                          // This is called when the user selects an item.
-                          setState(() {
-                            _bedDirectionChoice = value!;
-                          });
-                        },
-                        items: _bedDirection.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-
-                ],
-              )
-                  :TableRow(
-                  children: <Widget>[
-                    TableCell(child: Container()),
-                    TableCell(child: Container()),
-                  ]
-              ),
-
-              _testTypeChoice=="LIFT"?
-              _customRow2("Bed Travel Distance(mm)", _bedTravelDistance)
-                  :TableRow(
-                  children: <Widget>[
-                    TableCell(child: Container()),
-                    TableCell(child: Container()),
-                  ]
-              ),
-
             ],
           ),
 
@@ -837,9 +605,9 @@ class _BlowCardTestPageState extends State<BlowCardTestPage> {
           target: _target.toString(),
           targetRPM: _targetRPM,
           testRuntime: _testRuntimeval.toString(),
-          motorDirection: _testTypeChoice!="LIFT" ? _motorDirectionChoice.toString() : _liftMotorsChoice.toString() ,
-          bedDirectionChoice: _bedDirectionChoice.toString(),
-          bedTravelDistance: _bedTravelDistance.text.toString(),
+          motorDirection:  _motorDirectionChoice,
+          bedDirectionChoice: "UP",
+          bedTravelDistance: "1",
       );
 
 
@@ -856,36 +624,26 @@ class _BlowCardTestPageState extends State<BlowCardTestPage> {
         MaterialPageRoute(
           builder: (_){
 
-            if(_testTypeChoice=="MOTOR" &&(_motorNameChoice=="DRAFTING" || _motorNameChoice=="WINDING") || _testTypeChoice=="LIFT"&&_liftMotorsChoice=="BOTH"){
+            if(_testTypeChoice=="MOTOR" && _motorNameChoice=="DRAFTING"){
 
               String leftTitle,rightTitle;
 
-              if(_testTypeChoice=="MOTOR" &&(_motorNameChoice=="DRAFTING")){
-                leftTitle = "FR";
-                rightTitle = "BR";
-              }
-              else if(_testTypeChoice=="MOTOR" &&(_motorNameChoice=="WINDING")){
-                leftTitle = "Flyer";
-                rightTitle = "Bobbin";
-              }
-              else{
-                leftTitle = "Left";
-                rightTitle = "Right";
-              }
+              leftTitle = "FR";
+              rightTitle = "BR";
 
-              return BlowCardStopDiagnoseDoubleUI(
+              return DrawFrameStopDiagnoseDoubleUI(
                 connection: connection,
                 testsStream: testsStream,
-                isLift: _testTypeChoice=="LIFT",
+                isLift: false,
                 leftTitle: leftTitle,
                 rightTitle: rightTitle,
               );
             }
             else{
-              return BlowCardStopDiagnoseSingleUI(
+              return DrawFrameStopDiagnoseSingleUI(
                 connection: connection,
                 testsStream: testsStream,
-                isLift: _testTypeChoice=="LIFT",
+                isLift: false,
               );
             }
           }
@@ -905,20 +663,20 @@ class _BlowCardTestPageState extends State<BlowCardTestPage> {
 
 }
 
-class BlowCardStopDiagnoseSingleUI extends StatefulWidget {
+class DrawFrameStopDiagnoseSingleUI extends StatefulWidget {
 
   BluetoothConnection? connection;
   Stream<Uint8List>? testsStream;
   bool isLift;
 
 
-  BlowCardStopDiagnoseSingleUI({required this.connection, required this.testsStream, required this.isLift});
+  DrawFrameStopDiagnoseSingleUI({required this.connection, required this.testsStream, required this.isLift});
 
   @override
-  _BlowCardStopDiagnoseSingleUIState createState() => _BlowCardStopDiagnoseSingleUIState();
+  _DrawFrameStopDiagnoseSingleUIState createState() => _DrawFrameStopDiagnoseSingleUIState();
 }
 
-class _BlowCardStopDiagnoseSingleUIState extends State<BlowCardStopDiagnoseSingleUI> {
+class _DrawFrameStopDiagnoseSingleUIState extends State<DrawFrameStopDiagnoseSingleUI> {
 
   String? _runningRPM;
   String? _runningSignalVoltage;
@@ -987,31 +745,23 @@ class _BlowCardStopDiagnoseSingleUIState extends State<BlowCardStopDiagnoseSingl
           if(snapshot.hasData){
             var data = snapshot.data;
             String _d = utf8.decode(data!);
-            print("\nTESTS: run diagnose data: "+_d);
-            print(snapshot.data);
+            //print("\nTESTS: run diagnose data: "+_d);
+            //print(snapshot.data);
 
 
             try{
 
               Map<String,double> _diagResponse = DiagnosticMessageResponse().decode(_d);
-              print("HERE!!!!!!!!!!!!!!: $_diagResponse");
+              //print("HERE!!!!!!!!!!!!!!: $_diagResponse");
 
               _runningRPM = _diagResponse["speedRPM"]!.toStringAsFixed(0);
               _runningSignalVoltage = _diagResponse["signalVoltage"]!.toStringAsFixed(0);
               _current = _diagResponse["current"]!.toStringAsFixed(2);
               _power = _diagResponse["power"]!.toStringAsFixed(2);
 
-              if(_diagResponse.keys.length == 5){
-                //contains lift
-
-                _lift = _diagResponse["lift"]!.toStringAsFixed(2);
-              }
-              else{
-                _lift = null;
-              }
             }
             catch(e){
-              print("tests1: ${e.toString()}");
+              print("error in DiagnosticsResponse: ${e.toString()}");
             }
           }
 
@@ -1041,23 +791,14 @@ class _BlowCardStopDiagnoseSingleUIState extends State<BlowCardStopDiagnoseSingl
                   _customRow("PWM (0 to 1500)", _runningSignalVoltage),
                   _customRow("Current (A)", _current),
                   _customRow("Power (W)", _power),
-
-                  widget.isLift ?
-                  _customRow("Lift (mm)", _lift)
-                      :TableRow(
-                      children: <Widget>[
-                        TableCell(child: Container()),
-                        TableCell(child: Container()),
-                      ]
-                  ),
                 ],
               ),
               Container(
                 height: MediaQuery.of(context).size.height*0.05,
                 width: MediaQuery.of(context).size.width*0.9,
-                margin: EdgeInsets.only(top: 40),
+                margin: const EdgeInsets.only(top: 40),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: <Color>[Colors.blue,Colors.lightGreen]
@@ -1069,12 +810,12 @@ class _BlowCardStopDiagnoseSingleUIState extends State<BlowCardStopDiagnoseSingl
                     onPressed: (){
                       _stopDiagnose();
                     },
-                    child: Text("STOP DIAGNOSE", style: TextStyle(fontWeight: FontWeight.bold),),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
+                    child: const Text("STOP DIAGNOSE", style: TextStyle(fontWeight: FontWeight.bold),),
                   ),
                 ),
               ),
@@ -1115,7 +856,7 @@ class _BlowCardStopDiagnoseSingleUIState extends State<BlowCardStopDiagnoseSingl
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.middle,
           child: Container(
-            margin: EdgeInsets.only(left: 5, right: 5),
+            margin: const EdgeInsets.only(left: 5, right: 5),
             child: Text(
               label,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
@@ -1129,8 +870,8 @@ class _BlowCardStopDiagnoseSingleUIState extends State<BlowCardStopDiagnoseSingl
 
             height: MediaQuery.of(context).size.height*0.05,
             width: MediaQuery.of(context).size.width*0.2,
-            margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
-            padding: EdgeInsets.only(left: 5, top: 11),
+            margin: const EdgeInsets.only(top: 2.5,bottom: 2.5),
+            padding: const EdgeInsets.only(left: 5, top: 11),
             child: Text(attribute ?? "--", ),
           ),
         ),
@@ -1141,7 +882,7 @@ class _BlowCardStopDiagnoseSingleUIState extends State<BlowCardStopDiagnoseSingl
 }
 
 
-class BlowCardStopDiagnoseDoubleUI extends StatefulWidget {
+class DrawFrameStopDiagnoseDoubleUI extends StatefulWidget {
 
   BluetoothConnection? connection;
   Stream<Uint8List>? testsStream;
@@ -1150,13 +891,13 @@ class BlowCardStopDiagnoseDoubleUI extends StatefulWidget {
   String leftTitle,rightTitle;
 
 
-  BlowCardStopDiagnoseDoubleUI({required this.connection, required this.testsStream, required this.isLift, required this.leftTitle, required this.rightTitle});
+  DrawFrameStopDiagnoseDoubleUI({required this.connection, required this.testsStream, required this.isLift, required this.leftTitle, required this.rightTitle});
 
   @override
-  _BlowCardStopDiagnoseDoubleUIState createState() => _BlowCardStopDiagnoseDoubleUIState();
+  _DrawFrameStopDiagnoseDoubleUIState createState() => _DrawFrameStopDiagnoseDoubleUIState();
 }
 
-class _BlowCardStopDiagnoseDoubleUIState extends State<BlowCardStopDiagnoseDoubleUI> {
+class _DrawFrameStopDiagnoseDoubleUIState extends State<DrawFrameStopDiagnoseDoubleUI> {
 
   //call this UI when there are two motors
 
@@ -1164,9 +905,6 @@ class _BlowCardStopDiagnoseDoubleUIState extends State<BlowCardStopDiagnoseDoubl
   String? _runningSignalVoltage1,_runningSignalVoltage2;
   String? _current1,_current2;
   String? _power1,_power2;
-
-  String? _lift1,_lift2;
-
   bool isConnected = false;
 
 
@@ -1188,7 +926,7 @@ class _BlowCardStopDiagnoseDoubleUIState extends State<BlowCardStopDiagnoseDoubl
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: Text(
-          "Flyer Frame",
+          "Draw Frame",
           style: TextStyle(
             color: Colors.white,
           ),
@@ -1245,20 +983,9 @@ class _BlowCardStopDiagnoseDoubleUIState extends State<BlowCardStopDiagnoseDoubl
               _runningSignalVoltage2 = _diagResponse["signalVoltage1"]!.toStringAsFixed(0);
               _current2 = _diagResponse["current1"]!.toStringAsFixed(2);
               _power2 = _diagResponse["power1"]!.toStringAsFixed(2);
-
-              if(_diagResponse.keys.length == 10){
-                //contains lift
-
-                _lift1 = _diagResponse["lift"]!.toStringAsFixed(2);
-                _lift2 = _diagResponse["lift1"]!.toStringAsFixed(2);
-              }
-              else{
-                _lift1 = null;
-                _lift2 = null;
-              }
             }
             catch(e){
-              print("tests1: ${e.toString()}");
+              print("Diagnostics Reponse Err: ${e.toString()}");
             }
           }
 
@@ -1291,15 +1018,6 @@ class _BlowCardStopDiagnoseDoubleUIState extends State<BlowCardStopDiagnoseDoubl
                   _customRow("Current (A)", _current1, _current2),
                   _customRow("Power (W)", _power1, _power2),
 
-                  widget.isLift ?
-                  _customRow("Lift (mm)", _lift1, _lift2)
-                      :TableRow(
-                      children: <Widget>[
-                        TableCell(child: Container()),
-                        TableCell(child: Container()),
-                        TableCell(child: Container()),
-                      ]
-                  ),
                 ],
               ),
               Container(
