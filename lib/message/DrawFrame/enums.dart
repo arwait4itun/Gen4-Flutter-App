@@ -45,46 +45,6 @@ extension MachineIdExtension on MachineId{
 }
 
 
-enum MotorId{
-  flyer,
-  bobbin,
-  frontRoller,
-  backRoller,
-  drafting,
-  winding,
-  lift,
-  liftLeft,
-  liftRight,
-}
-
-extension MotorIdExtension on MotorId{
-
-  String get hexVal {
-    switch (this){
-
-      case MotorId.flyer:
-        return "01";
-      case MotorId.bobbin:
-        return "02";
-      case MotorId.frontRoller:
-        return "03";
-      case MotorId.backRoller:
-        return "04";
-      case MotorId.drafting:
-        return "05";
-      case MotorId.winding:
-        return "06";
-      case MotorId.lift:
-        return "07";
-      case MotorId.liftLeft:
-        return "08";
-      case MotorId.liftRight:
-        return "09";
-
-    }
-  }
-}
-
 
 
 
@@ -127,7 +87,6 @@ extension InformationExtension on Information{
         return "07";
       case Information.gearBoxSettingsFromApp:
         return "08";
-
       case Information.gearBoxSettingsFromMachine:
         return "09";
       case Information.changeName:
@@ -277,6 +236,8 @@ extension pauseExtension on Pause{
 enum pauseReason{
   userPaused,
   creelSliverCut,
+  coilerSliverCut,
+  lapping,
 }
 
 extension pauseReasonExtension on pauseReason{
@@ -287,6 +248,10 @@ extension pauseReasonExtension on pauseReason{
         return "01";
       case pauseReason.creelSliverCut:
         return "02";
+      case pauseReason.coilerSliverCut:
+        return "03";
+      case pauseReason.lapping:
+        return "04";
       default:
         return "00";
     }

@@ -24,3 +24,28 @@ extension SettingsAttributeTypeExtension on SettingsAttribute{
     }
   }
 }
+
+
+enum MotorId{
+  frontRoller,
+  backRoller,
+  creel,
+  drafting,
+}
+
+extension MotorIdExtension on MotorId{
+
+  String get hexVal {
+    switch (this){
+
+      case MotorId.frontRoller:
+        return "01";
+      case MotorId.backRoller:
+        return "02";
+      case MotorId.creel:
+        return "03";
+      case MotorId.drafting:
+        return "05";
+    }
+  }
+}

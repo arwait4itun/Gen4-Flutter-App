@@ -3,6 +3,15 @@ import 'package:flyer/message/hexa_to_double.dart';
 import 'enums.dart';
 import 'machineEnums.dart';
 
+
+Map<String,List> settingsLimits = {
+  "deliverySpeed":[50,150],
+  "draft":[5,12],
+  "lengthLimit":[250,1250],
+  "rampUpTime":[3,15],
+  "rampDownTime":[3,15],
+};
+
 class SettingsMessage{
   
   String deliverySpeed;
@@ -44,8 +53,8 @@ class SettingsMessage{
 
     packet += attribute(SettingsAttribute.deliverySpeed.hexVal,bit4s,padding(deliverySpeed, bit4));
     packet += attribute(SettingsAttribute.draft.hexVal, bit8s, padding(draft, bit8));
-    packet += attribute(SettingsAttribute.lengthLimit.hexVal, bit8s, padding(lengthLimit, bit8));
-    packet += attribute(SettingsAttribute.rampUpTime.hexVal, bit8s, padding(rampUpTime, bit8));
+    packet += attribute(SettingsAttribute.lengthLimit.hexVal, bit4s, padding(lengthLimit, bit4));
+    packet += attribute(SettingsAttribute.rampUpTime.hexVal, bit4s, padding(rampUpTime, bit4));
     packet += attribute(SettingsAttribute.rampDownTime.hexVal,bit4s, padding(rampDownTime, bit4));
 
     packet += Separator.eof.hexVal;
@@ -82,7 +91,6 @@ class SettingsMessage{
       s = hexConvert(double.parse(str));
       len = s.length;
     }
-
 
     for(int i = 0;i < no-len;i++){
       s = "0"+s;

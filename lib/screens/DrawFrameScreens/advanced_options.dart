@@ -168,18 +168,6 @@ class _DrawFrameAdvancedOptionsUIState extends State<DrawFrameAdvancedOptionsUI>
             const Divider(
               color: Colors.grey,
             ),
-            DrawFrameMotorGearPageUI(connection: widget.connection, stream: widget.stream),
-            const Divider(
-              color: Colors.grey,
-
-            ),
-
-            Container(
-              padding: EdgeInsets.only(left: 10,top: 10,bottom: 5),
-              margin: EdgeInsets.only(left: 10),
-              child: const Text('RTF Settings', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400, fontSize: 18),),
-            ),
-            DrawFrameRTFUI(connection: widget.connection, stream: widget.stream),
           ],
         ),
     );

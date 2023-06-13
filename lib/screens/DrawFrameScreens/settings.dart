@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
-import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/message/acknowledgement.dart';
-import 'package:flyer/message/Flyer/request_settings.dart';
-import 'package:flyer/message/Flyer/settingsMessage.dart';
+import 'package:flyer/message/DrawFrame/settings_request.dart';
+import 'package:flyer/message/DrawFrame/settingsMessage.dart';
+import 'package:flyer/screens/DrawFrameScreens/settingsPopUpPage.dart';
 import 'package:flyer/screens/FlyerScreens/popup_calc.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
@@ -30,18 +30,11 @@ class DrawFrameSettingsPage extends StatefulWidget {
 
 class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
 
-  final TextEditingController _spindleSpeed = TextEditingController();
+  final TextEditingController _deliverySpeed = TextEditingController();
   final TextEditingController _draft = TextEditingController();
-  final TextEditingController _twistPerInch = TextEditingController();
-  final TextEditingController _RTF = TextEditingController();
-  final TextEditingController _layers = TextEditingController();
-  final TextEditingController _maxHeightOfContent = TextEditingController();
-  final TextEditingController _rovingWidth = TextEditingController();
-  final TextEditingController _deltaBobbinDia = TextEditingController();
-  final TextEditingController _bareBobbinDia = TextEditingController();
-  final TextEditingController _rampupTime = TextEditingController();
-  final TextEditingController _rampdownTime = TextEditingController();
-  final TextEditingController _changeLayerTime = TextEditingController();
+  final TextEditingController _lengthLimit = TextEditingController();
+  final TextEditingController _rampUpTime = TextEditingController();
+  final TextEditingController _rampDownTime = TextEditingController();
 
 
   List<String> _data = List<String>.empty(growable: true);
@@ -69,19 +62,11 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
 
       Map<String,String> _s = Provider.of<ConnectionProvider>(context,listen: false).settings;
 
-      _spindleSpeed.text = _s["spindleSpeed"].toString();
+      _deliverySpeed.text = _s["deliverySpeed"].toString();
       _draft.text =  _s["draft"].toString();
-      _twistPerInch.text = _s["twistPerInch"].toString();
-      _RTF.text = _s["RTF"].toString();
-      _layers.text=_s["layers"].toString();
-      _maxHeightOfContent.text  = _s["maxHeightOfContent"].toString();
-      _rovingWidth.text = _s["rovingWidth"].toString();
-      _deltaBobbinDia.text = _s["deltaBobbinDia"].toString();
-      _bareBobbinDia.text = _s["bareBobbinDia"].toString();
-      _rampupTime.text= _s["rampupTime"].toString();
-      _rampdownTime.text = _s["rampdownTime"].toString();
-      _changeLayerTime.text = _s["changeLayerTime"].toString();
-
+      _lengthLimit.text = _s["lengthLimit"].toString();
+      _rampUpTime.text = _s["rampUpTime"].toString();
+      _rampDownTime.text=_s["rampDownTime"].toString();
     }
 
 
@@ -125,7 +110,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
           children: [
 
             Container(
-              margin: EdgeInsets.only(bottom: 5),
+              margin: const EdgeInsets.only(bottom: 10),
               child: Center(
                 child: Text(
                   "Settings",
@@ -145,23 +130,15 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: <TableRow>[
-                _customRow("Spindle Speed (RPM)", _spindleSpeed, isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("DeliverySpeed (mtr/min)", _deliverySpeed, isFloat: false,defaultValue: "",enabled: _enabled),
                 _customRow("Draft", _draft,defaultValue: "",enabled: _enabled),
-                _customRow("Twists Per Inch", _twistPerInch,defaultValue: "",enabled: _enabled),
-                _customRow("Initial RTF", _RTF,defaultValue: "",enabled: _enabled),
-                _customRow("Layers (m)", _layers, isFloat: false,defaultValue: "",enabled: _enabled),
-                _customRow("Max Content Ht (mm)", _maxHeightOfContent, isFloat: false,defaultValue: "",enabled: _enabled),
-                _customRow("Roving Width", _rovingWidth, defaultValue: "",enabled: _enabled),
-                _customRow("Delta Bobbin-dia (mm)", _deltaBobbinDia,defaultValue: "",enabled: _enabled),
-                _customRow("Bare Bobbin-dia (mm)", _bareBobbinDia, isFloat: false, defaultValue: "",enabled: _enabled),
-                _customRow("Ramp Up Time (s)", _rampupTime, isFloat: false,defaultValue: "",enabled: _enabled),
-                _customRow("Ramp Down Time (s)", _rampdownTime, isFloat: false, defaultValue: "",enabled: _enabled),
-                _customRow("Change Layer Time (ms)", _changeLayerTime, isFloat: false, defaultValue: "",enabled: _enabled),
+                _customRow("Length Limit (mtrs)", _lengthLimit,isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("RampUp Time (sec)", _rampUpTime,isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("RampDown Time (sec)", _rampDownTime, isFloat: false,defaultValue: "",enabled: _enabled),
               ],
             ),
 
             Container(
-
               width: MediaQuery.of(context).size.width,
             ),
             Container(
@@ -219,20 +196,13 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
             IconButton(
               onPressed: (){
                 //hard coded change
-                _spindleSpeed.text =  "650";
-                _draft.text =  "8.8";
-                _twistPerInch.text = "1.4";
-                _RTF.text = "1";
-                _layers.text="50";
-                _maxHeightOfContent.text = "280";
-                _rovingWidth.text = "1.2";
-                _deltaBobbinDia.text = "1.1";
-                _bareBobbinDia.text = "48";
-                _rampupTime.text= "12";
-                _rampdownTime.text = "12";
-                _changeLayerTime.text = "800";
+                _deliverySpeed.text =  "80";
+                _draft.text =  "8";
+                _lengthLimit.text = "400";
+                _rampUpTime.text = "6";
+                _rampDownTime.text="6";
 
-                SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+                SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
 
                 ConnectionProvider().setSettings(_sm.toMap());
                 Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
@@ -257,30 +227,13 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
             IconButton(
               onPressed: () async {
                 String _valid = isValidForm();
+                //if settings are valid, try to see if the motor RPMs are correct
+                if(_valid == "valid"){
+                  _valid = calculate();
+                }
                 if(_valid == "valid"){
 
-                  //run calculate to prevent rpm from exceeding limit
-                  try{
-                    calculate();
-                  }
-                  on CustomException catch(e){
-
-                    //handle these exceptions separately
-
-                    print("Settings: onSave custom: ${e.toString()}");
-
-                    SnackBar _sb = SnackBarService(message: e.toString(), color: Colors.red).snackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(_sb);
-                  }
-                  catch(e){
-                    print("Settings: onSave: ${e.toString()}");
-                    SnackBar _sb = SnackBarService(message: "Settings Not Saved", color: Colors.red).snackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(_sb);
-                  }
-
-
-
-                  SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+                  SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
                   String _msg = _sm.createPacket();
 
                   connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
@@ -343,7 +296,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
                     throw FormatException(_err);
                   }
 
-                  SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+                  SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
 
                   ConnectionProvider().setSettings(_sm.toMap());
                   Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
@@ -390,7 +343,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
                 throw FormatException(_err);
               }
 
-              SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+              SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
 
               ConnectionProvider().setSettings(_sm.toMap());
               Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
@@ -420,7 +373,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
         height: MediaQuery.of(context).size.height*0.8,
         width: MediaQuery.of(context).size.width*0.9,
         color: Colors.white,
-        child: FlyerPopUpUI(),
+        child: const DrawFramePopUpUI(),
       ),
     );
   }
@@ -462,10 +415,10 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.middle,
           child: Container(
-            margin: EdgeInsets.only(left: 20, right: 20),
+            margin: const EdgeInsets.only(left: 20, right: 20),
             child: Text(
                 label,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ),
         ),
@@ -475,7 +428,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
           Container(
             height: MediaQuery.of(context).size.height*0.05,
             width: MediaQuery.of(context).size.width*0.01,
-            margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
+            margin: const EdgeInsets.only(top: 2.5,bottom: 2.5),
             color: enabled? Colors.transparent : Colors.grey.shade400,
             child: TextField(
               enabled: enabled,
@@ -493,7 +446,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
               ],
               keyboardType: TextInputType.phone,
 
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 //hintText: defaultValue,
               ),
@@ -513,15 +466,15 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
 
     String errorMessage = "valid";
 
-    if(_spindleSpeed.text.trim() == "" ){
-      errorMessage = "Spindle Speed is Empty!";
+    if(_deliverySpeed.text.trim() == "" ){
+      errorMessage = "Delivery Speed is Empty!";
       return errorMessage;
     }
     else{
-      List range = globals.settingsLimits["spindleSpeed"]!;
-      double val = double.parse(_spindleSpeed.text.trim());
+      List range = settingsLimits["deliverySpeed"]!;
+      double val = double.parse(_deliverySpeed.text.trim());
       if(val < range[0] || val > range[1]){
-        errorMessage = "Spindle Speed values should be within $range";
+        errorMessage = "Delivery Speed values should be within $range";
         return errorMessage;
       }
     }
@@ -531,7 +484,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
       return errorMessage;
     }
     else{
-      List range = globals.settingsLimits["draft"]!;
+      List range = settingsLimits["draft"]!;
       double val = double.parse(_draft.text.trim());
 
       if(val < range[0] || val > range[1]){
@@ -540,144 +493,45 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
       }
     }
 
-    if(_twistPerInch.text.trim() == "" ){
-      errorMessage = "Twist per Inch is Empty!";
+    if(_lengthLimit.text.trim() == "" ){
+      errorMessage = "Length Limit is Empty!";
       return errorMessage;
     }
     else{
-      List range = globals.settingsLimits["twistPerInch"]!;
-      double val = double.parse(_twistPerInch.text.trim());
+      List range = settingsLimits["lengthLimit"]!;
+      double val = double.parse(_lengthLimit.text.trim());
 
       if(val < range[0] || val > range[1]){
-        errorMessage = "Twist per Inch values should be within $range";
+        errorMessage = "Length Limit values should be within $range";
         return errorMessage;
       }
     }
 
-    if(_RTF.text.trim() == "" ){
-      errorMessage = "RTF is Empty!";
+    if(_rampUpTime.text.trim() == "" ){
+      errorMessage = "RampUp Time is Empty!";
       return errorMessage;
     }
     else{
 
-      List range = globals.settingsLimits["RTF"]!;
-      double val = double.parse(_RTF.text.trim());
+      List range = settingsLimits["rampUpTime"]!;
+      double val = double.parse(_rampUpTime.text.trim());
 
       if(val < range[0] || val > range[1]){
-        errorMessage = "RTF values should be within $range";
+        errorMessage = "RampUp Time values should be within $range";
         return errorMessage;
       }
     }
 
-    if(_layers.text.trim() == "" ){
-      errorMessage = "Layers is Empty!";
+    if(_rampDownTime.text.trim() == "" ){
+      errorMessage = "RampDown Time is Empty!";
       return errorMessage;
     }
     else{
-      List range = globals.settingsLimits["layers"]!;
-      double val = double.parse(_layers.text.trim());
+      List range = settingsLimits["rampDownTime"]!;
+      double val = double.parse(_rampDownTime.text.trim());
 
       if(val < range[0] || val > range[1]){
-        errorMessage = "Layers values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_maxHeightOfContent.text.trim() == "" ){
-      errorMessage = "Max Height is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = globals.settingsLimits["maxHeightOfContent"]!;
-      double val = double.parse(_maxHeightOfContent.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Max Height values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_rovingWidth.text.trim() == "" ){
-      errorMessage = "Roving Width is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = globals.settingsLimits["rovingWidth"]!;
-      double val = double.parse(_rovingWidth.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Roving Width values should be within $range";
-        return errorMessage;
-      }
-
-    }
-
-    if(_deltaBobbinDia.text.trim() == "" ){
-      errorMessage = "Delta Bobbin Dia is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = globals.settingsLimits["deltaBobbinDia"]!;
-      double val = double.parse(_deltaBobbinDia.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Delta Bobbin Dia values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_bareBobbinDia.text.trim() == "" ){
-      errorMessage = "Bare Bobbin Dia is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = globals.settingsLimits["bareBobbinDia"]!;
-      double val = double.parse(_bareBobbinDia.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Bare Bobbin Dia values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_rampupTime.text.trim() == "" ){
-      errorMessage = "Rampup Time is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = globals.settingsLimits["rampupTime"]!;
-      double val = double.parse(_rampupTime.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Ramp Up Time values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_rampdownTime.text.trim() == "" ){
-      errorMessage = "Ramp Down Time is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = globals.settingsLimits["rampdownTime"]!;
-      double val = double.parse(_rampdownTime.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Ramp Down Time values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_changeLayerTime.text.trim() == "" ){
-      errorMessage = "Change Layer Time is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = globals.settingsLimits["changeLayerTime"]!;
-      double val = double.parse(_changeLayerTime.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Change Layer values should be within $range";
+        errorMessage = "RampDown Time values should be within $range";
         return errorMessage;
       }
     }
@@ -710,23 +564,16 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
         }
 
 
-        _spindleSpeed.text = settings["spindleSpeed"]!.toInt().toString();
+        _deliverySpeed.text = settings["deliverySpeed"]!.toInt().toString();
         _draft.text = settings["draft"].toString();
-        _twistPerInch.text = settings["twistPerInch"].toString();
-        _RTF.text = settings["RTF"].toString();
-        _layers.text = settings["layers"]!.toInt().toString();
-        _maxHeightOfContent.text = settings["maxHeightOfContent"]!.toInt().toString();
-        _rovingWidth.text = settings["rovingWidth"].toString();
-        _deltaBobbinDia.text = settings["deltaBobbinDia"].toString();
-        _bareBobbinDia.text = settings["bareBobbinDia"]!.toInt().toString();
-        _rampupTime.text = settings["rampupTime"]!.toInt().toString();
-        _rampdownTime.text = settings["rampdownTime"]!.toInt().toString();
-        _changeLayerTime.text = settings["changeLayerTime"]!.toInt().toString();
+        _lengthLimit.text = settings["lengthLimit"]!.toInt().toString();
+        _rampUpTime.text = settings["rampUpTime"]!.toInt().toString();
+        _rampDownTime.text = settings["rampDownTime"]!.toInt().toString();
 
         newDataReceived = false;
 
 
-        SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text);
+        SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
         ConnectionProvider().setSettings(_sm.toMap());
         Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
@@ -765,59 +612,37 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
   }
 
 
-  void calculate(){
+  String calculate(){
 
     //calculates rpm
-    //always run this function in try catch
-    double FR_CIRCUMFERENCE = 94.248;
-    
-    var maxRPM = 1500;
-    var strokeDistLimit = 5.5;
-    
-    var flyerMotorRPM = double.parse(_spindleSpeed.text) * 1.476;
-    var delivery_mtr_min = (double.parse(_spindleSpeed.text)/ double.parse(_twistPerInch.text)) * 0.0254;
+    //always run this function in try catch. this is used to check if the motorRPMs
+    // within the ability of the motor due to the settings we have input
 
-    double FR_RPM = (delivery_mtr_min * 1000) / FR_CIRCUMFERENCE;
+    String errorMessage = "valid";
 
-    var FR_MotorRPM = (FR_RPM * 5);
+    int maxRPM = 1450;
 
-    var BR_MotorRPM = ((FR_RPM * 23.562) / (double.parse(_draft.text)/ 1.5));
+    double deliveryspdMmin= double.parse(_deliverySpeed.text);
+    double draft= double.parse(_draft.text);
 
+    double frCircumference = 125.6;
+    double brCircumference = 94.2;
 
-    double layerNo = 0; //change this
+    double frRpm = deliveryspdMmin * 1000/frCircumference;
+    double frMotorRPM = frRpm * 1;
+    double reqBrSurfacespeed = deliveryspdMmin*1000/draft;
+    double brRPM = reqBrSurfacespeed/brCircumference;
+    double brMotorRPM = brRPM * 6.91;
 
-    var bobbinDia = double.parse(_bareBobbinDia.text)+ layerNo * double.parse(_deltaBobbinDia.text);
-
-    var deltaRpm_Spindle_Bobbin = (delivery_mtr_min * 1000) /
-        (bobbinDia * 3.14159);
-
-    var bobbinRPM = double.parse(_spindleSpeed.text) + deltaRpm_Spindle_Bobbin;
-    var bobbinMotorRPM = bobbinRPM * 1.476;
-
-    var strokeHeight = double.parse(_maxHeightOfContent.text) - (double.parse(_rovingWidth.text) * layerNo);
-    var _strokeDistperSec = (deltaRpm_Spindle_Bobbin * double.parse(_rovingWidth.text)) / 60.0; //5.5
-    var liftMotorRPM = (_strokeDistperSec * 60.0 / 4) * 15.3;
-  
-
-    if(flyerMotorRPM > maxRPM){
-      throw CustomException("Flyer Motor RPM (${flyerMotorRPM.toInt()}) Exceeds $maxRPM");
-    }
-    if(FR_MotorRPM > maxRPM){
-      throw CustomException("FR Motor RPM (${FR_MotorRPM.toInt()}) Exceeds $maxRPM");
-    }
-    if(BR_MotorRPM > maxRPM){
-      throw CustomException("BR Motor RPM (${BR_MotorRPM.toInt()}) Exceeds $maxRPM");
-    }
-    if(bobbinMotorRPM > maxRPM){
-      throw CustomException("Bobbin Motor RPM (${bobbinMotorRPM.toInt()}) Exceeds $maxRPM");
-    }
-    if(_strokeDistperSec > strokeDistLimit){
-      throw CustomException("Stroke Dist Per Sec (${_strokeDistperSec.toStringAsFixed(2)}) Exceeds $strokeDistLimit");
-    }
-    if(liftMotorRPM> maxRPM){
-      throw CustomException("Lift Motor RPM (${liftMotorRPM.toInt()}) Exceeds $maxRPM");
-    }
-
+    if(frMotorRPM > maxRPM){
+      errorMessage = "FrontRoller Motor RPM (${frMotorRPM.toInt()}) exceeds  motor Max RPM ($maxRPM). Check 'Parameters' page for more details.";
+      return errorMessage;
+     }
+    if(brMotorRPM > maxRPM){
+      errorMessage = "BackRoller Motor RPM (${brMotorRPM.toInt()}) exceeds motor Max RPM ($maxRPM). Check 'Parameters' page for more details";
+      return errorMessage;
+     }
+    return errorMessage;
   }
   
   Container _checkConnection(){

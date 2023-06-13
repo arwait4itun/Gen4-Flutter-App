@@ -2,10 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flyer/screens/DrawFrameScreens/diagnostics.dart';
 import 'package:flyer/screens/FlyerScreens/drawer.dart';
-import 'package:flyer/screens/FlyerScreens/advanced_options.dart';
+import 'package:flyer/screens/DrawFrameScreens/advanced_options.dart';
 import 'package:flyer/screens/FlyerScreens/phone_status_page.dart';
-import 'package:flyer/screens/FlyerScreens/settings.dart';
+import 'package:flyer/screens/DrawFrameScreens/settings.dart';
 import 'package:flyer/screens/status.dart';
 import 'package:flyer/screens/FlyerScreens/tests.dart';
 
@@ -100,9 +101,9 @@ class _DrawFrameDashboardScaffoldState extends State<DrawFrameDashboardScaffold>
         //checks if the device is a phone or tablet based on screen size
         //MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
         FlyerPhoneStatusPageUI(connection: connection,statusStream: multiStream,),
-        FlyerSettingsPage(connection: connection, settingsStream: multiStream,),
-        FlyerTestPage(connection: connection, testsStream: multiStream,),
-        FlyerAdvancedOptionsUI(connection: connection,stream: multiStream,),
+        DrawFrameSettingsPage(connection: connection, settingsStream: multiStream,),
+        DrawFrameTestPage(connection: connection, testsStream: multiStream,),
+        DrawFrameAdvancedOptionsUI(connection: connection,stream: multiStream,),
       ];
 
 
@@ -138,7 +139,7 @@ class _DrawFrameDashboardScaffoldState extends State<DrawFrameDashboardScaffold>
   AppBar appBar(GlobalKey<ScaffoldState> _scaffoldKey){
 
     return AppBar(
-      title: const Text("Flyer Frame"),
+      title: const Text("Draw Frame"),
       backgroundColor: Theme.of(context).primaryColor,
       elevation: 1.0,
       shadowColor: Theme.of(context).highlightColor,
