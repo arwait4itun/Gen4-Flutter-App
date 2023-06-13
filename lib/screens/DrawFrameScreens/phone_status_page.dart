@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/message/statusMessage.dart';
+import 'package:flyer/message/Flyer/statusMessage.dart';
 import 'package:flyer/screens/FlyerScreens/running_carousel.dart';
 import 'package:provider/provider.dart';
 

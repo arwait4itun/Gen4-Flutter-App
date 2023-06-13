@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/message/carouselMessage.dart';
-import 'package:flyer/message/enums.dart';
+import 'package:flyer/message/Flyer/carouselMessage.dart';
+import 'package:flyer/message/Flyer/enums.dart';
 
 class FlyerRunningCarousel extends StatefulWidget {
 

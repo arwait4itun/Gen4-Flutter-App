@@ -1,5 +1,5 @@
 import 'enums.dart';
-import 'hexa_to_double.dart';
+import '../hexa_to_double.dart';
 
 
 class RTFMessage{
@@ -15,14 +15,14 @@ class RTFMessage{
     String packetLength = "";
     String attributeCount =  "01";
 
-    int bit4 = 4; //for padding
-    String bit4s = "04";
+    //int bit4 = 4; //for padding
+    //String bit4s = "04";
 
     int bit8 = 8;
     String bit8s = "08";
 
     int bit2 = 2;
-    String bit2s = "02";
+    //String bit2s = "02";
 
 
     //  packet += packetLength;
@@ -91,9 +91,9 @@ class RTFMessage{
     print(len);
 
     String _machineState = packet.substring(4,6);
-    String _ss = packet.substring(6,8);
+    //String _ss = packet.substring(6,8);
 
-    int _attributeLength = int.parse(packet.substring(8,10)); //should be 3
+    //int _attributeLength = int.parse(packet.substring(8,10)); //should be 3
 
     //print(_attributeLength);
 

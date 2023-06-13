@@ -6,9 +6,6 @@ import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
-
-
 void main() async {
 
 

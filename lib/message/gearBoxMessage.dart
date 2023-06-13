@@ -1,6 +1,6 @@
 import 'package:flyer/message/hexa_to_double.dart';
 
-import 'enums.dart';
+import 'Flyer/enums.dart';
 
 class GearBoxMessage{
 

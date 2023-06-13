@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/acknowledgement.dart';
-import 'package:flyer/message/enums.dart';
+import 'package:flyer/message/Flyer/enums.dart';
 import 'package:flyer/message/gearBoxMessage.dart';
 import 'package:flyer/message/logging_message.dart';
-import 'package:flyer/message/rtf_message.dart';
+import 'package:flyer/message/Flyer/rtf_message.dart';
 
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';

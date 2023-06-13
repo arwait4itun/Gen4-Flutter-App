@@ -7,8 +7,8 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/message/acknowledgement.dart';
-import 'package:flyer/message/request_settings.dart';
-import 'package:flyer/message/settingsMessage.dart';
+import 'package:flyer/message/Flyer/request_settings.dart';
+import 'package:flyer/message/Flyer/settingsMessage.dart';
 import 'package:flyer/screens/FlyerScreens/popup_calc.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
