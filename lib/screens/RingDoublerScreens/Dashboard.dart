@@ -14,17 +14,17 @@ import 'package:provider/provider.dart';
 import '../../services/provider_service.dart';
 import '../../services/snackbar_service.dart';
 
-class FlyerDashboardScaffold extends StatefulWidget {
+class RingDoublerDashboardScaffold extends StatefulWidget {
 
   BluetoothConnection connection;
 
-  FlyerDashboardScaffold({required this.connection});
+  RingDoublerDashboardScaffold({required this.connection});
 
   @override
-  _FlyerDashboardScaffoldState createState() => _FlyerDashboardScaffoldState();
+  _RingDoublerDashboardScaffoldState createState() => _RingDoublerDashboardScaffoldState();
 }
 
-class _FlyerDashboardScaffoldState extends State<FlyerDashboardScaffold> {
+class _RingDoublerDashboardScaffoldState extends State<RingDoublerDashboardScaffold> {
 
   int _selectedIndex = 0;
   late BluetoothConnection connection;

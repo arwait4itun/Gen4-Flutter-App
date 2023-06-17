@@ -9,6 +9,7 @@ import 'package:flyer/message/im_paired.dart';
 import 'package:flyer/screens/CardingScreens/Dashboard.dart';
 import 'package:flyer/screens/DrawFrameScreens/Dashboard.dart';
 import 'package:flyer/screens/FlyerScreens/Dashboard.dart';
+import 'package:flyer/screens/RingDoublerScreens/Dashboard.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,8 @@ import 'package:flyer/globals.dart' as globals;
 
 class BluetoothPage extends StatefulWidget {
 
-  BluetoothPage({Key? key}) : super(key: key);
+  String machineRoute;
+  BluetoothPage({required this.machineRoute});
 
 
 
@@ -258,11 +260,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
 
                           await ScaffoldMessenger.of(context).showSnackBar(_sb);
 
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context){
-                              return FlyerDashboardScaffold(connection: connection);
-                            })
-                          );
+                          _navigateToDashboard(connection);
 
                         }
                         catch(e){
@@ -297,7 +295,42 @@ class _BluetoothPageState extends State<BluetoothPage> {
 
   }
 
+  void _navigateToDashboard(BluetoothConnection connection){
 
+    if(widget.machineRoute=="flyer"){
+
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context){
+            return FlyerDashboardScaffold(connection: connection);
+          })
+      );
+
+    }
+    if(widget.machineRoute=="carding"){
+
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context){
+            return CardingDashboardScaffold(connection: connection);
+          })
+      );
+    }
+    if(widget.machineRoute=="ringdoubler"){
+
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context){
+            return RingDoublerDashboardScaffold(connection: connection);
+          })
+      );
+    }
+    if(widget.machineRoute=="drawframe"){
+
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context){
+            return DrawFrameDashboardScaffold(connection: connection);
+          })
+      );
+    }
+  }
 
 
   AppBar _appBar(){
@@ -319,8 +352,8 @@ class _BluetoothPageState extends State<BluetoothPage> {
       leading: IconButton(
         icon: Icon(Icons.close),
         onPressed: (){
-          print("exit");
-          SystemNavigator.pop();
+          print("from bluetooth to slect machine");
+          Navigator.of(context).pop();
         },
       ),
     );
