@@ -115,7 +115,7 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
           children: [
 
             Container(
-              margin: const EdgeInsets.only(bottom: 10),
+              margin: const EdgeInsets.only(bottom: 10, top: 10),
               child: Center(
                 child: Text(
                   "Settings",
