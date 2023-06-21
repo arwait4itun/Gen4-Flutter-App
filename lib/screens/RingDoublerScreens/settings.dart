@@ -703,6 +703,7 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
         }
 
         _inputYarnCount.text = settings["inputYarn"]!.toInt().toString();
+        _outputYarnDia.text = settings["outputYarnDia"]!.toString();
         _spindleSpeedChoice = settings["spindleSpeed"]!.toInt().toString();
         _twistPerInch.text = settings["twistPerInch"].toString();
         _packageHeight.text = settings["packageHeight"].toString();
