@@ -6,8 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 import 'package:flyer/message/acknowledgement.dart';
-import 'package:flyer/message/Flyer/settings_request.dart';
-import 'package:flyer/message/Flyer/settingsMessage.dart';
+import 'package:flyer/message/RingDoubler/settings_request.dart';
+import 'package:flyer/message/RingDoubler/settingsMessage.dart';
 import 'package:flyer/screens/FlyerScreens/settingsPopUpPage.dart';
 import 'package:flyer/services/provider_service.dart';
 import 'package:provider/provider.dart';
@@ -29,19 +29,12 @@ class FlyerSettingsPage extends StatefulWidget {
 
 class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
 
+  final TextEditingController _inputYarnCount = TextEditingController();
   final TextEditingController _spindleSpeed = TextEditingController();
-  final TextEditingController _draft = TextEditingController();
   final TextEditingController _twistPerInch = TextEditingController();
-  final TextEditingController _RTF = TextEditingController();
-  final TextEditingController _layers = TextEditingController();
-  final TextEditingController _maxHeightOfContent = TextEditingController();
-  final TextEditingController _rovingWidth = TextEditingController();
-  final TextEditingController _deltaBobbinDia = TextEditingController();
-  final TextEditingController _bareBobbinDia = TextEditingController();
-  final TextEditingController _rampupTime = TextEditingController();
-  final TextEditingController _rampdownTime = TextEditingController();
-  final TextEditingController _changeLayerTime = TextEditingController();
-  final TextEditingController _coneAngleFactor = TextEditingController();
+  final TextEditingController _packageHeight = TextEditingController();
+  final TextEditingController _diaBuildFactor = TextEditingController();
+  final TextEditingController _windingClosenessFactor = TextEditingController();
 
   List<String> _data = List<String>.empty(growable: true);
   bool newDataReceived = false;
@@ -68,19 +61,12 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
 
       Map<String,String> _s = Provider.of<ConnectionProvider>(context,listen: false).settings;
 
-      _spindleSpeed.text = _s["spindleSpeed"].toString();
-      _draft.text =  _s["draft"].toString();
+      _inputYarnCount.text = _s["inputYarnCount"].toString();
+      _spindleSpeed.text =  _s["spindleSpeed"].toString();
       _twistPerInch.text = _s["twistPerInch"].toString();
-      _RTF.text = _s["RTF"].toString();
-      _layers.text=_s["layers"].toString();
-      _maxHeightOfContent.text  = _s["maxHeightOfContent"].toString();
-      _rovingWidth.text = _s["rovingWidth"].toString();
-      _deltaBobbinDia.text = _s["deltaBobbinDia"].toString();
-      _bareBobbinDia.text = _s["bareBobbinDia"].toString();
-      _rampupTime.text= _s["rampupTime"].toString();
-      _rampdownTime.text = _s["rampdownTime"].toString();
-      _changeLayerTime.text = _s["changeLayerTime"].toString();
-      _coneAngleFactor.text = _s["coneAngleFactor"].toString();
+      _packageHeight.text = _s["packageHeight"].toString();
+      _diaBuildFactor.text=_s["diaBuildFactor"].toString();
+      _windingClosenessFactor.text  = _s["windingClosenessFactor"].toString();
     }
 
 
@@ -144,19 +130,12 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: <TableRow>[
-                _customRow("Spindle Speed (RPM)", _spindleSpeed, isFloat: false,defaultValue: "",enabled: _enabled),
-                _customRow("Draft", _draft,defaultValue: "",enabled: _enabled),
-                _customRow("Twists Per Inch", _twistPerInch,defaultValue: "",enabled: _enabled),
-                _customRow("Initial RTF", _RTF,defaultValue: "",enabled: _enabled),
-                _customRow("Layers (m)", _layers, isFloat: false,defaultValue: "",enabled: _enabled),
-                _customRow("Max Content Ht (mm)", _maxHeightOfContent, isFloat: false,defaultValue: "",enabled: _enabled),
-                _customRow("Roving Width", _rovingWidth, defaultValue: "",enabled: _enabled),
-                _customRow("Delta Bobbin-dia (mm)", _deltaBobbinDia,defaultValue: "",enabled: _enabled),
-                _customRow("Bare Bobbin-dia (mm)", _bareBobbinDia, isFloat: false, defaultValue: "",enabled: _enabled),
-                _customRow("Ramp Up Time (s)", _rampupTime, isFloat: false,defaultValue: "",enabled: _enabled),
-                _customRow("Ramp Down Time (s)", _rampdownTime, isFloat: false, defaultValue: "",enabled: _enabled),
-                _customRow("Change Layer Time (ms)", _changeLayerTime, isFloat: false, defaultValue: "",enabled: _enabled),
-                _customRow("Cone Angle Factor", _coneAngleFactor, defaultValue: "",enabled: _enabled),
+                _customRow("Input Yarn Count (Ne)", _inputYarnCount, isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Spindle Speed (RPM)", _spindleSpeed,isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Twists Per Inch", _twistPerInch,isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Package Height (mm)", _packageHeight,isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Dia Build Factor ", _diaBuildFactor, defaultValue: "",enabled: _enabled),
+                _customRow("Winding Closeness Factor", _windingClosenessFactor, isFloat: false,defaultValue: "",enabled: _enabled),
 
               ],
             ),
@@ -220,21 +199,14 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
             IconButton(
               onPressed: (){
                 //hard coded change
-                _spindleSpeed.text =  "650";
-                _draft.text =  "8.8";
-                _twistPerInch.text = "1.4";
-                _RTF.text = "1";
-                _layers.text="50";
-                _maxHeightOfContent.text = "280";
-                _rovingWidth.text = "1.2";
-                _deltaBobbinDia.text = "1.1";
-                _bareBobbinDia.text = "48";
-                _rampupTime.text= "12";
-                _rampdownTime.text = "12";
-                _changeLayerTime.text = "800";
-                _coneAngleFactor.text = "1";
+                _inputYarnCount.text =  "20";
+                _spindleSpeed.text =  "8000";
+                _twistPerInch.text = "14";
+                _packageHeight.text = "200";
+                _diaBuildFactor.text="0.12";
+                _windingClosenessFactor.text = "108";
 
-                SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text,coneAngleFactor: _coneAngleFactor.text);
+                SettingsMessage _sm = SettingsMessage(inputYarn: _inputYarnCount.text, spindleSpeed: _spindleSpeed.text, twistPerInch: _twistPerInch.text, packageHt: _packageHeight.text, diaBuildFactor: _diaBuildFactor.text, windingClosenessFactor: _windingClosenessFactor.text);
 
                 ConnectionProvider().setSettings(_sm.toMap());
                 Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
@@ -264,7 +236,7 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
                 }
                 if (_valid == "valid"){
 
-                  SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text,coneAngleFactor: _coneAngleFactor.text);
+                  SettingsMessage _sm = SettingsMessage(inputYarn: _inputYarnCount.text, spindleSpeed: _spindleSpeed.text, twistPerInch: _twistPerInch.text, packageHt: _packageHeight.text, diaBuildFactor: _diaBuildFactor.text, windingClosenessFactor: _windingClosenessFactor.text);
                   String _msg = _sm.createPacket();
 
                   connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
@@ -326,8 +298,7 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
 
                     throw FormatException(_err);
                   }
-
-                  SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text,coneAngleFactor:_coneAngleFactor.text);
+                  SettingsMessage _sm = SettingsMessage(inputYarn: _inputYarnCount.text, spindleSpeed: _spindleSpeed.text, twistPerInch: _twistPerInch.text, packageHt: _packageHeight.text, diaBuildFactor: _diaBuildFactor.text, windingClosenessFactor: _windingClosenessFactor.text);
 
                   ConnectionProvider().setSettings(_sm.toMap());
                   Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
@@ -374,7 +345,7 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
                 throw FormatException(_err);
               }
 
-              SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text,coneAngleFactor:_coneAngleFactor.text);
+              SettingsMessage _sm = SettingsMessage(inputYarn: _inputYarnCount.text, spindleSpeed: _spindleSpeed.text, twistPerInch: _twistPerInch.text, packageHt: _packageHeight.text, diaBuildFactor: _diaBuildFactor.text, windingClosenessFactor: _windingClosenessFactor.text);
 
               ConnectionProvider().setSettings(_sm.toMap());
               Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
@@ -497,6 +468,19 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
 
     String errorMessage = "valid";
 
+    if(_inputYarnCount.text.trim() == "" ){
+      errorMessage = "Input Yarn Count is Empty!";
+      return errorMessage;
+    }
+    else{
+      List range = settingsLimits["inputYarnCount"]!;
+      double val = double.parse(_inputYarnCount.text.trim());
+      if(val < range[0] || val > range[1]){
+        errorMessage = "Input Yarn Count values should be within $range";
+        return errorMessage;
+      }
+    }
+
     if(_spindleSpeed.text.trim() == "" ){
       errorMessage = "Spindle Speed is Empty!";
       return errorMessage;
@@ -504,22 +488,9 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
     else{
       List range = settingsLimits["spindleSpeed"]!;
       double val = double.parse(_spindleSpeed.text.trim());
+
       if(val < range[0] || val > range[1]){
         errorMessage = "Spindle Speed values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_draft.text.trim() == "" ){
-      errorMessage = "Draft is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = settingsLimits["draft"]!;
-      double val = double.parse(_draft.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Draft values should be within $range";
         return errorMessage;
       }
     }
@@ -538,144 +509,45 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
       }
     }
 
-    if(_RTF.text.trim() == "" ){
-      errorMessage = "RTF is Empty!";
+    if(_packageHeight.text.trim() == "" ){
+      errorMessage = "Package Height is Empty!";
       return errorMessage;
     }
     else{
 
-      List range = settingsLimits["RTF"]!;
-      double val = double.parse(_RTF.text.trim());
+      List range = settingsLimits["packageHeight"]!;
+      double val = double.parse(_packageHeight.text.trim());
 
       if(val < range[0] || val > range[1]){
-        errorMessage = "RTF values should be within $range";
+        errorMessage = "Package Height values should be within $range";
         return errorMessage;
       }
     }
 
-    if(_layers.text.trim() == "" ){
-      errorMessage = "Layers is Empty!";
+    if(_diaBuildFactor.text.trim() == "" ){
+      errorMessage = "Dia Build Factor is Empty!";
       return errorMessage;
     }
     else{
-      List range = settingsLimits["layers"]!;
-      double val = double.parse(_layers.text.trim());
+      List range = settingsLimits["diaBuildFactor"]!;
+      double val = double.parse(_diaBuildFactor.text.trim());
 
       if(val < range[0] || val > range[1]){
-        errorMessage = "Layers values should be within $range";
+        errorMessage = "Dia Build Factor values should be within $range";
         return errorMessage;
       }
     }
 
-    if(_maxHeightOfContent.text.trim() == "" ){
-      errorMessage = "Max Height is Empty!";
+    if(_windingClosenessFactor.text.trim() == "" ){
+      errorMessage = "Winding Closeness Factor Height is Empty!";
       return errorMessage;
     }
     else{
-      List range = settingsLimits["maxHeightOfContent"]!;
-      double val = double.parse(_maxHeightOfContent.text.trim());
+      List range = settingsLimits["windingClosenessFactor"]!;
+      double val = double.parse(_windingClosenessFactor.text.trim());
 
       if(val < range[0] || val > range[1]){
-        errorMessage = "Max Height values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_rovingWidth.text.trim() == "" ){
-      errorMessage = "Roving Width is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = settingsLimits["rovingWidth"]!;
-      double val = double.parse(_rovingWidth.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Roving Width values should be within $range";
-        return errorMessage;
-      }
-
-    }
-
-    if(_deltaBobbinDia.text.trim() == "" ){
-      errorMessage = "Delta Bobbin Dia is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = settingsLimits["deltaBobbinDia"]!;
-      double val = double.parse(_deltaBobbinDia.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Delta Bobbin Dia values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_bareBobbinDia.text.trim() == "" ){
-      errorMessage = "Bare Bobbin Dia is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = settingsLimits["bareBobbinDia"]!;
-      double val = double.parse(_bareBobbinDia.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Bare Bobbin Dia values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_rampupTime.text.trim() == "" ){
-      errorMessage = "Rampup Time is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = settingsLimits["rampupTime"]!;
-      double val = double.parse(_rampupTime.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Ramp Up Time values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_rampdownTime.text.trim() == "" ){
-      errorMessage = "Ramp Down Time is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = settingsLimits["rampdownTime"]!;
-      double val = double.parse(_rampdownTime.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Ramp Down Time values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_changeLayerTime.text.trim() == "" ){
-      errorMessage = "Change Layer Time is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = settingsLimits["changeLayerTime"]!;
-      double val = double.parse(_changeLayerTime.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Change Layer values should be within $range";
-        return errorMessage;
-      }
-    }
-
-    if(_coneAngleFactor.text.trim() == "" ){
-      errorMessage = "Cone Angle Factor is Empty!";
-      return errorMessage;
-    }
-    else{
-      List range = settingsLimits["coneAngleFactor"]!;
-      double val = double.parse(_changeLayerTime.text.trim());
-
-      if(val < range[0] || val > range[1]){
-        errorMessage = "Cone Angle Factor values should be within $range";
+        errorMessage = "Winding Closeness Factor values should be within $range";
         return errorMessage;
       }
     }
@@ -708,24 +580,16 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
         }
 
 
-        _spindleSpeed.text = settings["spindleSpeed"]!.toInt().toString();
-        _draft.text = settings["draft"].toString();
+        _inputYarnCount.text = settings["inputYarnCount"]!.toInt().toString();
+        _spindleSpeed.text = settings["spindleSpeed"].toString();
         _twistPerInch.text = settings["twistPerInch"].toString();
-        _RTF.text = settings["RTF"].toString();
-        _layers.text = settings["layers"]!.toInt().toString();
-        _maxHeightOfContent.text = settings["maxHeightOfContent"]!.toInt().toString();
-        _rovingWidth.text = settings["rovingWidth"].toString();
-        _deltaBobbinDia.text = settings["deltaBobbinDia"].toString();
-        _bareBobbinDia.text = settings["bareBobbinDia"]!.toInt().toString();
-        _rampupTime.text = settings["rampupTime"]!.toInt().toString();
-        _rampdownTime.text = settings["rampdownTime"]!.toInt().toString();
-        _changeLayerTime.text = settings["changeLayerTime"]!.toInt().toString();
-        _coneAngleFactor.text = settings["coneAngleFactor"].toString();
+        _packageHeight.text = settings["packageHeight"].toString();
+        _diaBuildFactor.text = settings["diaBuildFactor"]!.toInt().toString();
+        _windingClosenessFactor.text = settings["windingClosenessFactor"]!.toInt().toString();
 
         newDataReceived = false;
 
-
-        SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text,coneAngleFactor: _coneAngleFactor.text);
+        SettingsMessage _sm = SettingsMessage(inputYarn: _inputYarnCount.text, spindleSpeed: _spindleSpeed.text, twistPerInch: _twistPerInch.text, packageHt: _packageHeight.text, diaBuildFactor: _diaBuildFactor.text, windingClosenessFactor: _windingClosenessFactor.text);
         ConnectionProvider().setSettings(_sm.toMap());
         Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
@@ -772,24 +636,25 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
     double frCircumference = 94.248;
     double frRollerToMotorGearRatio = 4.61;
 
+    /*
     var maxRPM = 1450;
     var strokeDistLimit = 5.5;
     
-    var flyerMotorRPM = double.parse(_spindleSpeed.text) * 1.476;
-    var deliveryMtrMin = (double.parse(_spindleSpeed.text)/ double.parse(_twistPerInch.text)) * 0.0254;
+    var flyerMotorRPM = double.parse(_inputYarnCount.text) * 1.476;
+    var deliveryMtrMin = (double.parse(_inputYarnCount.text)/ double.parse(_twistPerInch.text)) * 0.0254;
 
     double frRpm = (deliveryMtrMin * 1000) / frCircumference;
     var frMotorRpm = (frRpm * frRollerToMotorGearRatio);
-    var brMotorRpm = ((frRpm * 23.562) / (double.parse(_draft.text)/ 1.5));
+    var brMotorRpm = ((frRpm * 23.562) / (double.parse(_spindleSpeed.text)/ 1.5));
 
     double layerNo = 0; //layer 0 has highest speed for bobbin RPM so calculate only for that
     var bobbinDia = double.parse(_bareBobbinDia.text)+ layerNo * double.parse(_deltaBobbinDia.text);
 
     var deltaRpmSpindleBobbin = (deliveryMtrMin * 1000) /(bobbinDia * 3.14159);
-    var bobbinRPM = double.parse(_spindleSpeed.text) + deltaRpmSpindleBobbin;
+    var bobbinRPM = double.parse(_inputYarnCount.text) + deltaRpmSpindleBobbin;
     var bobbinMotorRPM = bobbinRPM * 1.476;
 
-    var strokeHeight = double.parse(_maxHeightOfContent.text) - ((double.parse(_rovingWidth.text) * double.parse(_coneAngleFactor.text)) * layerNo);
+    var strokeHeight = double.parse(_windingClosenessFactor.text) - ((double.parse(_rovingWidth.text) * double.parse(_coneAngleFactor.text)) * layerNo);
     var strokeDistPerSec = (deltaRpmSpindleBobbin * (double.parse(_rovingWidth.text) * double.parse(_coneAngleFactor.text))) / 60.0; //5.5
     var liftMotorRPM = (strokeDistPerSec * 60.0 / 4) * 15.3;
 
@@ -816,7 +681,8 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
     if(liftMotorRPM> maxRPM){
       errorMessage = "Stroke Speed (${liftMotorRPM.toInt()}) exceeds  motor Max RPM ($maxRPM). Check 'Parameters' page for more details.";
       return errorMessage;
-    }
+    }*/
+
     return errorMessage;
   }
   

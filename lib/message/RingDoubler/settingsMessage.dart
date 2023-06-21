@@ -1,36 +1,34 @@
 
 import 'package:flyer/message/hexa_to_double.dart';
 
+import 'machineEnums.dart';
 import 'enums.dart';
 
+Map<String,List> settingsLimits = {
+  "inputYarnCount":[10,80],
+  "spindleSpeed":[6000,12000],
+  "twistPerInch":[12,30],
+  "packageHeight":[50,250],
+  "diaBuildFactor":[0.05,2.5],
+  "windingClosenessFactor":[50,200]
+};
+
 class SettingsMessage{
-  
+
+  String inputYarn;
   String spindleSpeed;
-  String draft;
   String twistPerInch;
-  String RTF;
-  String layers;
-  String maxHeightOfContent;
-  String rovingWidth;
-  String deltaBobbinDia;
-  String bareBobbinDia;
-  String rampupTime;
-  String rampdownTime;
-  String changeLayerTime;
-  
+  String packageHt;
+  String diaBuildFactor;
+  String windingClosenessFactor;
+
   SettingsMessage({
-  required this.spindleSpeed,
-  required this.draft,
-  required this.twistPerInch,
-  required this.RTF,
-  required this.layers,
-  required this.maxHeightOfContent,
-  required this.rovingWidth,
-  required this.deltaBobbinDia,
-  required this.bareBobbinDia,
-  required this.rampupTime,
-  required this.rampdownTime,
-  required this.changeLayerTime
+    required this.inputYarn,
+    required this.spindleSpeed,
+    required this.twistPerInch,
+    required this.packageHt,
+    required this.diaBuildFactor,
+    required this.windingClosenessFactor
   });
 
   String createPacket(){
@@ -56,18 +54,12 @@ class SettingsMessage{
     packet += Substate.running.hexVal; // doesnt matter for this usecase
     packet += padding(attributeCount,bit2);
 
+    packet += attribute(SettingsAttribute.inputYarn.hexVal,bit4s,padding(inputYarn, bit4));
     packet += attribute(SettingsAttribute.spindleSpeed.hexVal,bit4s,padding(spindleSpeed, bit4));
-    packet += attribute(SettingsAttribute.draft.hexVal, bit8s, padding(draft, bit8));
-    packet += attribute(SettingsAttribute.twistPerInch.hexVal, bit8s, padding(twistPerInch, bit8));
-    packet += attribute(SettingsAttribute.RTF.hexVal, bit8s, padding(RTF, bit8));
-    packet += attribute(SettingsAttribute.layers.hexVal,bit4s, padding(layers, bit4));
-    packet += attribute(SettingsAttribute.maxHeightOfContent.hexVal, bit4s, padding(maxHeightOfContent, bit4));
-    packet += attribute(SettingsAttribute.rovingWidth.hexVal, bit8s, padding(rovingWidth, bit8));
-    packet += attribute(SettingsAttribute.deltaBobbinDia.hexVal, bit8s, padding(deltaBobbinDia,bit8));
-    packet += attribute(SettingsAttribute.bareBobbinDia.hexVal, bit4s, padding(bareBobbinDia, bit4));
-    packet += attribute(SettingsAttribute.rampupTime.hexVal, bit4s, padding(rampupTime, bit4));
-    packet += attribute(SettingsAttribute.rampdownTime.hexVal, bit4s, padding(rampdownTime, bit4));
-    packet += attribute(SettingsAttribute.changeLayerTime.hexVal, bit4s, padding(changeLayerTime, bit4));
+    packet += attribute(SettingsAttribute.twistPerInch.hexVal, bit4s, padding(twistPerInch, bit4));
+    packet += attribute(SettingsAttribute.packageHeight.hexVal, bit4s, padding(packageHt, bit4));
+    packet += attribute(SettingsAttribute.diaBuildFactor.hexVal,bit8s, padding(diaBuildFactor, bit8));
+    packet += attribute(SettingsAttribute.windingClosenessFactor.hexVal, bit4s, padding(windingClosenessFactor, bit4));
 
     packet += Separator.eof.hexVal;
 
@@ -115,18 +107,12 @@ class SettingsMessage{
   Map<String,String> toMap(){
 
     Map<String,String> _settings = {
+      "inputYarnCount": inputYarn,
       "spindleSpeed": spindleSpeed,
-      "draft": draft,
       "twistPerInch": twistPerInch,
-      "RTF": RTF,
-      "layers": layers,
-      "maxHeightOfContent": maxHeightOfContent,
-      "rovingWidth": rovingWidth,
-      "deltaBobbinDia": deltaBobbinDia,
-      "bareBobbinDia": bareBobbinDia,
-      "rampupTime": rampupTime,
-      "rampdownTime": rampdownTime,
-      "changeLayerTime": changeLayerTime,
+      "packageHeight": packageHt,
+      "diaBuildFactor": diaBuildFactor,
+      "windingClosenessFactor":windingClosenessFactor
     };
 
     return _settings;

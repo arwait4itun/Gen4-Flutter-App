@@ -1,4 +1,5 @@
 import 'enums.dart';
+import 'machineEnums.dart';
 import '../hexa_to_double.dart';
 
 class DiagnosticMessage{
@@ -52,30 +53,12 @@ class DiagnosticMessage{
 
       packet += padding(attributeCount.toString(),bit2);
 
-      String _motorId;
+      String _motorId = MotorId.calender.hexVal;
 
       switch(motorNameChoice){
-
-        case "FLYER":
-          _motorId = MotorId.flyer.hexVal;
+        case "CALENDER":
+          _motorId = MotorId.calender.hexVal;
           break;
-        case "BOBBIN":
-          _motorId = MotorId.bobbin.hexVal;
-          break;
-        case "FRONT ROLLER":
-          _motorId = MotorId.frontRoller.hexVal;
-          break;
-        case "BACK ROLLER":
-          _motorId = MotorId.backRoller.hexVal;
-          break;
-        case "DRAFTING":
-          _motorId = MotorId.drafting.hexVal;
-          break;
-        case "WINDING":
-          _motorId = MotorId.winding.hexVal;
-          break;
-        default:
-          _motorId = MotorId.flyer.hexVal;
       }
 
       //motor id
@@ -169,10 +152,6 @@ class DiagnosticMessage{
 
       packet += attribute(DiagnosticAttributeType.bedDistance.hexVal, "04", padding(bedTravelDistance,4));
 
-
-
-
-
     }
 
     packet += Separator.eof.hexVal;
@@ -180,8 +159,6 @@ class DiagnosticMessage{
     packetLength = padding(packet.length.toString(),2);
 
     packet = Separator.sof.hexVal+packetLength+packet;
-
-    print("here!!!!!!!!!!!!!!!! ${packet.toUpperCase()}");
 
     return packet.toUpperCase();
   }

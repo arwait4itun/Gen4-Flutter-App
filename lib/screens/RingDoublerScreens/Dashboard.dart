@@ -138,7 +138,7 @@ class _RingDoublerDashboardScaffoldState extends State<RingDoublerDashboardScaff
   AppBar appBar(GlobalKey<ScaffoldState> _scaffoldKey){
 
     return AppBar(
-      title: const Text("Flyer Frame"),
+      title: const Text("Ring Doubler"),
       backgroundColor: Theme.of(context).primaryColor,
       elevation: 1.0,
       shadowColor: Theme.of(context).highlightColor,
