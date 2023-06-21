@@ -715,6 +715,7 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
 
         SettingsMessage _sm = SettingsMessage(
             inputYarn: _inputYarnCount.text,
+            outputYarnDia: _outputYarnDia.text,
             spindleSpeed: _spindleSpeedChoice,
             twistPerInch: _twistPerInch.text,
             packageHt: _packageHeight.text,
