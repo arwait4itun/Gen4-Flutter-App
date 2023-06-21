@@ -6,6 +6,7 @@ import 'package:flyer/screens/FlyerScreens/drawer.dart';
 import 'package:flyer/screens/FlyerScreens/advanced_options.dart';
 import 'package:flyer/screens/FlyerScreens/phone_status_page.dart';
 import 'package:flyer/screens/FlyerScreens/settings.dart';
+import 'package:flyer/screens/RingDoublerScreens/settings.dart';
 import 'package:flyer/screens/status.dart';
 import 'package:flyer/screens/FlyerScreens/diagnostics.dart';
 
@@ -100,7 +101,7 @@ class _RingDoublerDashboardScaffoldState extends State<RingDoublerDashboardScaff
         //checks if the device is a phone or tablet based on screen size
         //MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
         FlyerPhoneStatusPageUI(connection: connection,statusStream: multiStream,),
-        FlyerSettingsPage(connection: connection, settingsStream: multiStream,),
+        RingDoublerSettingsPage(connection: connection, settingsStream: multiStream,),
         FlyerTestPage(connection: connection, testsStream: multiStream,),
         FlyerAdvancedOptionsUI(connection: connection,stream: multiStream,),
       ];

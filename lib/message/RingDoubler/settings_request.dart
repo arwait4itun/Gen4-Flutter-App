@@ -91,6 +91,9 @@ class RequestSettings{
     else if(t==SettingsAttribute.inputYarn.hexVal){
       return SettingsAttribute.inputYarn.name;
     }
+    else if(t==SettingsAttribute.outputYarnDia.hexVal){
+      return SettingsAttribute.outputYarnDia.name;
+    }
     else if(t==SettingsAttribute.twistPerInch.hexVal){
       return SettingsAttribute.twistPerInch.name;
     }
@@ -102,6 +105,9 @@ class RequestSettings{
     }
     else if(t==SettingsAttribute.windingClosenessFactor.hexVal){
       return SettingsAttribute.windingClosenessFactor.name;
+    }
+    else if(t==SettingsAttribute.windingOffsetCoils.hexVal){
+      return SettingsAttribute.windingOffsetCoils.name;
     }
     else{
       return "";

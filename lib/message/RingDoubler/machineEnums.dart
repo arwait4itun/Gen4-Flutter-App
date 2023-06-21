@@ -1,12 +1,13 @@
 
 enum SettingsAttribute{
   inputYarn,
+  outputYarnDia,
   spindleSpeed,
   twistPerInch,
   packageHeight,
   diaBuildFactor,
   windingClosenessFactor,
-
+  windingOffsetCoils,
 }
 
 extension SettingsAttributeTypeExtension on SettingsAttribute{
@@ -15,16 +16,20 @@ extension SettingsAttributeTypeExtension on SettingsAttribute{
     switch (this){
       case SettingsAttribute.inputYarn:
         return "90";
-      case SettingsAttribute.spindleSpeed:
+      case SettingsAttribute.outputYarnDia:
         return "91";
-      case SettingsAttribute.twistPerInch:
+      case SettingsAttribute.spindleSpeed:
         return "92";
-      case SettingsAttribute.packageHeight:
+      case SettingsAttribute.twistPerInch:
         return "93";
-      case SettingsAttribute.diaBuildFactor:
+      case SettingsAttribute.packageHeight:
         return "94";
-      case SettingsAttribute.windingClosenessFactor:
+      case SettingsAttribute.diaBuildFactor:
         return "95";
+      case SettingsAttribute.windingClosenessFactor:
+        return "96";
+      case SettingsAttribute.windingOffsetCoils:
+        return "97";
     }
   }
 }
