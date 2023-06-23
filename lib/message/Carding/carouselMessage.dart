@@ -129,8 +129,6 @@ class CarouselMessage{
   String attributeName(String t){
 
     //chooses attribute based on substate
-
-
     if(t==Running.whatInfo.hexVal){
       //ensure what info value matches the motor id
       return Running.whatInfo.name;
