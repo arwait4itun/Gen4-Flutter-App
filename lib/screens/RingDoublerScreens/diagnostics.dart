@@ -30,7 +30,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
 
   //run diagnose variables
   List<String> _testType = ["MOTOR","LIFT"];
-  List<String> _motorName = ["FLYER","BOBBIN","FRONT ROLLER","BACK ROLLER","DRAFTING","WINDING"];
+  List<String> _motorName = ["CALENDER"];
   List<String> _controlType = ["OPEN LOOP","CLOSED LOOP"];
 
   List<String> _motorDirection = ["DEFAULT","REVERSE"];
@@ -987,15 +987,13 @@ class _FlyerStopDiagnoseSingleUIState extends State<FlyerStopDiagnoseSingleUI> {
           if(snapshot.hasData){
             var data = snapshot.data;
             String _d = utf8.decode(data!);
-            print("\nTESTS: run diagnose data: "+_d);
-            print(snapshot.data);
+            //print("\nTESTS: run diagnose data: "+_d);
+            //print(snapshot.data);
 
 
             try{
 
               Map<String,double> _diagResponse = DiagnosticMessageResponse().decode(_d);
-              print("HERE!!!!!!!!!!!!!!: $_diagResponse");
-
               _runningRPM = _diagResponse["speedRPM"]!.toStringAsFixed(0);
               _runningSignalVoltage = _diagResponse["signalVoltage"]!.toStringAsFixed(0);
               _current = _diagResponse["current"]!.toStringAsFixed(2);

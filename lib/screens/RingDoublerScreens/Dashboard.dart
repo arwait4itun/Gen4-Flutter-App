@@ -2,13 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/screens/FlyerScreens/drawer.dart';
-import 'package:flyer/screens/FlyerScreens/advanced_options.dart';
-import 'package:flyer/screens/FlyerScreens/phone_status_page.dart';
-import 'package:flyer/screens/FlyerScreens/settings.dart';
+//import 'package:flyer/screens/FlyerScreens/drawer.dart';
+import 'package:flyer/screens/RingDoublerScreens/advanced_options.dart';
+import 'package:flyer/screens/RingDoublerScreens/phone_status_page.dart';
 import 'package:flyer/screens/RingDoublerScreens/settings.dart';
 import 'package:flyer/screens/status.dart';
-import 'package:flyer/screens/FlyerScreens/diagnostics.dart';
+import 'package:flyer/screens/RingDoublerScreens/diagnostics.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:provider/provider.dart';
@@ -113,7 +112,7 @@ class _RingDoublerDashboardScaffoldState extends State<RingDoublerDashboardScaff
         appBar: appBar(_scaffoldKey),
         bottomNavigationBar: navigationBar(),
         body: _pages[_selectedIndex],
-        drawer: FlyerDrawerPage(connection: connection, stream: multiStream,),
+        //drawer: FlyerDrawerPage(connection: connection, stream: multiStream,),
       );
     }
     else{
@@ -131,7 +130,7 @@ class _RingDoublerDashboardScaffoldState extends State<RingDoublerDashboardScaff
         appBar: appBar(_scaffoldKey),
         bottomNavigationBar: navigationBar(),
         body: _pages[_selectedIndex],
-        drawer: FlyerDrawerPage(connection: connection, stream: multiStream,),
+        //drawer: FlyerDrawerPage(connection: connection, stream: multiStream,),
       );
     }
   }
@@ -163,14 +162,14 @@ class _RingDoublerDashboardScaffoldState extends State<RingDoublerDashboardScaff
         },
       ),
 
-      actions: [
+      /*actions: [
         IconButton(
             onPressed: (){
               _scaffoldKey.currentState?.openDrawer();
             },
             icon: Icon(Icons.more_vert),
         ),
-      ],
+      ],*/
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

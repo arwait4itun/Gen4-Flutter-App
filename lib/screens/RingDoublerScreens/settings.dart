@@ -247,6 +247,7 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
               onPressed: () {
                 //hard coded change
                 _inputYarnCount.text = "20";
+                _outputYarnDia.text = "0.40";
                 _spindleSpeedChoice= "6000";
                 _twistPerInch.text = "14";
                 _packageHeight.text = "200";
@@ -264,6 +265,7 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
                     windingClosenessFactor: _windingClosenessFactor.text,
                     windingOffsetCoils: _windingOffsetCoils.text);
 
+                // if the user changes the value
                 _outputYarnDia.text = _sm.outputYarnDia ?? "";
 
                 ConnectionProvider().setSettings(_sm.toMap());
@@ -705,8 +707,8 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
         _inputYarnCount.text = settings["inputYarn"]!.toInt().toString();
         _outputYarnDia.text = settings["outputYarnDia"]!.toString();
         _spindleSpeedChoice = settings["spindleSpeed"]!.toInt().toString();
-        _twistPerInch.text = settings["twistPerInch"].toString();
-        _packageHeight.text = settings["packageHeight"].toString();
+        _twistPerInch.text = settings["twistPerInch"]!.toInt().toString();
+        _packageHeight.text = settings["packageHeight"]!.toInt().toString();
         _diaBuildFactor.text = settings["diaBuildFactor"].toString();
         _windingClosenessFactor.text = settings["windingClosenessFactor"]!.toInt().toString();
         _windingOffsetCoils.text = settings["windingOffsetCoils"]!.toInt().toString();

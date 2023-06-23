@@ -172,13 +172,6 @@ class _FlyerAdvancedOptionsUIState extends State<FlyerAdvancedOptionsUI> {
               color: Colors.grey,
 
             ),
-
-            Container(
-              padding: EdgeInsets.only(left: 10,top: 10,bottom: 5),
-              margin: EdgeInsets.only(left: 10),
-              child: const Text('RTF Settings', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400, fontSize: 18),),
-            ),
-            FlyerRTFUI(connection: widget.connection, stream: widget.stream),
           ],
         ),
     );

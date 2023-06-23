@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/message/Flyer/statusMessage.dart';
+import 'package:flyer/message/RingDoubler/statusMessage.dart';
 import 'package:flyer/screens/FlyerScreens/running_carousel.dart';
 import 'package:provider/provider.dart';
 
@@ -113,10 +113,10 @@ class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
 
 
                 try {
-                  print("here status!!!!!: $_d");
+                  //print("here status!!!!!: $_d");
                   Map<String, String> _statusResponse = StatusMessage().decode(
                       _d);
-                  print("HERE!!!!!!!!!!!!!!: $_statusResponse");
+                  //print("HERE!!!!!!!!!!!!!!: $_statusResponse");
 
                   if (!_statusResponse.isEmpty) {
                     _substate = _statusResponse["substate"]!;

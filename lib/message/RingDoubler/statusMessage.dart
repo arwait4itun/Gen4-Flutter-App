@@ -1,5 +1,5 @@
 
-import 'package:flyer/message/Flyer/errorMessage.dart';
+import 'package:flyer/message/RingDoubler/errorMessage.dart';
 import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
@@ -18,7 +18,7 @@ class StatusMessage{
 
     int len = int.parse(packet.substring(2,4),radix: 16); //Packet Length
 
-    print(len);
+    //print(len);
 
     String _machineState = packet.substring(4,6);
     String _ss = packet.substring(6,8);
@@ -113,7 +113,7 @@ class StatusMessage{
 
 
 
-    print(_settings);
+    //print(_settings);
     return _settings;
   }
 
