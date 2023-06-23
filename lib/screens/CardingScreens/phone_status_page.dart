@@ -31,8 +31,6 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
   String _errorInformation = "";
   String _errorCode = "";
 
-  String _layer = "";
-
   String _pauseReason = "";
 
 
@@ -43,8 +41,10 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
   bool pause = false;
   bool idle = false;
 
-  double _liftLeft = 2;
-  double _liftRight = 0;
+  int _coilerSensor=0;
+  int _ductSensor=0;
+
+  double _deliveryMtrsPerMin=0;
 
 
   late Stream<Uint8List> statusStream;
@@ -73,21 +73,14 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
       if (running || homing || pause || hasError) {
         //disable settings and diagnostic pages when running to prevent errors
 
-        if (Provider
-            .of<ConnectionProvider>(context, listen: false)
-            .settingsChangeAllowed) {
-          Provider.of<ConnectionProvider>(context, listen: false)
-              .setSettingsChangeAllowed(false);
+        if (Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
+          Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
         }
       }
       else {
-        if (!Provider
-            .of<ConnectionProvider>(context, listen: false)
-            .settingsChangeAllowed) {
+        if (!Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
           try {
-            Provider.of<ConnectionProvider>(
-                context, listen: false)
-                .setSettingsChangeAllowed(true);
+            Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
           }
           catch (e) {
             print("Status: ${e.toString()}");
@@ -113,8 +106,7 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
 
 
                 try {
-                  Map<String, String> _statusResponse = StatusMessage().decode(
-                      _d);
+                  Map<String, String> _statusResponse = StatusMessage().decode(_d);
 
                   if (!_statusResponse.isEmpty) {
                     _substate = _statusResponse["substate"]!;
@@ -157,12 +149,9 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
                         break;
                     }
 
-                    if (_statusResponse.containsKey("leftLiftDistance") &&
-                        _statusResponse.containsKey("rightLiftDistance")) {
-                      _liftLeft =
-                          double.parse(_statusResponse["leftLiftDistance"]!);
-                      _liftRight =
-                          double.parse(_statusResponse["rightLiftDistance"]!);
+                    if (_statusResponse.containsKey("coilerSensor") && _statusResponse.containsKey("ductSensor")) {
+                      _coilerSensor = int.parse(_statusResponse["coilerSensor"]!);
+                      _ductSensor = int.parse(_statusResponse["ductSensor"]!);
                     }
 
                     if (hasError) {
@@ -172,9 +161,7 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
                       _errorAction = "Action";
                     }
                     else if (running) {
-                      _layer = double.parse(_statusResponse["layers"]!)
-                          .toInt()
-                          .toString();
+                      _deliveryMtrsPerMin = double.parse(_statusResponse["deliverMtrsPerMin"]!);
                     }
                     else if (pause) {
                       _pauseReason = _statusResponse["pauseReason"]!;
@@ -188,14 +175,8 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
               }
 
               return Container(
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height,
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
                 child: _mainUI(),
               );
             }
@@ -341,7 +322,7 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
                 border: Border.all(color: Colors.grey),
               ),
               child: Text(
-                _layer,
+                _deliveryMtrsPerMin.toString(),
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   color: Colors.black,
@@ -353,7 +334,7 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
           ],
         ),
 
-        _liftAnimation(_liftLeft,_liftRight),
+        _sensorStatuses(_coilerSensor, _ductSensor),
 
         FlyerRunningCarousel(connection: connection, multistream: statusStream),
       ],
@@ -403,7 +384,7 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
           ),
         ),
 
-        _liftAnimation(_liftLeft,_liftRight),
+        _sensorStatuses(_coilerSensor, _ductSensor),
 
       ],
     );
@@ -650,108 +631,60 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
     );
   }
 
-  Widget _liftAnimation(double left, double right){
+  Widget _sensorStatuses(int coilerStatus, int ductStatus){
 
-    //dir = +ve if l > r
-    //dir = -ve if r > l
-    //dir = 0 if r==l
+    return Container(
 
-    double direction = (left-right)/4;
-
-
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-
-      children: [
-
-        SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height*0.01,
-        ),
-
-        Text(
-            'Δ (mm) = ${(left-right).toStringAsFixed(2)}',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-
-        Padding(
-          padding: EdgeInsets.only(top: 5),
-          child: Text(
-            '(Δ = L - R)',
-            style: TextStyle(
-              fontSize: 12,
-            ),
-          ),
-        ),
-
-        SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height*0.04,
-        ),
-
-        Container(
-          height: MediaQuery.of(context).size.height*0.05,
-          width: MediaQuery.of(context).size.width*0.95,
-          padding: EdgeInsets.all(10),
-
-
-          child: Transform.rotate(
-
-            angle: (direction)*math.pi/40,
-            child: Container(
-              height: MediaQuery.of(context).size.height*0.05,
-              width: MediaQuery.of(context).size.width*0.95,
-              padding: EdgeInsets.all(8.0),
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-        ),
-
-        Container(
-          width: MediaQuery.of(context).size.width*0.95,
-          height: MediaQuery.of(context).size.height*0.08,
-          padding: EdgeInsets.all(7),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      height: MediaQuery.of(context).size.height*0.15,
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.all(2.5),
+      padding: EdgeInsets.all(2.5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "L",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    left.toStringAsFixed(2),
-                  )
-                ],
+              Text(
+                "Coiler",
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "R",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    right.toStringAsFixed(2),
-                  )
-                ],
+              Container(
+                height: 20,
+                width: 20,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  color: coilerStatus==1? Colors.lightGreen: Colors.red
+                ),
+              ),
+              Text(
+                coilerStatus==1 ? "On": "Off",
               ),
             ],
           ),
-        ),
-
-      ],
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Duct",
+              ),
+              Container(
+                height: 20,
+                width: 20,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    color: ductStatus==1? Colors.lightGreen: Colors.red
+                ),
+              ),
+              Text(
+                ductStatus==1 ? "On": "Off",
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

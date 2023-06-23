@@ -135,14 +135,14 @@ class CarouselMessage{
       //ensure what info value matches the motor id
       return Running.whatInfo.name;
     }
-    else if(t==Running.rightLiftDistance.hexVal){
-      return Running.rightLiftDistance.name;
+    else if(t==Running.totalPower.hexVal){
+      return Running.totalPower.name;
     }
-    else if(t==Running.leftLiftDistance.hexVal){
-      return Running.leftLiftDistance.name;
+    else if(t==Running.coilerSensor.hexVal){
+      return Running.coilerSensor.name;
     }
-    else if(t==Running.layers.hexVal){
-      return Running.layers.name;
+    else if(t==Running.ductSensor.hexVal){
+      return Running.ductSensor.name;
     }
     else if(t==Running.motorTemp.hexVal){
       return Running.motorTemp.name;
@@ -158,6 +158,9 @@ class CarouselMessage{
     }
     else if(t==Running.outputMtrs.hexVal){
       return Running.outputMtrs.name;
+    }
+    else if(t==Running.totalPower.hexVal){
+      return Running.totalPower.name;
     }
     else{
       return "";

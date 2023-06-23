@@ -124,20 +124,14 @@ class StatusMessage{
 
   String attributeName(String ss,String t){
     //chooses attribute based on substate
-    if(ss==Substate.homing.name && t==Homing.rightLiftDistance.hexVal){
-      return Homing.rightLiftDistance.name;
+    if(ss==Substate.running.name && t==Running.coilerSensor.hexVal){
+      return Running.coilerSensor.name;
     }
-    else if(ss==Substate.homing.name && t==Homing.leftLiftDistance.hexVal){
-      return Homing.leftLiftDistance.name;
+    else if(ss==Substate.running.name && t==Running.ductSensor.hexVal){
+      return Running.ductSensor.name;
     }
-    else if(ss==Substate.running.name && t==Running.leftLiftDistance.hexVal){
-      return Running.leftLiftDistance.name;
-    }
-    else if(ss==Substate.running.name && t==Running.rightLiftDistance.hexVal){
-      return Running.rightLiftDistance.name;
-    }
-    else if(ss==Substate.running.name && t==Running.layers.hexVal){
-      return Running.layers.name;
+    else if(ss==Substate.running.name && t==Running.deliveryMtrsPerMin.hexVal){
+      return Running.deliveryMtrsPerMin.name;
     }
     else if(ss==Substate.pause.name && t==Pause.pauseReason.hexVal){
       return Pause.pauseReason.name;
