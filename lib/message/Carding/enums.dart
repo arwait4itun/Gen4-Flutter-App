@@ -1,5 +1,9 @@
 
 
+import 'dart:io';
+
+import 'package:flyer/message/Carding/machineEnums.dart';
+
 enum Separator {
   sof,
   eof
@@ -156,14 +160,15 @@ extension homingExtension on Homing{
 
 
 enum Running{
-  leftLiftDistance,
-  rightLiftDistance,
-  layers,
+  ductSensor,
+  coilerSensor,
   motorTemp,
   MOSFETTemp,
   current,
   RPM,
   outputMtrs,
+  totalPower,
+  deliveryMtrsPerMin,
   whatInfo,
 }
 
@@ -171,12 +176,10 @@ extension runningExtension on Running{
 
   String get hexVal {
     switch (this) {
-      case Running.leftLiftDistance:
-        return "01";
-      case Running.rightLiftDistance:
-        return "02";
-      case Running.layers:
-        return "03";
+      case Running.ductSensor:
+        return "0B";
+      case Running.coilerSensor:
+        return "0C";
       case Running.motorTemp:
         return "04";
       case Running.MOSFETTemp:
@@ -189,6 +192,10 @@ extension runningExtension on Running{
         return "08";
       case Running.whatInfo:
         return "09";
+      case Running.totalPower:
+        return "0A";
+      case Running.deliveryMtrsPerMin:
+        return "0D";
       default:
         return "00";
     }
@@ -410,5 +417,14 @@ extension LogAttributesExtension on LogAttributes{
       case LogAttributes.disable:
         return "00";
     }
+  }
+}
+
+void main(){
+
+  var v = MotorId.values;
+
+  for(int i=0;i<v.length;i++){
+    print(v[i].toString()+",");
   }
 }
