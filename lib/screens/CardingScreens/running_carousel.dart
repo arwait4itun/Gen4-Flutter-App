@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/message/Flyer/carouselMessage.dart';
+import 'package:flyer/message/Carding/carouselMessage.dart';
 import 'package:flyer/message/Carding/machineEnums.dart';
 
 class CardingRunningCarousel extends StatefulWidget {
@@ -25,7 +25,7 @@ class _CardingRunningCarouselState extends State<CardingRunningCarousel> {
 
   int index=0;
   
-  List<String> _names = ["CYLINDER", "BEATER", "CAGE", "CYLINDERFEED", "BEATERFEED", "COILER"];
+  List<String> _names = ["PRODUCTION","CYLINDER", "BEATER", "CAGE", "CYLINDERFEED", "BEATERFEED", "COILER"];
 
   List<String> _ids = [
     "0A",//production hard coded
@@ -91,8 +91,7 @@ class _CardingRunningCarouselState extends State<CardingRunningCarousel> {
         }
       ),
       items: items.map((i) {
-
-
+        print("items for loop $i");
         return StreamBuilder<Uint8List>(
             stream: _stream,
             builder: (context, snapshot) {
@@ -105,9 +104,9 @@ class _CardingRunningCarouselState extends State<CardingRunningCarousel> {
                   print("\nCarousel: data: "+_d);
                   print(snapshot.data);
 
-                  String _motorId = _ids[i-1];
+                  String _motorId = _ids[i-2];
 
-                  print("here!!!!!! $_motorId");
+                  print("here!!!!!! MOTOR ID =  $_motorId, i $i");
                   Map<String,String> _carouselResponse = CarouselMessage(carouselId: _motorId).decode(_d);
                   print("HERE!!!!!!!!!!!!!!: $_carouselResponse");
 
@@ -117,13 +116,14 @@ class _CardingRunningCarouselState extends State<CardingRunningCarousel> {
                     if (_motorId == "0A") {
                       //for production
                       production = double.parse(_carouselResponse["outputMtrs"]!).toStringAsFixed(2);
+                      totalPower = double.parse(_carouselResponse["totalPower"]!).toStringAsFixed(0);
                     }
                     else {
                       motorTemp = double.parse(_carouselResponse["motorTemp"]!).toStringAsFixed(0);
                       MOSFETTemp = double.parse(_carouselResponse["MOSFETTemp"]!).toStringAsFixed(0);
                       current = double.parse(_carouselResponse["current"]!).toStringAsFixed(2);
                       RPM = double.parse(_carouselResponse["RPM"]!).toStringAsFixed(0);
-                      totalPower = double.parse(_carouselResponse["totalPower"]!).toStringAsFixed(0);
+
                     }
                   }
 
@@ -152,10 +152,9 @@ class _CardingRunningCarouselState extends State<CardingRunningCarousel> {
                         Text(_names[i-1], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
 
                         i!=1? _customRow("Motor Temp (C)", motorTemp??"-"): _customRow("Output Per Spindle", production??"-"),
-                        i!=1? _customRow("MOSFET Temp (C)", MOSFETTemp??"-"): Container(),
+                        i!=1? _customRow("MOSFET Temp (C)", MOSFETTemp??"-"): _customRow("Total Power", totalPower??"-"),
                         i!=1?_customRow("Current (A)", current??"-"): Container(),
                         i!=1? _customRow("RPM", RPM??"-"): Container(),
-                        i!=1? _customRow("Total Power", totalPower??"-"): Container(),
 
 
                         DotsIndicator(

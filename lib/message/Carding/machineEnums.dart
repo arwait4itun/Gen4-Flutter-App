@@ -44,7 +44,7 @@ enum MotorId{
   cage,
   cylinderFeed,
   beaterFeed,
-  coiler
+  coiler,
 }
 
 extension MotorIdExtension on MotorId{

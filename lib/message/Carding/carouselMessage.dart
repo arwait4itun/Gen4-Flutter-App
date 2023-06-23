@@ -72,6 +72,8 @@ class CarouselMessage{
 
       double v; //int or double
 
+      print("t: $t, l: $l, v: $val key: $key");
+
       if(key == ""){
         print("carousel message: Invalid Attribute Type");
         return Map<String, String>();
@@ -87,6 +89,7 @@ class CarouselMessage{
         v = convert(val);
       }
 
+      print("key :$key,value:$val");
       if(key==Running.whatInfo.name){
 
         //ensure whatinfo and motor id match
@@ -98,7 +101,7 @@ class CarouselMessage{
           //throw FormatException("Carousel Info What Info and Motor ID don't match");
         }
       }
-      //print("t: $t, l: $l, v: $val");
+      //print("t: $t, l: $l, v: $val key: $key");
       _settings[key] = v.toString();
 
       i=i+4+l;
@@ -153,6 +156,9 @@ class CarouselMessage{
     }
     else if(t==Running.RPM.hexVal){
       return Running.RPM.name;
+    }
+    else if(t==Running.deliveryMtrsPerMin.hexVal){
+      return Running.deliveryMtrsPerMin.name;
     }
     else if(t==Running.outputMtrs.hexVal){
       return Running.outputMtrs.name;

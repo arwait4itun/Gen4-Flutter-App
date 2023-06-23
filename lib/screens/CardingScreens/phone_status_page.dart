@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/Carding/statusMessage.dart';
-import 'package:flyer/screens/FlyerScreens/running_carousel.dart';
+import 'package:flyer/screens/CardingScreens/running_carousel.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/provider_service.dart';
@@ -150,8 +150,10 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
                     }
 
                     if (_statusResponse.containsKey("coilerSensor") && _statusResponse.containsKey("ductSensor")) {
-                      _coilerSensor = int.parse(_statusResponse["coilerSensor"]!);
-                      _ductSensor = int.parse(_statusResponse["ductSensor"]!);
+                      
+
+                      _coilerSensor = double.parse(_statusResponse["coilerSensor"]!).toInt();
+                      _ductSensor = double.parse(_statusResponse["ductSensor"]!).toInt();
                     }
 
                     if (hasError) {
@@ -161,7 +163,7 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
                       _errorAction = "Action";
                     }
                     else if (running) {
-                      _deliveryMtrsPerMin = double.parse(_statusResponse["deliverMtrsPerMin"]!);
+                      _deliveryMtrsPerMin = double.parse(_statusResponse["deliveryMtrsPerMin"]!);
                     }
                     else if (pause) {
                       _pauseReason = _statusResponse["pauseReason"]!;
@@ -306,7 +308,7 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Layer",
+              "Delivery Speed",
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontSize: 18,
@@ -336,7 +338,7 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
 
         _sensorStatuses(_coilerSensor, _ductSensor),
 
-        FlyerRunningCarousel(connection: connection, multistream: statusStream),
+        CardingRunningCarousel(connection: connection, multistream: statusStream),
       ],
     );
   }
@@ -635,51 +637,50 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
 
     return Container(
 
-      height: MediaQuery.of(context).size.height*0.15,
+      height: MediaQuery.of(context).size.height*0.20,
       width: MediaQuery.of(context).size.width,
-      margin: EdgeInsets.all(2.5),
-      padding: EdgeInsets.all(2.5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      margin: EdgeInsets.all(5),
+      padding: EdgeInsets.all(5),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Coiler",
+                "Coiler Sensor (${_coilerSensor==1? "On": "Off"})  ",
+                style: TextStyle(fontSize: 18, color: Theme.of(context).highlightColor),
               ),
               Container(
                 height: 20,
                 width: 20,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(50),
                   color: coilerStatus==1? Colors.lightGreen: Colors.red
                 ),
               ),
-              Text(
-                coilerStatus==1 ? "On": "Off",
-              ),
+
             ],
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Duct",
+                "Duct Sensor (${_ductSensor==1? "On": "Off"})  ",
+                style: TextStyle(fontSize: 18, color: Theme.of(context).highlightColor),
               ),
               Container(
                 height: 20,
                 width: 20,
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(50),
                     color: ductStatus==1? Colors.lightGreen: Colors.red
                 ),
-              ),
-              Text(
-                ductStatus==1 ? "On": "Off",
               ),
             ],
           ),
