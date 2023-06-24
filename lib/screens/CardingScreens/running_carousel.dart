@@ -57,15 +57,10 @@ class _CardingRunningCarouselState extends State<CardingRunningCarousel> {
     //send initial carousel message
 
     String _productionID = "0A";
-
     String _m = CarouselMessage(carouselId: _productionID).createPacket();
-
     Future.delayed(Duration(milliseconds: 250)).then((value) => null);
-
     widget.connection.output.add(Uint8List.fromList(utf8.encode(_m)));
-
     widget.connection.output!.allSent.then((value) => null);
-
     Future.delayed(Duration(milliseconds: 250)).then((value) => null);
 
   }
@@ -86,12 +81,11 @@ class _CardingRunningCarouselState extends State<CardingRunningCarousel> {
         scrollDirection: Axis.horizontal,
         viewportFraction: 0.9,
         onPageChanged: (int idx,b) async {
-          print(idx);
+          //print(idx);
           onSlide(idx);
         }
       ),
       items: items.map((i) {
-        print("items for loop $i");
         return StreamBuilder<Uint8List>(
             stream: _stream,
             builder: (context, snapshot) {
@@ -101,22 +95,21 @@ class _CardingRunningCarouselState extends State<CardingRunningCarousel> {
 
                   var data = snapshot.data;
                   String _d = utf8.decode(data!);
-                  print("\nCarousel: data: "+_d);
-                  print(snapshot.data);
+                  //print ("in Loop $i");
+                  //print("\nRun PacketData: data: "+_d);
 
-                  String _motorId = _ids[i-2];
+                  String _carousalID = _ids[i-1];
 
-                  print("here!!!!!! MOTOR ID =  $_motorId, i $i");
-                  Map<String,String> _carouselResponse = CarouselMessage(carouselId: _motorId).decode(_d);
-                  print("HERE!!!!!!!!!!!!!!: $_carouselResponse");
-
-
+                  //print("carousal input No = $_carousalID");
+                  Map<String,String> _carouselResponse = CarouselMessage(carouselId: _carousalID).decode(_d);
+                  //print("HERE!!!!!!!!!!!!!!: $_carouselResponse");
 
                   if(!_carouselResponse.isEmpty) {
-                    if (_motorId == "0A") {
+                    if (_carousalID == "0A") {
                       //for production
                       production = double.parse(_carouselResponse["outputMtrs"]!).toStringAsFixed(2);
                       totalPower = double.parse(_carouselResponse["totalPower"]!).toStringAsFixed(0);
+                      //print ("after Carousal Response :$production , $totalPower");
                     }
                     else {
                       motorTemp = double.parse(_carouselResponse["motorTemp"]!).toStringAsFixed(0);
@@ -126,9 +119,6 @@ class _CardingRunningCarouselState extends State<CardingRunningCarousel> {
 
                     }
                   }
-
-
-
 
                   return Container(
                     margin: EdgeInsets.only(left: 2.5,right: 2.5),
@@ -148,7 +138,6 @@ class _CardingRunningCarouselState extends State<CardingRunningCarousel> {
                       crossAxisAlignment: CrossAxisAlignment.center,
 
                       children: [
-
                         Text(_names[i-1], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
 
                         i!=1? _customRow("Motor Temp (C)", motorTemp??"-"): _customRow("Output Per Spindle", production??"-"),

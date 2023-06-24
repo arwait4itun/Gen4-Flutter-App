@@ -78,8 +78,6 @@ class CarouselMessage{
         //throw FormatException("Invalid Attribute Type");
       }
 
-
-
       if(l==4 || l==2){
         v = int.parse(val,radix: 16).toDouble();
       }
@@ -89,9 +87,10 @@ class CarouselMessage{
 
       if(key==Running.whatInfo.name){
 
-        //ensure whatinfo and motor id match
-        print("here: $key,$val,$carouselId");
+        print("whatInfo V parameter = $v");
+        print("carousal No = $carouselId");
 
+        //ensure whatinfo and motor id match
         if(val.padLeft(2,"0") != carouselId){
           print("Carousel Info What Info and Motor ID don't match");
           return Map<String, String>();

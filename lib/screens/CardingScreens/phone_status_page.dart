@@ -102,7 +102,7 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
                 var data = snapshot.data;
                 String _d = utf8.decode(data!);
                 print("\nStatus: data: " + _d);
-                print(snapshot.data);
+                //print(snapshot.data);
 
 
                 try {
