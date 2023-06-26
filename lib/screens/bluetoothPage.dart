@@ -2,23 +2,24 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/im_paired.dart';
-import 'package:flyer/screens/Dashboard.dart';
-import 'package:flyer/services/provider_service.dart';
+import 'package:flyer/screens/CardingScreens/Dashboard.dart';
+import 'package:flyer/screens/DrawFrameScreens/Dashboard.dart';
+import 'package:flyer/screens/FlyerScreens/Dashboard.dart';
+import 'package:flyer/screens/RingDoublerScreens/Dashboard.dart';
 import 'package:flyer/services/snackbar_service.dart';
-import 'package:provider/provider.dart';
 
-import 'bluetoothFiles/DiscoveryPage.dart';
+
 import 'bluetoothFiles/SelectBondedDevicePage.dart';
 import 'package:flyer/globals.dart' as globals;
 
 
 class BluetoothPage extends StatefulWidget {
 
-  BluetoothPage({Key? key}) : super(key: key);
+  String machineRoute;
+  BluetoothPage({required this.machineRoute});
 
 
 
@@ -242,7 +243,6 @@ class _BluetoothPageState extends State<BluetoothPage> {
                         try {
                           print('Connect -> selected ' + selectedDevice.address);
                           globals.isConnected = true;
-                          ConnectionProvider().setConnection(true);
                           globals.selectedDevice = selectedDevice;
                           BluetoothConnection connection = await BluetoothConnection.toAddress(selectedDevice.address);
 
@@ -250,24 +250,18 @@ class _BluetoothPageState extends State<BluetoothPage> {
                           connection!.output!.add(ascii.encode(ImPaired().createPacket()));
                           await connection!.output.allSent;
 
-                          Provider.of<ConnectionProvider>(context,listen: false).setConnection(true);
 
                           SnackBar _sb = SnackBarService(message: "Connected!", color: Colors.green).snackBar();
 
                           await ScaffoldMessenger.of(context).showSnackBar(_sb);
 
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context){
-                              return DashboardScaffold(connection: connection);
-                            })
-                          );
+                          _navigateToDashboard(connection);
 
                         }
                         catch(e){
 
                           print("Error pairing: paired devices: "+e.toString());
                           globals.isConnected = false;
-                          ConnectionProvider().setConnection(false);
 
                           //SnackBar _sb = SnackBarService(message: "Error Pairing", color: Colors.red).snackBar();
 
@@ -295,7 +289,42 @@ class _BluetoothPageState extends State<BluetoothPage> {
 
   }
 
+  void _navigateToDashboard(BluetoothConnection connection){
 
+    if(widget.machineRoute=="flyer"){
+
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context){
+            return FlyerDashboardScaffold(connection: connection);
+          })
+      );
+
+    }
+    if(widget.machineRoute=="carding"){
+
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context){
+            return CardingDashboardScaffold(connection: connection);
+          })
+      );
+    }
+    if(widget.machineRoute=="ringdoubler"){
+
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context){
+            return RingDoublerDashboardScaffold(connection: connection);
+          })
+      );
+    }
+    if(widget.machineRoute=="drawframe"){
+
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context){
+            return DrawFrameDashboardScaffold(connection: connection);
+          })
+      );
+    }
+  }
 
 
   AppBar _appBar(){
@@ -317,8 +346,8 @@ class _BluetoothPageState extends State<BluetoothPage> {
       leading: IconButton(
         icon: Icon(Icons.close),
         onPressed: (){
-          print("exit");
-          SystemNavigator.pop();
+          print("from bluetooth to slect machine");
+          Navigator.of(context).pop();
         },
       ),
     );
