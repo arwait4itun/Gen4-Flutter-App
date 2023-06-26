@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flyer/screens/select_machine.dart';
-import 'package:flyer/services/provider_service.dart';
+import 'package:flyer/services/Flyer/provider_service.dart';
+import 'package:flyer/services/Carding/provider_service.dart';
+import 'package:flyer/services/DrawFrame/provider_service.dart';
+import 'package:flyer/services/RingDoubler/provider_service.dart';
+
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -48,8 +52,13 @@ void main() async {
 
   ErrorWidget.builder = (FlutterErrorDetails details) => Container();
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ConnectionProvider(),
+    MultiProvider(
+      providers: [
+        Provider<FlyerConnectionProvider>(create: (_) => FlyerConnectionProvider()),
+        Provider<CardingConnectionProvider>(create: (_) => CardingConnectionProvider()),
+        Provider<RingDoublerConnectionProvider>(create: (_) => RingDoublerConnectionProvider()),
+        Provider<DrawFrameConnectionProvider>(create: (_) => DrawFrameConnectionProvider()),
+      ],
       child: const MyApp(),
     ),
   );

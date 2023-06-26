@@ -10,7 +10,7 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
 import 'package:flyer/globals.dart' as globals;
-import 'package:flyer/services/provider_service.dart';
+import 'package:flyer/services/DrawFrame/provider_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/snackbar_service.dart';

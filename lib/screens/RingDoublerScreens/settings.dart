@@ -10,7 +10,7 @@ import 'package:flyer/message/acknowledgement.dart';
 import 'package:flyer/message/RingDoubler/settings_request.dart';
 import 'package:flyer/message/RingDoubler/settingsMessage.dart';
 import 'package:flyer/screens/FlyerScreens/settingsPopUpPage.dart';
-import 'package:flyer/services/provider_service.dart';
+import 'package:flyer/services/RingDoubler/provider_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/snackbar_service.dart';
@@ -60,18 +60,24 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
       print("Settings: Connection init: ${e.toString()}");
     }
 
-    if (!Provider.of<ConnectionProvider>(context, listen: false).isSettingsEmpty) {
+    try{
+      if (!Provider.of<RingDoublerConnectionProvider>(context, listen: false).isSettingsEmpty) {
 
-      Map<String, String> _s = Provider.of<ConnectionProvider>(context, listen: false).settings;
+        Map<String, String> _s = Provider.of<RingDoublerConnectionProvider>(context, listen: false).settings;
 
-      _inputYarnCount.text = _s["inputYarnCount"].toString();
-      _outputYarnDia.text = _s["outputYarnDia"].toString();
-      _spindleSpeedChoice = _s["spindleSpeed"].toString();
-      _twistPerInch.text = _s["twistPerInch"].toString();
-      _packageHeight.text = _s["packageHeight"].toString();
-      _diaBuildFactor.text = _s["diaBuildFactor"].toString();
-      _windingClosenessFactor.text = _s["windingClosenessFactor"].toString();
-      _windingOffsetCoils.text = _s["windingOffsetCoils"].toString();
+        _inputYarnCount.text = _s["inputYarnCount"].toString();
+        _outputYarnDia.text = _s["outputYarnDia"].toString();
+        _spindleSpeedChoice = _s["spindleSpeed"].toString();
+        _twistPerInch.text = _s["twistPerInch"].toString();
+        _packageHeight.text = _s["packageHeight"].toString();
+        _diaBuildFactor.text = _s["diaBuildFactor"].toString();
+        _windingClosenessFactor.text = _s["windingClosenessFactor"].toString();
+        _windingOffsetCoils.text = _s["windingOffsetCoils"].toString();
+      }
+
+    }
+    catch(e){
+      print("RD: Settings: init ${e.toString()}");
     }
 
     try {
@@ -96,7 +102,7 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
 
     if (connection!.isConnected) {
 
-      bool _enabled = Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed;
+      bool _enabled = Provider.of<RingDoublerConnectionProvider>(context, listen: false).settingsChangeAllowed;
 
       
       return SingleChildScrollView(
@@ -200,9 +206,7 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
               height: MediaQuery.of(context).size.height * 0.1,
               width: MediaQuery.of(context).size.width,
               child: Row(
-                mainAxisAlignment: _settingsButtons().length == 1
-                    ? MainAxisAlignment.end
-                    : MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: _settingsButtons(),
               ),
@@ -216,7 +220,7 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
   }
 
   List<Widget> _settingsButtons() {
-    if (Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
+    if (Provider.of<RingDoublerConnectionProvider>(context, listen: false).settingsChangeAllowed) {
       return [
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -268,9 +272,9 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
                 // if the user changes the value
                 _outputYarnDia.text = _sm.outputYarnDia ?? "";
 
-                ConnectionProvider().setSettings(_sm.toMap());
+                RingDoublerConnectionProvider().setSettings(_sm.toMap());
 
-                Provider.of<ConnectionProvider>(context, listen: false).setSettings(_sm.toMap());
+                Provider.of<RingDoublerConnectionProvider>(context, listen: false).setSettings(_sm.toMap());
               },
               icon: Icon(
                 Icons.settings_backup_restore,
@@ -390,8 +394,8 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
                   //update
                   _outputYarnDia.text = _sm.outputYarnDia ?? "";
 
-                  ConnectionProvider().setSettings(_sm.toMap());
-                  Provider.of<ConnectionProvider>(context, listen: false)
+                  RingDoublerConnectionProvider().setSettings(_sm.toMap());
+                  Provider.of<RingDoublerConnectionProvider>(context, listen: false)
                       .setSettings(_sm.toMap());
 
                   showDialog(
@@ -418,55 +422,91 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
           ],
         ),
       ];
-    } else {
-      return [
-        IconButton(
-          onPressed: () {
-            try {
-              String _err = isValidForm();
+    }
 
-              if (_err != "valid") {
-                //if error in form
-                SnackBar _snack =
+    else {
+      return [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+                onPressed: () async {
+                  _requestSettings();
+                },
+                icon: Icon(
+                  Icons.input,
+                  color: Theme.of(context).primaryColor,
+                )),
+            Text(
+              "Input",
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ],
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+              onPressed: () {
+                try {
+                  String _err = isValidForm();
+
+                  if (_err != "valid") {
+                    //if error in form
+                    SnackBar _snack =
                     SnackBarService(message: _err, color: Colors.red)
                         .snackBar();
-                ScaffoldMessenger.of(context).showSnackBar(_snack);
+                    ScaffoldMessenger.of(context).showSnackBar(_snack);
 
-                throw FormatException(_err);
-              }
+                    throw FormatException(_err);
+                  }
 
-              SettingsMessage _sm = SettingsMessage(
-                  inputYarn: _inputYarnCount.text,
-                  outputYarnDia: _outputYarnDia.text,
-                  spindleSpeed: _spindleSpeedChoice,
-                  twistPerInch: _twistPerInch.text,
-                  packageHt: _packageHeight.text,
-                  diaBuildFactor: _diaBuildFactor.text,
-                  windingClosenessFactor: _windingClosenessFactor.text,
-                  windingOffsetCoils: _windingOffsetCoils.text,
-              );
+                  SettingsMessage _sm = SettingsMessage(
+                    inputYarn: _inputYarnCount.text,
+                    outputYarnDia: _outputYarnDia.text,
+                    spindleSpeed: _spindleSpeedChoice,
+                    twistPerInch: _twistPerInch.text,
+                    packageHt: _packageHeight.text,
+                    diaBuildFactor: _diaBuildFactor.text,
+                    windingClosenessFactor: _windingClosenessFactor.text,
+                    windingOffsetCoils: _windingOffsetCoils.text,
+                  );
 
-              //update
-              _outputYarnDia.text = _sm.outputYarnDia??"";
+                  //update
+                  _outputYarnDia.text = _sm.outputYarnDia??"";
 
-              ConnectionProvider().setSettings(_sm.toMap());
-              Provider.of<ConnectionProvider>(context, listen: false)
-                  .setSettings(_sm.toMap());
+                  RingDoublerConnectionProvider().setSettings(_sm.toMap());
+                  Provider.of<RingDoublerConnectionProvider>(context, listen: false)
+                      .setSettings(_sm.toMap());
 
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return _popUpUI();
-                  });
-            } catch (e) {
-              print("Settings: search icon button: ${e.toString()}");
-            }
-          },
-          icon: Icon(
-            Icons.search,
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return _popUpUI();
+                      });
+                } catch (e) {
+                  print("Settings: search icon button: ${e.toString()}");
+                }
+              },
+              icon: Icon(
+                Icons.search,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            Text(
+              "parameters",
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ],
+        )
       ];
     }
   }
@@ -729,9 +769,9 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
         //update
         _outputYarnDia.text = _sm.outputYarnDia??"";
 
-        ConnectionProvider().setSettings(_sm.toMap());
+        RingDoublerConnectionProvider().setSettings(_sm.toMap());
 
-        Provider.of<ConnectionProvider>(context, listen: false).setSettings(_sm.toMap());
+        Provider.of<RingDoublerConnectionProvider>(context, listen: false).setSettings(_sm.toMap());
 
         SnackBar _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();
         ScaffoldMessenger.of(context).showSnackBar(_sb);

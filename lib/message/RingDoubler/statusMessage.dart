@@ -3,6 +3,7 @@ import 'package:flyer/message/RingDoubler/errorMessage.dart';
 import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
+import 'machineEnums.dart';
 
 class StatusMessage{
 
@@ -130,7 +131,7 @@ class StatusMessage{
       }
     }
 
-    return "0";
+    return "";
   }
 
   String attributeName(String ss,String t){
@@ -150,8 +151,8 @@ class StatusMessage{
     else if(ss==Substate.running.name && t==Running.rightLiftDistance.hexVal){
       return Running.rightLiftDistance.name;
     }
-    else if(ss==Substate.running.name && t==Running.layers.hexVal){
-      return Running.layers.name;
+    else if(ss==Substate.running.name && t==Running.weight.hexVal){
+      return Running.weight.name;
     }
     else if(ss==Substate.pause.name && t==Pause.pauseReason.hexVal){
       return Pause.pauseReason.name;

@@ -7,12 +7,11 @@ import 'package:flyer/screens/FlyerScreens/drawer.dart';
 import 'package:flyer/screens/DrawFrameScreens/advanced_options.dart';
 import 'package:flyer/screens/DrawFrameScreens/phone_status_page.dart';
 import 'package:flyer/screens/DrawFrameScreens/settings.dart';
-import 'package:flyer/screens/status.dart';
 import 'package:flyer/screens/FlyerScreens/diagnostics.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:provider/provider.dart';
-import '../../services/provider_service.dart';
+import '../../services/DrawFrame/provider_service.dart';
 import '../../services/snackbar_service.dart';
 
 class DrawFrameDashboardScaffold extends StatefulWidget {
@@ -76,8 +75,8 @@ class _DrawFrameDashboardScaffoldState extends State<DrawFrameDashboardScaffold>
     widget.connection.close();
     widget.connection.dispose();
 
-    ConnectionProvider().clearSettings();
-    Provider.of<ConnectionProvider>(context,listen: false).clearSettings();
+    DrawFrameConnectionProvider().clearSettings();
+    Provider.of<DrawFrameConnectionProvider>(context,listen: false).clearSettings();
 
     super.dispose();
   }
@@ -113,7 +112,6 @@ class _DrawFrameDashboardScaffoldState extends State<DrawFrameDashboardScaffold>
         appBar: appBar(_scaffoldKey),
         bottomNavigationBar: navigationBar(),
         body: _pages[_selectedIndex],
-        drawer: FlyerDrawerPage(connection: connection, stream: multiStream,),
       );
     }
     else{
@@ -131,7 +129,6 @@ class _DrawFrameDashboardScaffoldState extends State<DrawFrameDashboardScaffold>
         appBar: appBar(_scaffoldKey),
         bottomNavigationBar: navigationBar(),
         body: _pages[_selectedIndex],
-        drawer: FlyerDrawerPage(connection: connection, stream: multiStream,),
       );
     }
   }
@@ -152,8 +149,8 @@ class _DrawFrameDashboardScaffoldState extends State<DrawFrameDashboardScaffold>
           widget.connection.close();
           widget.connection.dispose();
 
-          ConnectionProvider().clearSettings();
-          Provider.of<ConnectionProvider>(context,listen: false).clearSettings();
+          DrawFrameConnectionProvider().clearSettings();
+          Provider.of<DrawFrameConnectionProvider>(context,listen: false).clearSettings();
 
           SnackBar _sb = SnackBarService(message: "Pair Again", color: Colors.green).snackBar();
 
@@ -163,14 +160,6 @@ class _DrawFrameDashboardScaffoldState extends State<DrawFrameDashboardScaffold>
         },
       ),
 
-      actions: [
-        IconButton(
-            onPressed: (){
-              _scaffoldKey.currentState?.openDrawer();
-            },
-            icon: Icon(Icons.more_vert),
-        ),
-      ],
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

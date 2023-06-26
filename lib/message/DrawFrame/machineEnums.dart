@@ -49,3 +49,44 @@ extension MotorIdExtension on MotorId{
     }
   }
 }
+
+enum Running{
+  currentLength,
+  motorTemp,
+  MOSFETTemp,
+  current,
+  RPM,
+  outputMtrs,
+  whatInfo,
+  totalPower,
+  deliveryMtrsPerMin,
+
+}
+
+extension runningExtension on Running{
+
+  String get hexVal {
+    switch (this) {
+      case Running.currentLength:
+        return "0E";
+      case Running.motorTemp:
+        return "04";
+      case Running.MOSFETTemp:
+        return "05";
+      case Running.current:
+        return "06";
+      case Running.RPM:
+        return "07";
+      case Running.outputMtrs:
+        return "08";
+      case Running.whatInfo:
+        return "09";
+      case Running.totalPower:
+        return "0A";
+      case Running.deliveryMtrsPerMin:
+        return "0D";
+      default:
+        return "00";
+    }
+  }
+}

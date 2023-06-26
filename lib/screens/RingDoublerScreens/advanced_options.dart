@@ -5,28 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/acknowledgement.dart';
-import 'package:flyer/message/Flyer/enums.dart';
+
 import 'package:flyer/message/gearBoxMessage.dart';
 import 'package:flyer/message/logging_message.dart';
-import 'package:flyer/message/Flyer/rtf_message.dart';
 
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
-import '../../services/provider_service.dart';
-import 'package:flyer/message/Flyer/settingsMessage.dart';
+import '../../services/RingDoubler/provider_service.dart';
 
-class FlyerAdvancedOptionsUI extends StatefulWidget {
+
+class RingDoublerAdvancedOptionsUI extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  FlyerAdvancedOptionsUI({required this.connection, required this.stream});
+  RingDoublerAdvancedOptionsUI({required this.connection, required this.stream});
 
   @override
-  _FlyerAdvancedOptionsUIState createState() => _FlyerAdvancedOptionsUIState();
+  _RingDoublerAdvancedOptionsUIState createState() => _RingDoublerAdvancedOptionsUIState();
 }
 
-class _FlyerAdvancedOptionsUIState extends State<FlyerAdvancedOptionsUI> {
+class _RingDoublerAdvancedOptionsUIState extends State<RingDoublerAdvancedOptionsUI> {
 
 
   List<String> _data = List<String>.empty(growable: true);
@@ -89,7 +88,7 @@ class _FlyerAdvancedOptionsUIState extends State<FlyerAdvancedOptionsUI> {
 
             SwitchListTile(
               title: const Text('Enable Logging', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400, fontSize: 18),),
-              value: Provider.of<ConnectionProvider>(context,listen: false).logEnabled,
+              value: Provider.of<RingDoublerConnectionProvider>(context,listen: false).logEnabled,
               contentPadding: EdgeInsets.only(top: 10,left: 18, right: 10, bottom: 10),
               onChanged: (bool value) async {
 
@@ -130,7 +129,7 @@ class _FlyerAdvancedOptionsUIState extends State<FlyerAdvancedOptionsUI> {
 
                     else if(_d==Acknowledgement().createPacket()){
 
-                      Provider.of<ConnectionProvider>(context,listen: false).setLogEnabled(value);
+                      Provider.of<RingDoublerConnectionProvider>(context,listen: false).setLogEnabled(value);
 
                       SnackBar _sb = SnackBarService(message: "Logging ${_msg}", color: Colors.green).snackBar();
                       ScaffoldMessenger.of(context).showSnackBar(_sb);
@@ -167,7 +166,7 @@ class _FlyerAdvancedOptionsUIState extends State<FlyerAdvancedOptionsUI> {
             const Divider(
               color: Colors.grey,
             ),
-            FlyerMotorGearPageUI(connection: widget.connection, stream: widget.stream),
+            RingDoublerMotorGearPageUI(connection: widget.connection, stream: widget.stream),
             const Divider(
               color: Colors.grey,
 
@@ -208,18 +207,18 @@ class _FlyerAdvancedOptionsUIState extends State<FlyerAdvancedOptionsUI> {
 
 
 
-class FlyerMotorGearPageUI extends StatefulWidget {
+class RingDoublerMotorGearPageUI extends StatefulWidget {
 
   BluetoothConnection connection;
   Stream<Uint8List> stream;
 
-  FlyerMotorGearPageUI({required this.connection, required this.stream});
+  RingDoublerMotorGearPageUI({required this.connection, required this.stream});
 
   @override
-  _FlyerMotorGearPageUIState createState() => _FlyerMotorGearPageUIState();
+  _RingDoublerMotorGearPageUIState createState() => _RingDoublerMotorGearPageUIState();
 }
 
-class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
+class _RingDoublerMotorGearPageUIState extends State<RingDoublerMotorGearPageUI> {
 
   bool start = true;
   bool stop = false;
@@ -277,7 +276,7 @@ class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
   @override
   Widget build(BuildContext context) {
 
-    start = (Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed && Provider.of<ConnectionProvider>(context,listen: false).hasGBStarted);
+    start = (Provider.of<RingDoublerConnectionProvider>(context,listen: false).settingsChangeAllowed && Provider.of<RingDoublerConnectionProvider>(context,listen: false).hasGBStarted);
 
     print("$start");
 
@@ -340,8 +339,8 @@ class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
 
               children: [
 
-                Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("START", start, _start): Container(),
-                Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("STOP", stop, _stop): Container(),
+                Provider.of<RingDoublerConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("START", start, _start): Container(),
+                Provider.of<RingDoublerConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("STOP", stop, _stop): Container(),
               ],
             ),
           ],
@@ -687,7 +686,7 @@ class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
     await Future.delayed(Duration(milliseconds: 250));
 
 
-    Provider.of<ConnectionProvider>(context,listen: false).setGBStart(false);
+    Provider.of<RingDoublerConnectionProvider>(context,listen: false).setGBStart(false);
 
     setState(() {
 
@@ -701,7 +700,7 @@ class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
     await Future.delayed(Duration(milliseconds: 100));
 
 
-    Provider.of<ConnectionProvider>(context,listen: false).setGBStart(true);
+    Provider.of<RingDoublerConnectionProvider>(context,listen: false).setGBStart(true);
 
     setState(() {
 
@@ -739,358 +738,3 @@ class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
 }
 
 
-class FlyerRTFUI extends StatefulWidget {
-
-  BluetoothConnection connection;
-  Stream<Uint8List> stream;
-
-  FlyerRTFUI({required this.connection, required this.stream});
-
-
-  @override
-  _FlyerRTFUIState createState() => _FlyerRTFUIState();
-}
-
-class _FlyerRTFUIState extends State<FlyerRTFUI> {
-
-  String? _RTFval;
-
-  List<String> _data = List<String>.empty(growable: true);
-  bool newDataReceived = false;
-
-  late BluetoothConnection connection;
-  late Stream<Uint8List> stream;
-
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    connection = widget.connection;
-    stream = widget.stream;
-
-    try{
-      stream!.listen(_onDataReceived).onDone(() {});
-    }
-    catch(e){
-
-      print("RTF:ADVANCED OP: Listening init: ${e.toString()}");
-    }
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    _data.clear();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    _RTFval = Provider.of<ConnectionProvider>(context,listen: false).getRTF;
-
-    return Container(
-
-      height: MediaQuery.of(context).size.height*0.10,
-      width: MediaQuery.of(context).size.width,
-
-      padding: EdgeInsets.all(5),
-
-
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-
-          _customButton("receive", Icons.arrow_downward, _receive),
-          _customIncrementDecrement(_RTFval),
-          _customButton("send", Icons.arrow_upward, _send),
-        ],
-      ),
-    );
-  }
-
-  void _send() async {
-
-    if(_RTFval != null){
-
-
-      try{
-        String  _rtfMessage = RTFMessage(value: _RTFval!).createPacket();
-
-        connection!.output.add(Uint8List.fromList(utf8.encode(_rtfMessage)));
-
-        await connection!.output!.allSent;
-
-        await Future.delayed(Duration(milliseconds: 100));
-
-        if(newDataReceived){
-
-          newDataReceived = false;
-          String _d = _data.last;
-
-          if (_d == null || _d == "") {
-            SnackBar _sb = SnackBarService(message: "Invalid Packet", color: Colors.red).snackBar();
-            ScaffoldMessenger.of(context).showSnackBar(_sb);
-
-            print("Invalid Packet");
-
-            throw FormatException("RTF: Invalid Packet");
-          }
-
-          if (_d == Acknowledgement().createPacket()) {
-            SnackBar _sb = SnackBarService(message: "Saved RTF", color: Colors.green).snackBar();
-            ScaffoldMessenger.of(context).showSnackBar(_sb);
-          }
-          else {
-            SnackBar _sb = SnackBarService(message: "Failed To Save RTF Data", color: Colors.red).snackBar();
-            ScaffoldMessenger.of(context).showSnackBar(_sb);
-
-            print("RTF Failed");
-
-            throw FormatException("Send RTF Failed");
-          }
-        }
-
-      }
-      catch(e){
-
-        SnackBar _sb = SnackBarService(message: "Failed To Save RTF Data", color: Colors.red).snackBar();
-        ScaffoldMessenger.of(context).showSnackBar(_sb);
-
-        print("ADVANCED OPTION: RTF: ${e.toString()}");
-      }
-
-
-    }
-    else{
-      SnackBar _sb = SnackBarService(message: "Receive Data Before Pressing Send", color: Colors.red).snackBar();
-      ScaffoldMessenger.of(context).showSnackBar(_sb);
-    }
-  }
-
-  void _receive() async {
-
-    try{
-
-      String _rc = RTFMessage(value: "").receiveRequest();
-
-      connection!.output.add(Uint8List.fromList(utf8.encode(_rc)));
-
-      await connection!.output!.allSent;
-
-      await Future.delayed(Duration(milliseconds: 100));
-
-      if(newDataReceived){
-
-        newDataReceived = false;
-        String _d = _data.last;
-
-        if (_d == null || _d == "") {
-          SnackBar _sb = SnackBarService(message: "Invalid Packet", color: Colors.red).snackBar();
-          ScaffoldMessenger.of(context).showSnackBar(_sb);
-
-          print("Invalid Packet");
-
-          throw FormatException("RTF1: Invalid Packet");
-        }
-
-        var dt = RTFMessage(value: "").decode(_d);
-
-        String? _rtfdata = dt["value"];
-
-        if(_rtfdata==null){
-
-          throw FormatException("RTF1: Invalid value");
-        }
-
-        Provider.of<ConnectionProvider>(context,listen: false).setRTF(_rtfdata);
-        _RTFval = _rtfdata.toString();
-
-
-        setState(() {
-        });
-      }
-
-    }
-    catch(e){
-
-      SnackBar _sb = SnackBarService(message: "Failed To Receive RTF Data", color: Colors.red).snackBar();
-      ScaffoldMessenger.of(context).showSnackBar(_sb);
-
-      print("RTF: ${e.toString()}");
-    }
-  }
-
-
-  void _increment(){
-
-
-    try{
-      if(_RTFval!=null){
-
-        double _rtfdata = double.parse(_RTFval!);
-
-        _rtfdata += 0.01;
-
-        if(_rtfdata > settingsLimits["RTF"]![1]){
-
-          SnackBar _sb = SnackBarService(message: "RTF Range ${settingsLimits["RTF"]}", color: Colors.red).snackBar();
-          ScaffoldMessenger.of(context).showSnackBar(_sb);
-        }
-        else{
-
-          Provider.of<ConnectionProvider>(context,listen: false).setRTF(_rtfdata.toStringAsFixed(2));
-          _RTFval = _rtfdata.toStringAsFixed(2);
-          setState(() {
-
-          });
-        }
-      }
-    }
-    catch(e){
-      SnackBar _sb = SnackBarService(message: "Failed To Set RTF Data", color: Colors.red).snackBar();
-      ScaffoldMessenger.of(context).showSnackBar(_sb);
-      print("increment: RTF: ${e.toString()}");
-    }
-  }
-
-  void _decrement(){
-
-    try{
-      if(_RTFval!=null){
-
-        double _rtfdata = double.parse(_RTFval!);
-
-        _rtfdata -= 0.01;
-
-        if(_rtfdata < settingsLimits["RTF"]![0]){
-
-          SnackBar _sb = SnackBarService(message: "RTF Range ${settingsLimits["RTF"]}", color: Colors.red).snackBar();
-          ScaffoldMessenger.of(context).showSnackBar(_sb);
-        }
-        else{
-
-          Provider.of<ConnectionProvider>(context,listen: false).setRTF(_rtfdata.toStringAsFixed(2));
-          _RTFval = _rtfdata.toStringAsFixed(2);
-          setState(() {
-
-          });
-        }
-      }
-    }
-    catch(e){
-      SnackBar _sb = SnackBarService(message: "Failed To Set RTF Data", color: Colors.red).snackBar();
-      ScaffoldMessenger.of(context).showSnackBar(_sb);
-      print("decrement: RTF: ${e.toString()}");
-    }
-  }
-
-  Widget _customButton(String label,IconData icon, VoidCallback function){
-
-    return Container(
-      width: MediaQuery.of(context).size.width*0.15,
-
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            IconButton(
-                onPressed: (){
-                  function();
-                },
-                icon: Icon(
-                    icon,
-                    color: Colors.blue,
-                ),
-
-            ),
-            Text(
-                label,
-                style: TextStyle(color: Colors.blue),
-            ),
-          ]
-      ),
-
-    );
-  }
-
-  Widget _customIncrementDecrement(String? _text){
-
-    return Container(
-
-      height: MediaQuery.of(context).size.height*0.06,
-      width: MediaQuery.of(context).size.width*0.65,
-
-      margin: EdgeInsets.only(bottom: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-
-        children: [
-
-          IconButton(
-              onPressed: (){
-                _increment();
-              },
-              icon: Icon(Icons.add, color: Theme.of(context).primaryColor,)
-          ),
-
-          Container(
-            width: MediaQuery.of(context).size.width*0.3,
-            height: MediaQuery.of(context).size.height*0.06,
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.only(left: 10, right: 10),
-            decoration: BoxDecoration(
-              border: Border.all(),
-            ),
-            child: Text(
-              _text??"-",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold
-              ),
-            ),
-            alignment: Alignment.center,
-          ),
-          IconButton(
-              onPressed: (){
-                _decrement();
-              },
-              icon: Icon(Icons.remove, color: Theme.of(context).primaryColor,)
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _onDataReceived(Uint8List data) {
-
-    try {
-      String _d = utf8.decode(data);
-
-      if(_d==null || _d==""){
-        throw FormatException('Invalid Packet');
-      }
-
-      if(_d == Acknowledgement().createPacket() || _d == Acknowledgement().createPacket(error: true) || _d.substring(4,6)==Information.RTF.hexVal){
-
-        //Allow if:
-        //request settins data
-        // or if acknowledgement (error or no error )
-
-        _data.add(_d);
-        newDataReceived = true;
-      }
-
-      //else ignore data
-
-    }
-    catch (e){
-
-      print("rtf : onDataReceived: ${e.toString()}");
-    }
-  }
-}

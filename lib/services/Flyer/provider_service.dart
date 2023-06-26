@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flyer/globals.dart' as globals;
 
-class ConnectionProvider extends ChangeNotifier{
+class FlyerConnectionProvider extends ChangeNotifier{
 
   bool _isConnected = false;
   bool _PIDEnabled = false;

@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/DrawFrame/statusMessage.dart';
-import 'package:flyer/screens/FlyerScreens/running_carousel.dart';
+import 'package:flyer/screens/DrawFrameScreens/running_carousel.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/provider_service.dart';
+import '../../services/DrawFrame/provider_service.dart';
 
 class DrawFramePhoneStatusPageUI extends StatefulWidget {
 
@@ -31,7 +31,7 @@ class _DrawFramePhoneStatusPageUIState extends State<DrawFramePhoneStatusPageUI>
   String _errorInformation = "";
   String _errorCode = "";
 
-  String _layer = "";
+  String _currentLength = "";
 
   String _pauseReason = "";
 
@@ -72,27 +72,23 @@ class _DrawFramePhoneStatusPageUIState extends State<DrawFramePhoneStatusPageUI>
     try{
       if (running || homing || pause || hasError) {
         //disable settings and diagnostic pages when running to prevent errors
-
+        print("runnin");
         if (Provider
-            .of<ConnectionProvider>(context, listen: false)
+            .of<DrawFrameConnectionProvider>(context, listen: false)
             .settingsChangeAllowed) {
-          Provider.of<ConnectionProvider>(context, listen: false)
+          Provider.of<DrawFrameConnectionProvider>(context, listen: false)
               .setSettingsChangeAllowed(false);
         }
       }
-      else {
-        if (!Provider
-            .of<ConnectionProvider>(context, listen: false)
-            .settingsChangeAllowed) {
+      else if(idle){
+
           try {
-            Provider.of<ConnectionProvider>(
-                context, listen: false)
-                .setSettingsChangeAllowed(true);
+            Provider.of<DrawFrameConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
           }
           catch (e) {
             print("Status: ${e.toString()}");
           }
-        }
+
       }
     }
     catch(e){
@@ -176,9 +172,7 @@ class _DrawFramePhoneStatusPageUIState extends State<DrawFramePhoneStatusPageUI>
                       _errorAction = "Action";
                     }
                     else if (running) {
-                      _layer = double.parse(_statusResponse["layers"]!)
-                          .toInt()
-                          .toString();
+                      _currentLength = double.parse(_statusResponse["currentLength"]!).toStringAsFixed(2);
                     }
                     else if (pause) {
                       _pauseReason = _statusResponse["pauseReason"]!;
@@ -220,19 +214,24 @@ class _DrawFramePhoneStatusPageUIState extends State<DrawFramePhoneStatusPageUI>
     //decides which ui should be used based on substate
 
     if(hasError){
+      Provider.of<DrawFrameConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _errorUI();
     }
     else if(running){
+      Provider.of<DrawFrameConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _runUI();
     }
     else if(homing){
+      Provider.of<DrawFrameConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _homingUI();
     }
     else if(pause){
+      Provider.of<DrawFrameConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _pauseUI();
     }
     else{
       //idle
+      Provider.of<DrawFrameConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
       return _placeHolder();
     }
   }
@@ -329,7 +328,7 @@ class _DrawFramePhoneStatusPageUIState extends State<DrawFramePhoneStatusPageUI>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Layer",
+              "Current Length",
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontSize: 18,
@@ -345,7 +344,7 @@ class _DrawFramePhoneStatusPageUIState extends State<DrawFramePhoneStatusPageUI>
                 border: Border.all(color: Colors.grey),
               ),
               child: Text(
-                _layer,
+                _currentLength,
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   color: Colors.black,
@@ -357,9 +356,11 @@ class _DrawFramePhoneStatusPageUIState extends State<DrawFramePhoneStatusPageUI>
           ],
         ),
 
-        _liftAnimation(_liftLeft,_liftRight),
+        Container(
+          height: MediaQuery.of(context).size.height*0.1,
+        ),
 
-        FlyerRunningCarousel(connection: connection, multistream: statusStream),
+        DrawFrameRunningCarousel(connection: connection, multistream: statusStream),
       ],
     );
   }

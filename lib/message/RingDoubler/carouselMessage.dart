@@ -1,6 +1,7 @@
 import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
+import 'machineEnums.dart';
 
 class CarouselMessage{
 
@@ -51,7 +52,6 @@ class CarouselMessage{
     }
 
     if(_machineState!=Information.machineState.hexVal){
-      print(packet);
       print("Carousel Message: Invalid Request Settings Code");
       return Map<String, String>();
       //throw FormatException("Carousel Message: Invalid Request Settings Code");
@@ -63,7 +63,6 @@ class CarouselMessage{
 
       String t = packet.substring(i,i+2);
 
-
       int l = int.parse(packet.substring(i+2,i+4));
 
       String val = packet.substring(i+4,i+4+l);
@@ -73,12 +72,13 @@ class CarouselMessage{
       double v; //int or double
 
       if(key == ""){
+        print(t);
         print("carousel message: Invalid Attribute Type");
         return Map<String, String>();
         //throw FormatException("Invalid Attribute Type");
       }
 
-
+      //print ("Key:$key,Len:$l,Val:$val");
 
       if(l==4 || l==2){
         v = int.parse(val,radix: 16).toDouble();
@@ -88,23 +88,23 @@ class CarouselMessage{
       }
 
       if(key==Running.whatInfo.name){
-
-        //ensure whatinfo and motor id match
-        print("here: $key,$val,$carouselId");
-
+        //print("whatInfo V parameter = $val");
+        //print("carousal No = $carouselId");
         if(val.padLeft(2,"0") != carouselId){
-          print("Carousel Info What Info and Motor ID don't match");
+          //print("Carousel Info What Info and Motor ID don't match");
           return Map<String, String>();
           //throw FormatException("Carousel Info What Info and Motor ID don't match");
         }
       }
-      //print("t: $t, l: $l, v: $val");
-      _settings[key] = v.toString();
+      //print("t: $t, l: $l, v: $val key: $key");
+      if (key == Running.whatInfo.name){
+        _settings[key] = val;
+      }else {
+        _settings[key] = v.toString();
+      }
 
       i=i+4+l;
     }
-
-
 
     print(_settings);
     return _settings;
@@ -123,7 +123,7 @@ class CarouselMessage{
       }
     }
 
-    return "0";
+    return "";
   }
 
   String attributeName(String t){
@@ -143,9 +143,6 @@ class CarouselMessage{
     else if(t==Running.leftLiftDistance.hexVal){
       return Running.leftLiftDistance.name;
     }
-    else if(t==Running.layers.hexVal){
-      return Running.layers.name;
-    }
     else if(t==Running.motorTemp.hexVal){
       return Running.motorTemp.name;
     }
@@ -160,6 +157,12 @@ class CarouselMessage{
     }
     else if(t==Running.outputMtrs.hexVal){
       return Running.outputMtrs.name;
+    }
+    else if(t==Running.totalPower.hexVal){
+      return Running.totalPower.name;
+    }
+    else if(t==Running.weight.hexVal){
+      return Running.weight.name;
     }
     else{
       return "";

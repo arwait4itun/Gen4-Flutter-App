@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/screens/CardingScreens/diagnostics.dart';
-import 'package:flyer/screens/FlyerScreens/drawer.dart';
-import 'package:flyer/screens/DrawFrameScreens/advanced_options.dart';
+import 'package:flyer/screens/DrawFrameScreens/drawer.dart';
+import 'package:flyer/screens/CardingScreens/advanced_options.dart';
 import 'package:flyer/screens/CardingScreens/phone_status_page.dart';
 import 'package:flyer/screens/CardingScreens/settings.dart';
-import 'package:flyer/screens/status.dart';
 
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:provider/provider.dart';
-import '../../services/provider_service.dart';
+import '../../services/Carding/provider_service.dart';
 import '../../services/snackbar_service.dart';
 
 class CardingDashboardScaffold extends StatefulWidget {
@@ -76,8 +75,8 @@ class _CardingDashboardScaffoldState extends State<CardingDashboardScaffold> {
     widget.connection.close();
     widget.connection.dispose();
 
-    ConnectionProvider().clearSettings();
-    Provider.of<ConnectionProvider>(context,listen: false).clearSettings();
+    CardingConnectionProvider().clearSettings();
+    Provider.of<CardingConnectionProvider>(context,listen: false).clearSettings();
 
     super.dispose();
   }
@@ -103,7 +102,7 @@ class _CardingDashboardScaffoldState extends State<CardingDashboardScaffold> {
         CardingStatusPageUI(connection: connection,statusStream: multiStream,),
         CardingSettingsPage(connection: connection, settingsStream: multiStream,),
         CardingTestPage(connection: connection, testsStream: multiStream,),
-        DrawFrameAdvancedOptionsUI(connection: connection,stream: multiStream,),
+        CardingAdvancedOptionsUI(connection: connection,stream: multiStream,),
       ];
 
 
@@ -113,7 +112,6 @@ class _CardingDashboardScaffoldState extends State<CardingDashboardScaffold> {
         appBar: appBar(_scaffoldKey),
         bottomNavigationBar: navigationBar(),
         body: _pages[_selectedIndex],
-        drawer: FlyerDrawerPage(connection: connection, stream: multiStream,),
       );
     }
     else{
@@ -131,7 +129,6 @@ class _CardingDashboardScaffoldState extends State<CardingDashboardScaffold> {
         appBar: appBar(_scaffoldKey),
         bottomNavigationBar: navigationBar(),
         body: _pages[_selectedIndex],
-        drawer: FlyerDrawerPage(connection: connection, stream: multiStream,),
       );
     }
   }
@@ -152,8 +149,8 @@ class _CardingDashboardScaffoldState extends State<CardingDashboardScaffold> {
           widget.connection.close();
           widget.connection.dispose();
 
-          ConnectionProvider().clearSettings();
-          Provider.of<ConnectionProvider>(context,listen: false).clearSettings();
+          CardingConnectionProvider().clearSettings();
+          Provider.of<CardingConnectionProvider>(context,listen: false).clearSettings();
 
           SnackBar _sb = SnackBarService(message: "Pair Again", color: Colors.green).snackBar();
 
@@ -163,14 +160,6 @@ class _CardingDashboardScaffoldState extends State<CardingDashboardScaffold> {
         },
       ),
 
-      actions: [
-        IconButton(
-            onPressed: (){
-              _scaffoldKey.currentState?.openDrawer();
-            },
-            icon: Icon(Icons.more_vert),
-        ),
-      ],
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

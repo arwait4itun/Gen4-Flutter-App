@@ -37,7 +37,7 @@ class _FlyerRunningCarouselState extends State<FlyerRunningCarousel> {
     MotorId.liftRight.hexVal,
   ];
 
-  String? motorTemp,MOSFETTemp,current,RPM,production;
+  String? motorTemp,MOSFETTemp,current,RPM,production,totalPower;
 
   late Stream<Uint8List> _stream;
   late BluetoothConnection _connection;
@@ -102,32 +102,30 @@ class _FlyerRunningCarouselState extends State<FlyerRunningCarousel> {
 
                   var data = snapshot.data;
                   String _d = utf8.decode(data!);
-                  print("\nCarousel: data: "+_d);
-                  print(snapshot.data);
+                  //print ("in Loop $i");
+                  //print("\nRun PacketData: data: "+_d);
 
-                  String _motorId = _ids[i-1];
+                  String _carousalID = _ids[i-1];
 
-                  print("here!!!!!! $_motorId");
-                  Map<String,String> _carouselResponse = CarouselMessage(carouselId: _motorId).decode(_d);
-                  print("HERE!!!!!!!!!!!!!!: $_carouselResponse");
-
-
+                  //print("carousal input No = $_carousalID");
+                  Map<String,String> _carouselResponse = CarouselMessage(carouselId: _carousalID).decode(_d);
+                  //print("HERE!!!!!!!!!!!!!!: $_carouselResponse");
 
                   if(!_carouselResponse.isEmpty) {
-                    if (_motorId == "0A") {
+                    if (_carousalID == "0A") {
                       //for production
                       production = double.parse(_carouselResponse["outputMtrs"]!).toStringAsFixed(2);
+                      totalPower = double.parse(_carouselResponse["totalPower"]!).toStringAsFixed(2);
+                      //print ("after Carousal Response :$production , $totalPower");
                     }
                     else {
                       motorTemp = double.parse(_carouselResponse["motorTemp"]!).toStringAsFixed(0);
                       MOSFETTemp = double.parse(_carouselResponse["MOSFETTemp"]!).toStringAsFixed(0);
                       current = double.parse(_carouselResponse["current"]!).toStringAsFixed(2);
                       RPM = double.parse(_carouselResponse["RPM"]!).toStringAsFixed(0);
+
                     }
                   }
-
-
-
 
                   return Container(
                     margin: EdgeInsets.only(left: 2.5,right: 2.5),
@@ -147,11 +145,10 @@ class _FlyerRunningCarouselState extends State<FlyerRunningCarousel> {
                       crossAxisAlignment: CrossAxisAlignment.center,
 
                       children: [
-
                         Text(_names[i-1], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
 
                         i!=1? _customRow("Motor Temp (C)", motorTemp??"-"): _customRow("Output Per Spindle", production??"-"),
-                        i!=1? _customRow("MOSFET Temp (C)", MOSFETTemp??"-"): Container(),
+                        i!=1? _customRow("MOSFET Temp (C)", MOSFETTemp??"-"): _customRow("Total Power", totalPower??"-"),
                         i!=1?_customRow("Current (A)", current??"-"): Container(),
                         i!=1? _customRow("RPM", RPM??"-"): Container(),
 

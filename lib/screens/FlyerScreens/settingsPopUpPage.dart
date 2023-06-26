@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/provider_service.dart';
+import '../../services/Flyer/provider_service.dart';
 
 class FlyerPopUpUI extends StatefulWidget {
   const FlyerPopUpUI({Key? key}) : super(key: key);
@@ -36,9 +36,9 @@ class _FlyerPopUpUIState extends State<FlyerPopUpUI> {
     // TODO: implement initState
     super.initState();
 
-    if(!Provider.of<ConnectionProvider>(context,listen: false).isSettingsEmpty){
+    if(!Provider.of<FlyerConnectionProvider>(context,listen: false).isSettingsEmpty){
 
-      Map<String,String> _s = Provider.of<ConnectionProvider>(context,listen: false).settings;
+      Map<String,String> _s = Provider.of<FlyerConnectionProvider>(context,listen: false).settings;
 
       _spindleSpeed = double.parse(_s["spindleSpeed"].toString());
       _draft =  double.parse(_s["draft"].toString());
@@ -56,7 +56,7 @@ class _FlyerPopUpUIState extends State<FlyerPopUpUI> {
   @override
   Widget build(BuildContext context) {
 
-    if(Provider.of<ConnectionProvider>(context,listen: false).isSettingsEmpty){
+    if(Provider.of<FlyerConnectionProvider>(context,listen: false).isSettingsEmpty){
 
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,

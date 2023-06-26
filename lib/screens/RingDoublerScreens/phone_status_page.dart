@@ -5,24 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/RingDoubler/statusMessage.dart';
-import 'package:flyer/screens/FlyerScreens/running_carousel.dart';
+import 'package:flyer/screens/RingDoublerScreens/running_carousel.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/provider_service.dart';
+import '../../services/RingDoubler/provider_service.dart';
 
-class FlyerPhoneStatusPageUI extends StatefulWidget {
+class RingDoublerPhoneStatusUI extends StatefulWidget {
 
 
   BluetoothConnection connection;
   Stream<Uint8List> statusStream;
 
-  FlyerPhoneStatusPageUI({required this.connection,required this.statusStream});
+  RingDoublerPhoneStatusUI({required this.connection,required this.statusStream});
 
   @override
-  _FlyerPhoneStatusPageUIState createState() => _FlyerPhoneStatusPageUIState();
+  _RingDoublerPhoneStatusUIState createState() => _RingDoublerPhoneStatusUIState();
 }
 
-class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
+class _RingDoublerPhoneStatusUIState extends State<RingDoublerPhoneStatusUI> {
 
   String _substate = "";
 
@@ -31,7 +31,7 @@ class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
   String _errorInformation = "";
   String _errorCode = "";
 
-  String _layer = "";
+  String _weight = "";
 
   String _pauseReason = "";
 
@@ -73,21 +73,14 @@ class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
       if (running || homing || pause || hasError) {
         //disable settings and diagnostic pages when running to prevent errors
 
-        if (Provider
-            .of<ConnectionProvider>(context, listen: false)
-            .settingsChangeAllowed) {
-          Provider.of<ConnectionProvider>(context, listen: false)
-              .setSettingsChangeAllowed(false);
+        if (Provider.of<RingDoublerConnectionProvider>(context, listen: false).settingsChangeAllowed) {
+          Provider.of<RingDoublerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
         }
       }
-      else {
-        if (!Provider
-            .of<ConnectionProvider>(context, listen: false)
-            .settingsChangeAllowed) {
+      else if(idle){
+        if (!Provider.of<RingDoublerConnectionProvider>(context, listen: false).settingsChangeAllowed) {
           try {
-            Provider.of<ConnectionProvider>(
-                context, listen: false)
-                .setSettingsChangeAllowed(true);
+            Provider.of<RingDoublerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
           }
           catch (e) {
             print("Status: ${e.toString()}");
@@ -176,9 +169,7 @@ class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
                       _errorAction = "Action";
                     }
                     else if (running) {
-                      _layer = double.parse(_statusResponse["layers"]!)
-                          .toInt()
-                          .toString();
+                      _weight = double.parse(_statusResponse["weight"]!).toStringAsFixed(2);
                     }
                     else if (pause) {
                       _pauseReason = _statusResponse["pauseReason"]!;
@@ -220,19 +211,29 @@ class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
     //decides which ui should be used based on substate
 
     if(hasError){
+      Provider.of<RingDoublerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
+
       return _errorUI();
     }
     else if(running){
+      Provider.of<RingDoublerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
+
       return _runUI();
     }
     else if(homing){
+      Provider.of<RingDoublerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
+
       return _homingUI();
     }
     else if(pause){
+      Provider.of<RingDoublerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
+
       return _pauseUI();
     }
     else{
       //idle
+      Provider.of<RingDoublerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
+
       return _placeHolder();
     }
   }
@@ -329,7 +330,7 @@ class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Layer",
+              "Output Weight",
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontSize: 18,
@@ -345,7 +346,7 @@ class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
                 border: Border.all(color: Colors.grey),
               ),
               child: Text(
-                _layer,
+                _weight,
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   color: Colors.black,
@@ -359,7 +360,7 @@ class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
 
         _liftAnimation(_liftLeft,_liftRight),
 
-        FlyerRunningCarousel(connection: connection, multistream: statusStream),
+        RingDoublerRunningCarousel(connection: connection, multistream: statusStream),
       ],
     );
   }

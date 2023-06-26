@@ -3,6 +3,7 @@ import 'package:flyer/message/Flyer/errorMessage.dart';
 import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
+import 'machineEnums.dart';
 
 class StatusMessage{
 
@@ -130,7 +131,7 @@ class StatusMessage{
       }
     }
 
-    return "0";
+    return "";
   }
 
   String attributeName(String ss,String t){

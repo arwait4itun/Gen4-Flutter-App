@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/acknowledgement.dart';
-import 'package:flyer/message/Flyer/enums.dart';
+import 'package:flyer/message/Carding/enums.dart';
 import 'package:flyer/message/gearBoxMessage.dart';
 import 'package:flyer/message/logging_message.dart';
 import 'package:flyer/message/Flyer/rtf_message.dart';
@@ -13,7 +13,7 @@ import 'package:flyer/message/Carding/settingsMessage.dart';
 
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
-import '../../services/provider_service.dart';
+import '../../services/Carding/provider_service.dart';
 
 class CardingAdvancedOptionsUI extends StatefulWidget {
 
@@ -89,7 +89,7 @@ class _CardingAdvancedOptionsUIState extends State<CardingAdvancedOptionsUI> {
 
             SwitchListTile(
               title: const Text('Enable Logging', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400, fontSize: 18),),
-              value: Provider.of<ConnectionProvider>(context,listen: false).logEnabled,
+              value: Provider.of<CardingConnectionProvider>(context,listen: false).logEnabled,
               contentPadding: EdgeInsets.only(top: 10,left: 18, right: 10, bottom: 10),
               onChanged: (bool value) async {
 
@@ -130,7 +130,7 @@ class _CardingAdvancedOptionsUIState extends State<CardingAdvancedOptionsUI> {
 
                     else if(_d==Acknowledgement().createPacket()){
 
-                      Provider.of<ConnectionProvider>(context,listen: false).setLogEnabled(value);
+                      Provider.of<CardingConnectionProvider>(context,listen: false).setLogEnabled(value);
 
                       SnackBar _sb = SnackBarService(message: "Logging ${_msg}", color: Colors.green).snackBar();
                       ScaffoldMessenger.of(context).showSnackBar(_sb);
@@ -272,7 +272,7 @@ class _DrawFrameMotorGearPageUIState extends State<DrawFrameMotorGearPageUI> {
   @override
   Widget build(BuildContext context) {
 
-    start = (Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed && Provider.of<ConnectionProvider>(context,listen: false).hasGBStarted);
+    start = (Provider.of<CardingConnectionProvider>(context,listen: false).settingsChangeAllowed && Provider.of<CardingConnectionProvider>(context,listen: false).hasGBStarted);
 
     print("$start");
 
@@ -335,8 +335,8 @@ class _DrawFrameMotorGearPageUIState extends State<DrawFrameMotorGearPageUI> {
 
               children: [
 
-                Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("START", start, _start): Container(),
-                Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("STOP", stop, _stop): Container(),
+                Provider.of<CardingConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("START", start, _start): Container(),
+                Provider.of<CardingConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("STOP", stop, _stop): Container(),
               ],
             ),
           ],
@@ -682,7 +682,7 @@ class _DrawFrameMotorGearPageUIState extends State<DrawFrameMotorGearPageUI> {
     await Future.delayed(Duration(milliseconds: 250));
 
 
-    Provider.of<ConnectionProvider>(context,listen: false).setGBStart(false);
+    Provider.of<CardingConnectionProvider>(context,listen: false).setGBStart(false);
 
     setState(() {
 
@@ -696,7 +696,7 @@ class _DrawFrameMotorGearPageUIState extends State<DrawFrameMotorGearPageUI> {
     await Future.delayed(Duration(milliseconds: 100));
 
 
-    Provider.of<ConnectionProvider>(context,listen: false).setGBStart(true);
+    Provider.of<CardingConnectionProvider>(context,listen: false).setGBStart(true);
 
     setState(() {
 
@@ -784,7 +784,7 @@ class _DrawFrameRTFUIState extends State<DrawFrameRTFUI> {
   @override
   Widget build(BuildContext context) {
 
-    _RTFval = Provider.of<ConnectionProvider>(context,listen: false).getRTF;
+    _RTFval = Provider.of<CardingConnectionProvider>(context,listen: false).getRTF;
 
     return Container(
 
@@ -901,7 +901,7 @@ class _DrawFrameRTFUIState extends State<DrawFrameRTFUI> {
           throw FormatException("RTF1: Invalid value");
         }
 
-        Provider.of<ConnectionProvider>(context,listen: false).setRTF(_rtfdata);
+        Provider.of<CardingConnectionProvider>(context,listen: false).setRTF(_rtfdata);
         _RTFval = _rtfdata.toString();
 
 
@@ -937,7 +937,7 @@ class _DrawFrameRTFUIState extends State<DrawFrameRTFUI> {
         }
         else{
 
-          Provider.of<ConnectionProvider>(context,listen: false).setRTF(_rtfdata.toStringAsFixed(2));
+          Provider.of<CardingConnectionProvider>(context,listen: false).setRTF(_rtfdata.toStringAsFixed(2));
           _RTFval = _rtfdata.toStringAsFixed(2);
           setState(() {
 
@@ -968,7 +968,7 @@ class _DrawFrameRTFUIState extends State<DrawFrameRTFUI> {
         }
         else{
 
-          Provider.of<ConnectionProvider>(context,listen: false).setRTF(_rtfdata.toStringAsFixed(2));
+          Provider.of<CardingConnectionProvider>(context,listen: false).setRTF(_rtfdata.toStringAsFixed(2));
           _RTFval = _rtfdata.toStringAsFixed(2);
           setState(() {
 

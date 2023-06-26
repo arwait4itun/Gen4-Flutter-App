@@ -1,6 +1,7 @@
 import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
+import 'machineEnums.dart';
 
 class CarouselMessage{
 
@@ -121,7 +122,7 @@ class CarouselMessage{
       }
     }
 
-    return "0";
+    return "";
   }
 
   String attributeName(String t){

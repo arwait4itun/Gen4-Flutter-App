@@ -3,6 +3,7 @@ import 'package:flyer/message/DrawFrame/errorMessage.dart';
 import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
+import 'machineEnums.dart';
 
 class StatusMessage{
 
@@ -119,25 +120,14 @@ class StatusMessage{
         return v.name;
       }
     }
-    return "0";
+    return "";
   }
 
   String attributeName(String ss,String t){
     //chooses attribute based on substate
-    if(ss==Substate.homing.name && t==Homing.rightLiftDistance.hexVal){
-      return Homing.rightLiftDistance.name;
-    }
-    else if(ss==Substate.homing.name && t==Homing.leftLiftDistance.hexVal){
-      return Homing.leftLiftDistance.name;
-    }
-    else if(ss==Substate.running.name && t==Running.leftLiftDistance.hexVal){
-      return Running.leftLiftDistance.name;
-    }
-    else if(ss==Substate.running.name && t==Running.rightLiftDistance.hexVal){
-      return Running.rightLiftDistance.name;
-    }
-    else if(ss==Substate.running.name && t==Running.layers.hexVal){
-      return Running.layers.name;
+
+    if(ss==Substate.running.name && t==Running.currentLength.hexVal){
+      return Running.currentLength.name;
     }
     else if(ss==Substate.pause.name && t==Pause.pauseReason.hexVal){
       return Pause.pauseReason.name;

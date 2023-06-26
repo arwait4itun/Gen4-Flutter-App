@@ -9,7 +9,7 @@ import 'package:flyer/message/acknowledgement.dart';
 import 'package:flyer/message/DrawFrame/settings_request.dart';
 import 'package:flyer/message/DrawFrame/settingsMessage.dart';
 import 'package:flyer/screens/DrawFrameScreens/settingsPopUpPage.dart';
-import 'package:flyer/services/provider_service.dart';
+import 'package:flyer/services/DrawFrame/provider_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/snackbar_service.dart';
@@ -57,15 +57,20 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
     }
 
 
-    if(!Provider.of<ConnectionProvider>(context,listen: false).isSettingsEmpty){
+    try{
+      if(!Provider.of<DrawFrameConnectionProvider>(context,listen: false).isSettingsEmpty){
 
-      Map<String,String> _s = Provider.of<ConnectionProvider>(context,listen: false).settings;
+        Map<String,String> _s = Provider.of<DrawFrameConnectionProvider>(context,listen: false).settings;
 
-      _deliverySpeed.text = _s["deliverySpeed"].toString();
-      _draft.text =  _s["draft"].toString();
-      _lengthLimit.text = _s["lengthLimit"].toString();
-      _rampUpTime.text = _s["rampUpTime"].toString();
-      _rampDownTime.text=_s["rampDownTime"].toString();
+        _deliverySpeed.text = _s["deliverySpeed"].toString();
+        _draft.text =  _s["draft"].toString();
+        _lengthLimit.text = _s["lengthLimit"].toString();
+        _rampUpTime.text = _s["rampUpTime"].toString();
+        _rampDownTime.text=_s["rampDownTime"].toString();
+      }
+    }
+    catch(e){
+      print("DF: Settings: ${e.toString()}");
     }
 
 
@@ -97,7 +102,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
 
 
     if(connection!.isConnected){
-      bool _enabled = Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed;
+      bool _enabled = Provider.of<DrawFrameConnectionProvider>(context,listen: false).settingsChangeAllowed;
 
       return SingleChildScrollView(
         padding: EdgeInsets.only(left:screenHt *0.02,top: screenHt*0.01 ,bottom: screenHt*0.02, right: screenWidth*0.02),
@@ -109,7 +114,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
           children: [
 
             Container(
-              margin: const EdgeInsets.only(bottom: 10),
+              margin: const EdgeInsets.only(bottom: 10,top: 20),
               child: Center(
                 child: Text(
                   "Settings",
@@ -124,8 +129,8 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
 
             Table(
               columnWidths: const <int, TableColumnWidth>{
-                0: FractionColumnWidth(0.55),
-                1: FractionColumnWidth(0.35),
+                0: FractionColumnWidth(0.65),
+                1: FractionColumnWidth(0.30),
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: <TableRow>[
@@ -138,6 +143,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
             ),
 
             Container(
+              height: MediaQuery.of(context).size.height*0.1,
               width: MediaQuery.of(context).size.width,
             ),
             Container(
@@ -146,7 +152,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
               width: MediaQuery.of(context).size.width,
 
               child: Row(
-                mainAxisAlignment: _settingsButtons().length==1? MainAxisAlignment.end: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: _settingsButtons(),
@@ -166,7 +172,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
 
   List<Widget> _settingsButtons(){
 
-    if(Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed){
+    if(Provider.of<DrawFrameConnectionProvider>(context,listen: false).settingsChangeAllowed){
       return [
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -203,8 +209,8 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
 
                 SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
 
-                ConnectionProvider().setSettings(_sm.toMap());
-                Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+                DrawFrameConnectionProvider().setSettings(_sm.toMap());
+                Provider.of<DrawFrameConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
               },
               icon: Icon(Icons.settings_backup_restore,color: Theme.of(context).primaryColor,),
@@ -297,8 +303,8 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
 
                   SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
 
-                  ConnectionProvider().setSettings(_sm.toMap());
-                  Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+                  DrawFrameConnectionProvider().setSettings(_sm.toMap());
+                  Provider.of<DrawFrameConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
                   showDialog(
                       context: context,
@@ -327,7 +333,25 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
     }
     else{
       return [
-
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+                onPressed: () async {
+                  _requestSettings();
+                },
+                icon: Icon(Icons.input, color: Theme.of(context).primaryColor,)
+            ),
+            Text(
+              "Input",
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ],
+        ),
         IconButton(
           onPressed: (){
             try{
@@ -344,8 +368,8 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
 
               SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
 
-              ConnectionProvider().setSettings(_sm.toMap());
-              Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+              DrawFrameConnectionProvider().setSettings(_sm.toMap());
+              Provider.of<DrawFrameConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
               showDialog(
                   context: context,
@@ -414,7 +438,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.middle,
           child: Container(
-            margin: const EdgeInsets.only(left: 20, right: 20),
+            margin: const EdgeInsets.only(left: 20, right: 20,top: 10),
             child: Text(
                 label,
                 style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
@@ -427,7 +451,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
           Container(
             height: MediaQuery.of(context).size.height*0.05,
             width: MediaQuery.of(context).size.width*0.01,
-            margin: const EdgeInsets.only(top: 2.5,bottom: 2.5),
+            margin: const EdgeInsets.only(top: 12.5,bottom: 2.5),
             color: enabled? Colors.transparent : Colors.grey.shade400,
             child: TextField(
               enabled: enabled,
@@ -573,8 +597,8 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
 
 
         SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
-        ConnectionProvider().setSettings(_sm.toMap());
-        Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+        DrawFrameConnectionProvider().setSettings(_sm.toMap());
+        Provider.of<DrawFrameConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
 
         SnackBar _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();

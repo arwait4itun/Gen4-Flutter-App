@@ -12,7 +12,7 @@ import 'package:flyer/message/Flyer/rtf_message.dart';
 
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
-import '../../services/provider_service.dart';
+import '../../services/Flyer/provider_service.dart';
 import 'package:flyer/message/Flyer/settingsMessage.dart';
 
 class FlyerAdvancedOptionsUI extends StatefulWidget {
@@ -89,7 +89,7 @@ class _FlyerAdvancedOptionsUIState extends State<FlyerAdvancedOptionsUI> {
 
             SwitchListTile(
               title: const Text('Enable Logging', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w400, fontSize: 18),),
-              value: Provider.of<ConnectionProvider>(context,listen: false).logEnabled,
+              value: Provider.of<FlyerConnectionProvider>(context,listen: false).logEnabled,
               contentPadding: EdgeInsets.only(top: 10,left: 18, right: 10, bottom: 10),
               onChanged: (bool value) async {
 
@@ -130,7 +130,7 @@ class _FlyerAdvancedOptionsUIState extends State<FlyerAdvancedOptionsUI> {
 
                     else if(_d==Acknowledgement().createPacket()){
 
-                      Provider.of<ConnectionProvider>(context,listen: false).setLogEnabled(value);
+                      Provider.of<FlyerConnectionProvider>(context,listen: false).setLogEnabled(value);
 
                       SnackBar _sb = SnackBarService(message: "Logging ${_msg}", color: Colors.green).snackBar();
                       ScaffoldMessenger.of(context).showSnackBar(_sb);
@@ -284,7 +284,7 @@ class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
   @override
   Widget build(BuildContext context) {
 
-    start = (Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed && Provider.of<ConnectionProvider>(context,listen: false).hasGBStarted);
+    start = (Provider.of<FlyerConnectionProvider>(context,listen: false).settingsChangeAllowed && Provider.of<FlyerConnectionProvider>(context,listen: false).hasGBStarted);
 
     print("$start");
 
@@ -347,8 +347,8 @@ class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
 
               children: [
 
-                Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("START", start, _start): Container(),
-                Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("STOP", stop, _stop): Container(),
+                Provider.of<FlyerConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("START", start, _start): Container(),
+                Provider.of<FlyerConnectionProvider>(context,listen: false).settingsChangeAllowed? _customButton("STOP", stop, _stop): Container(),
               ],
             ),
           ],
@@ -694,7 +694,7 @@ class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
     await Future.delayed(Duration(milliseconds: 250));
 
 
-    Provider.of<ConnectionProvider>(context,listen: false).setGBStart(false);
+    Provider.of<FlyerConnectionProvider>(context,listen: false).setGBStart(false);
 
     setState(() {
 
@@ -708,7 +708,7 @@ class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
     await Future.delayed(Duration(milliseconds: 100));
 
 
-    Provider.of<ConnectionProvider>(context,listen: false).setGBStart(true);
+    Provider.of<FlyerConnectionProvider>(context,listen: false).setGBStart(true);
 
     setState(() {
 
@@ -796,7 +796,7 @@ class _FlyerRTFUIState extends State<FlyerRTFUI> {
   @override
   Widget build(BuildContext context) {
 
-    _RTFval = Provider.of<ConnectionProvider>(context,listen: false).getRTF;
+    _RTFval = Provider.of<FlyerConnectionProvider>(context,listen: false).getRTF;
 
     return Container(
 
@@ -913,7 +913,7 @@ class _FlyerRTFUIState extends State<FlyerRTFUI> {
           throw FormatException("RTF1: Invalid value");
         }
 
-        Provider.of<ConnectionProvider>(context,listen: false).setRTF(_rtfdata);
+        Provider.of<FlyerConnectionProvider>(context,listen: false).setRTF(_rtfdata);
         _RTFval = _rtfdata.toString();
 
 
@@ -949,7 +949,7 @@ class _FlyerRTFUIState extends State<FlyerRTFUI> {
         }
         else{
 
-          Provider.of<ConnectionProvider>(context,listen: false).setRTF(_rtfdata.toStringAsFixed(2));
+          Provider.of<FlyerConnectionProvider>(context,listen: false).setRTF(_rtfdata.toStringAsFixed(2));
           _RTFval = _rtfdata.toStringAsFixed(2);
           setState(() {
 
@@ -980,7 +980,7 @@ class _FlyerRTFUIState extends State<FlyerRTFUI> {
         }
         else{
 
-          Provider.of<ConnectionProvider>(context,listen: false).setRTF(_rtfdata.toStringAsFixed(2));
+          Provider.of<FlyerConnectionProvider>(context,listen: false).setRTF(_rtfdata.toStringAsFixed(2));
           _RTFval = _rtfdata.toStringAsFixed(2);
           setState(() {
 

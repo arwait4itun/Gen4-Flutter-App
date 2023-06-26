@@ -9,7 +9,7 @@ import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/provider_service.dart';
+import '../../services/Carding/provider_service.dart';
 
 
 class CardingTestPage extends StatefulWidget {
@@ -186,6 +186,7 @@ class _CardingTestPageState extends State<CardingTestPage> {
                         alignment: FractionalOffset.topLeft,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
+                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -231,6 +232,7 @@ class _CardingTestPageState extends State<CardingTestPage> {
                         elevation: 16,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
+                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -276,6 +278,7 @@ class _CardingTestPageState extends State<CardingTestPage> {
                         elevation: 16,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
+                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -386,7 +389,7 @@ class _CardingTestPageState extends State<CardingTestPage> {
             ],
           ),
 
-          Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed ?
+          Provider.of<CardingConnectionProvider>(context,listen: false).settingsChangeAllowed ?
           Container(
             height: MediaQuery.of(context).size.height*0.05,
             width: MediaQuery.of(context).size.width*0.9,

@@ -8,7 +8,7 @@ import 'package:flyer/message/Carding/statusMessage.dart';
 import 'package:flyer/screens/CardingScreens/running_carousel.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/provider_service.dart';
+import '../../services/Carding/provider_service.dart';
 
 class CardingStatusPageUI extends StatefulWidget {
 
@@ -72,20 +72,19 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
     try{
       if (running || homing || pause || hasError) {
         //disable settings and diagnostic pages when running to prevent errors
-
-        if (Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
-          Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
+        print("Running started");
+        if (Provider.of<CardingConnectionProvider>(context, listen: false).settingsChangeAllowed) {
+          Provider.of<CardingConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
         }
       }
-      else {
-        if (!Provider.of<ConnectionProvider>(context, listen: false).settingsChangeAllowed) {
+      else if(idle){
           try {
-            Provider.of<ConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
+            Provider.of<CardingConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
           }
           catch (e) {
             print("Status: ${e.toString()}");
           }
-        }
+
       }
     }
     catch(e){
@@ -199,19 +198,25 @@ class _CardingStatusPageUIState extends State<CardingStatusPageUI> {
     //decides which ui should be used based on substate
 
     if(hasError){
+      Provider.of<CardingConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _errorUI();
     }
     else if(running){
+      Provider.of<CardingConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _runUI();
     }
     else if(homing){
+      Provider.of<CardingConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _homingUI();
     }
     else if(pause){
+      Provider.of<CardingConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _pauseUI();
     }
     else{
       //idle
+      Provider.of<CardingConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
+
       return _placeHolder();
     }
   }

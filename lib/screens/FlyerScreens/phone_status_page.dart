@@ -8,7 +8,7 @@ import 'package:flyer/message/Flyer/statusMessage.dart';
 import 'package:flyer/screens/FlyerScreens/running_carousel.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/provider_service.dart';
+import '../../services/Flyer/provider_service.dart';
 
 class FlyerPhoneStatusPageUI extends StatefulWidget {
 
@@ -43,7 +43,7 @@ class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
   bool pause = false;
   bool idle = false;
 
-  double _liftLeft = 2;
+  double _liftLeft = 0;
   double _liftRight = 0;
 
 
@@ -74,25 +74,23 @@ class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
         //disable settings and diagnostic pages when running to prevent errors
 
         if (Provider
-            .of<ConnectionProvider>(context, listen: false)
+            .of<FlyerConnectionProvider>(context, listen: false)
             .settingsChangeAllowed) {
-          Provider.of<ConnectionProvider>(context, listen: false)
+          Provider.of<FlyerConnectionProvider>(context, listen: false)
               .setSettingsChangeAllowed(false);
         }
       }
-      else {
-        if (!Provider
-            .of<ConnectionProvider>(context, listen: false)
-            .settingsChangeAllowed) {
+      else if(idle){
+
           try {
-            Provider.of<ConnectionProvider>(
+            Provider.of<FlyerConnectionProvider>(
                 context, listen: false)
                 .setSettingsChangeAllowed(true);
           }
           catch (e) {
             print("Status: ${e.toString()}");
           }
-        }
+
       }
     }
     catch(e){
@@ -220,19 +218,24 @@ class _FlyerPhoneStatusPageUIState extends State<FlyerPhoneStatusPageUI> {
     //decides which ui should be used based on substate
 
     if(hasError){
+      Provider.of<FlyerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _errorUI();
     }
     else if(running){
+      Provider.of<FlyerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _runUI();
     }
     else if(homing){
+      Provider.of<FlyerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _homingUI();
     }
     else if(pause){
+      Provider.of<FlyerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(false);
       return _pauseUI();
     }
     else{
       //idle
+      Provider.of<FlyerConnectionProvider>(context, listen: false).setSettingsChangeAllowed(true);
       return _placeHolder();
     }
   }

@@ -6,12 +6,11 @@ import 'package:flyer/screens/FlyerScreens/drawer.dart';
 import 'package:flyer/screens/FlyerScreens/advanced_options.dart';
 import 'package:flyer/screens/FlyerScreens/phone_status_page.dart';
 import 'package:flyer/screens/FlyerScreens/settings.dart';
-import 'package:flyer/screens/status.dart';
 import 'package:flyer/screens/FlyerScreens/diagnostics.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:provider/provider.dart';
-import '../../services/provider_service.dart';
+import '../../services/Flyer/provider_service.dart';
 import '../../services/snackbar_service.dart';
 
 class FlyerDashboardScaffold extends StatefulWidget {
@@ -75,8 +74,8 @@ class _FlyerDashboardScaffoldState extends State<FlyerDashboardScaffold> {
     widget.connection.close();
     widget.connection.dispose();
 
-    ConnectionProvider().clearSettings();
-    Provider.of<ConnectionProvider>(context,listen: false).clearSettings();
+    FlyerConnectionProvider().clearSettings();
+    Provider.of<FlyerConnectionProvider>(context,listen: false).clearSettings();
 
     super.dispose();
   }
@@ -112,7 +111,6 @@ class _FlyerDashboardScaffoldState extends State<FlyerDashboardScaffold> {
         appBar: appBar(_scaffoldKey),
         bottomNavigationBar: navigationBar(),
         body: _pages[_selectedIndex],
-        drawer: FlyerDrawerPage(connection: connection, stream: multiStream,),
       );
     }
     else{
@@ -151,8 +149,8 @@ class _FlyerDashboardScaffoldState extends State<FlyerDashboardScaffold> {
           widget.connection.close();
           widget.connection.dispose();
 
-          ConnectionProvider().clearSettings();
-          Provider.of<ConnectionProvider>(context,listen: false).clearSettings();
+          FlyerConnectionProvider().clearSettings();
+          Provider.of<FlyerConnectionProvider>(context,listen: false).clearSettings();
 
           SnackBar _sb = SnackBarService(message: "Pair Again", color: Colors.green).snackBar();
 
@@ -161,15 +159,7 @@ class _FlyerDashboardScaffoldState extends State<FlyerDashboardScaffold> {
           Navigator.of(context).pop();
         },
       ),
-
-      actions: [
-        IconButton(
-            onPressed: (){
-              _scaffoldKey.currentState?.openDrawer();
-            },
-            icon: Icon(Icons.more_vert),
-        ),
-      ],
+      
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

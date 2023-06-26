@@ -10,7 +10,7 @@ import 'package:flyer/message/acknowledgement.dart';
 import 'package:flyer/message/Carding/settings_request.dart';
 import 'package:flyer/message/Carding/settingsMessage.dart';
 import 'package:flyer/screens/CardingScreens/settingsPopUpPage.dart';
-import 'package:flyer/services/provider_service.dart';
+import 'package:flyer/services/Carding/provider_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/snackbar_service.dart';
@@ -61,19 +61,25 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
     }
 
 
-    if(!Provider.of<ConnectionProvider>(context,listen: false).isSettingsEmpty){
+    try{
+      if(!Provider.of<CardingConnectionProvider>(context,listen: false).isSettingsEmpty){
 
-      Map<String,String> _s = Provider.of<ConnectionProvider>(context,listen: false).settings;
+        Map<String,String> _s = Provider.of<CardingConnectionProvider>(context,listen: false).settings;
 
-      _deliverySpeed.text = _s["deliverySpeed"].toString();
-      _draft.text =  _s["draft"].toString();
-      _cylinderSpeed.text = _s["cylSpeed"].toString();
-      _beaterSpeed.text = _s["btrSpeed"].toString();
-      _cylFeedSpeed.text = _s["cylFeedSpeed"].toString();
-      _btrFeedSpeed.text = _s["btrFeedSpeed"].toString();
-      _trunkSensorDelay.text=_s["trunkDelay"].toString();
-      _lengthLimit.text = _s["lengthLimit"].toString();
-      _rampTimes.text = _s["rampTimes"].toString();
+        _deliverySpeed.text = _s["deliverySpeed"].toString();
+        _draft.text =  _s["draft"].toString();
+        _cylinderSpeed.text = _s["cylSpeed"].toString();
+        _beaterSpeed.text = _s["btrSpeed"].toString();
+        _cylFeedSpeed.text = _s["cylFeedSpeed"].toString();
+        _btrFeedSpeed.text = _s["btrFeedSpeed"].toString();
+        _trunkSensorDelay.text=_s["trunkDelay"].toString();
+        _lengthLimit.text = _s["lengthLimit"].toString();
+        _rampTimes.text = _s["rampTimes"].toString();
+      }
+    }
+    catch(e){
+
+      print("carding: settings: ${e.toString()}");
     }
 
     try{
@@ -104,7 +110,7 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
 
 
     if(connection!.isConnected){
-      bool _enabled = Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed;
+      bool _enabled = true; //only for carding
 
       return SingleChildScrollView(
         padding: EdgeInsets.only(left:screenHt *0.02,top: screenHt*0.01 ,bottom: screenHt*0.02, right: screenWidth*0.02),
@@ -218,8 +224,8 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
 
               SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
 
-              ConnectionProvider().setSettings(_sm.toMap());
-              Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+              CardingConnectionProvider().setSettings(_sm.toMap());
+              Provider.of<CardingConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
             },
             icon: Icon(Icons.settings_backup_restore,color: Theme.of(context).primaryColor,),
@@ -374,8 +380,8 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
 
                 SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
 
-                ConnectionProvider().setSettings(_sm.toMap());
-                Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+                CardingConnectionProvider().setSettings(_sm.toMap());
+                Provider.of<CardingConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
                 showDialog(
                     context: context,
@@ -676,8 +682,8 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
 
         SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
 
-        ConnectionProvider().setSettings(_sm.toMap());
-        Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+        CardingConnectionProvider().setSettings(_sm.toMap());
+        Provider.of<CardingConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
 
         SnackBar _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();

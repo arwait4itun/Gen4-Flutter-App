@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/provider_service.dart';
+import '../../services/DrawFrame/provider_service.dart';
 
 class DrawFramePopUpUI extends StatefulWidget {
   const DrawFramePopUpUI({Key? key}) : super(key: key);
@@ -28,9 +28,9 @@ class _DrawFramePopUpUIState extends State<DrawFramePopUpUI> {
     // TODO: implement initState
     super.initState();
 
-    if(!Provider.of<ConnectionProvider>(context,listen: false).isSettingsEmpty){
+    if(!Provider.of<DrawFrameConnectionProvider>(context,listen: false).isSettingsEmpty){
 
-      Map<String,String> _s = Provider.of<ConnectionProvider>(context,listen: false).settings;
+      Map<String,String> _s = Provider.of<DrawFrameConnectionProvider>(context,listen: false).settings;
 
       _deliverySpeed = double.parse(_s["deliverySpeed"].toString());
       _draft =  double.parse(_s["draft"].toString());
@@ -41,7 +41,7 @@ class _DrawFramePopUpUIState extends State<DrawFramePopUpUI> {
   @override
   Widget build(BuildContext context) {
 
-    if(Provider.of<ConnectionProvider>(context,listen: false).isSettingsEmpty){
+    if(Provider.of<DrawFrameConnectionProvider>(context,listen: false).isSettingsEmpty){
 
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,

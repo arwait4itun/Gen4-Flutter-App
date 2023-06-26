@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/message/Flyer/carouselMessage.dart';
-import 'package:flyer/message/Flyer/machineEnums.dart';
+import 'package:flyer/message/DrawFrame/carouselMessage.dart';
+import 'package:flyer/message/DrawFrame/machineEnums.dart';
 
 class DrawFrameRunningCarousel extends StatefulWidget {
 
@@ -21,23 +21,20 @@ class DrawFrameRunningCarousel extends StatefulWidget {
 
 class _DrawFrameRunningCarouselState extends State<DrawFrameRunningCarousel> {
 
-  List<int> items = [1,2,3,4,5,6,7];
+  List<int> items = [1,2,3,4];
 
   int index=0;
   
-  List<String> _names = ["PRODUCTION","FLYER","BOBBIN","FRONT ROLLER","BACK ROLLER","LIFT LEFT","LIFT RIGHT"];
+  List<String> _names = ["PRODUCTION","FRONT ROLLER","BACK ROLLER","CREEL"];
 
   List<String> _ids = [
     "0A",//production hard coded
-    MotorId.flyer.hexVal,
-    MotorId.bobbin.hexVal,
     MotorId.frontRoller.hexVal,
     MotorId.backRoller.hexVal,
-    MotorId.liftLeft.hexVal,
-    MotorId.liftRight.hexVal,
+    MotorId.creel.hexVal,
   ];
 
-  String? motorTemp,MOSFETTemp,current,RPM,production;
+  String? motorTemp,MOSFETTemp,current,RPM,production,totalPower;
 
   late Stream<Uint8List> _stream;
   late BluetoothConnection _connection;
@@ -91,132 +88,80 @@ class _DrawFrameRunningCarouselState extends State<DrawFrameRunningCarousel> {
         }
       ),
       items: items.map((i) {
+      return StreamBuilder<Uint8List>(
+          stream: _stream,
+          builder: (context, snapshot) {
 
+            try{
+              if(snapshot.hasData){
 
-        return StreamBuilder<Uint8List>(
-            stream: _stream,
-            builder: (context, snapshot) {
+                var data = snapshot.data;
+                String _d = utf8.decode(data!);
+                //print ("in Loop $i");
+                //print("\nRun PacketData: data: "+_d);
 
-              try{
-                if(snapshot.hasData){
+                String _carousalID = _ids[i-1];
 
-                  var data = snapshot.data;
-                  String _d = utf8.decode(data!);
-                  print("\nCarousel: data: "+_d);
-                  print(snapshot.data);
+                //print("carousal input No = $_carousalID");
+                Map<String,String> _carouselResponse = CarouselMessage(carouselId: _carousalID).decode(_d);
+                //print("HERE!!!!!!!!!!!!!!: $_carouselResponse");
 
-                  String _motorId = _ids[i-1];
-
-                  print("here!!!!!! $_motorId");
-                  Map<String,String> _carouselResponse = CarouselMessage(carouselId: _motorId).decode(_d);
-                  print("HERE!!!!!!!!!!!!!!: $_carouselResponse");
-
-
-
-                  if(!_carouselResponse.isEmpty) {
-                    if (_motorId == "0A") {
-                      //for production
-                      production = double.parse(_carouselResponse["outputMtrs"]!).toStringAsFixed(2);
-                    }
-                    else {
-                      motorTemp = double.parse(_carouselResponse["motorTemp"]!).toStringAsFixed(0);
-                      MOSFETTemp = double.parse(_carouselResponse["MOSFETTemp"]!).toStringAsFixed(0);
-                      current = double.parse(_carouselResponse["current"]!).toStringAsFixed(2);
-                      RPM = double.parse(_carouselResponse["RPM"]!).toStringAsFixed(0);
-                    }
+                if(!_carouselResponse.isEmpty) {
+                  if (_carousalID == "0A") {
+                    //for production
+                    production = double.parse(_carouselResponse["outputMtrs"]!).toStringAsFixed(2);
+                    totalPower = double.parse(_carouselResponse["totalPower"]!).toStringAsFixed(2);
+                    //print ("after Carousal Response :$production , $totalPower");
                   }
+                  else {
+                    motorTemp = double.parse(_carouselResponse["motorTemp"]!).toStringAsFixed(0);
+                    MOSFETTemp = double.parse(_carouselResponse["MOSFETTemp"]!).toStringAsFixed(0);
+                    current = double.parse(_carouselResponse["current"]!).toStringAsFixed(2);
+                    RPM = double.parse(_carouselResponse["RPM"]!).toStringAsFixed(0);
 
-
-
-
-                  return Container(
-                    margin: EdgeInsets.only(left: 2.5,right: 2.5),
-                    width: MediaQuery.of(context).size.width*0.9,
-
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: <Color>[Colors.blue,Colors.blueAccent,Colors.lightBlue]
-                      ),
-                    ),
-
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-
-                      children: [
-
-                        Text(_names[i-1], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
-
-                        i!=1? _customRow("Motor Temp (C)", motorTemp??"-"): _customRow("Output Per Spindle", production??"-"),
-                        i!=1? _customRow("MOSFET Temp (C)", MOSFETTemp??"-"): Container(),
-                        i!=1?_customRow("Current (A)", current??"-"): Container(),
-                        i!=1? _customRow("RPM", RPM??"-"): Container(),
-
-
-                        DotsIndicator(
-                          decorator: DotsDecorator(
-                            color: Colors.white,
-                            activeColor: Theme.of(context).primaryColor,
-                          ),
-                          dotsCount: items.length,
-                          position: i.toDouble()-1,
-                        ),
-                      ],
-                    ),
-                  );
+                  }
                 }
-                else{
 
-                  return Container(
-                    margin: EdgeInsets.only(left: 2.5,right: 2.5),
-                    width: MediaQuery.of(context).size.width*0.9,
+                return Container(
+                  margin: EdgeInsets.only(left: 2.5,right: 2.5),
+                  width: MediaQuery.of(context).size.width*0.9,
 
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: <Color>[Colors.blue,Colors.blueAccent,Colors.lightBlue]
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: <Color>[Colors.blue,Colors.blueAccent,Colors.lightBlue]
+                    ),
+                  ),
+
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+
+                    children: [
+                      Text(_names[i-1], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
+
+                      i!=1? _customRow("Motor Temp (C)", motorTemp??"-"): _customRow("Output Per Spindle", production??"-"),
+                      i!=1? _customRow("MOSFET Temp (C)", MOSFETTemp??"-"): _customRow("Total Power", totalPower??"-"),
+                      i!=1?_customRow("Current (A)", current??"-"): Container(),
+                      i!=1? _customRow("RPM", RPM??"-"): Container(),
+
+
+                      DotsIndicator(
+                        decorator: DotsDecorator(
+                          color: Colors.white,
+                          activeColor: Theme.of(context).primaryColor,
+                        ),
+                        dotsCount: items.length,
+                        position: i.toDouble()-1,
                       ),
-                    ),
-
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-
-                      children: [
-
-                        Text(_names[i-1], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
-
-                        SizedBox(
-                          height: 10,
-                          width: 10,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 1.5,
-                          ),
-                        ),
-
-                        Text("Waiting For Data...", style: TextStyle(color: Colors.white, fontSize: 10),),
-
-                        DotsIndicator(
-                          decorator: DotsDecorator(
-                            color: Colors.white,
-                            activeColor: Theme.of(context).primaryColor,
-                          ),
-                          dotsCount: items.length,
-                          position: i.toDouble()-1,
-                        ),
-                      ],
-                    ),
-                  );
-                }
+                    ],
+                  ),
+                );
               }
-              catch(e){
-                print("carousel: ${e.toString()}");
+              else{
+
                 return Container(
                   margin: EdgeInsets.only(left: 2.5,right: 2.5),
                   width: MediaQuery.of(context).size.width*0.9,
@@ -262,8 +207,55 @@ class _DrawFrameRunningCarouselState extends State<DrawFrameRunningCarousel> {
                 );
               }
             }
-        );
-      }).toList(),
+            catch(e){
+              print("carousel: ${e.toString()}");
+              return Container(
+                margin: EdgeInsets.only(left: 2.5,right: 2.5),
+                width: MediaQuery.of(context).size.width*0.9,
+
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: <Color>[Colors.blue,Colors.blueAccent,Colors.lightBlue]
+                  ),
+                ),
+
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+
+                  children: [
+
+                    Text(_names[i-1], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
+
+                    SizedBox(
+                      height: 10,
+                      width: 10,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 1.5,
+                      ),
+                    ),
+
+                    Text("Waiting For Data...", style: TextStyle(color: Colors.white, fontSize: 10),),
+
+                    DotsIndicator(
+                      decorator: DotsDecorator(
+                        color: Colors.white,
+                        activeColor: Theme.of(context).primaryColor,
+                      ),
+                      dotsCount: items.length,
+                      position: i.toDouble()-1,
+                    ),
+                  ],
+                ),
+              );
+            }
+          }
+      );
+    }).toList(),
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flyer/message/hexa_to_double.dart';
 
 import 'enums.dart';
+import 'machineEnums.dart';
 
 class CarouselMessage{
 
@@ -51,7 +52,6 @@ class CarouselMessage{
     }
 
     if(_machineState!=Information.machineState.hexVal){
-      print(packet);
       print("Carousel Message: Invalid Request Settings Code");
       return Map<String, String>();
       //throw FormatException("Carousel Message: Invalid Request Settings Code");
@@ -62,7 +62,6 @@ class CarouselMessage{
     for(int i=start; i<end;){
 
       String t = packet.substring(i,i+2);
-
 
       int l = int.parse(packet.substring(i+2,i+4));
 
@@ -78,6 +77,8 @@ class CarouselMessage{
         //throw FormatException("Invalid Attribute Type");
       }
 
+      //print ("Key:$key,Len:$l,Val:$val");
+
       if(l==4 || l==2){
         v = int.parse(val,radix: 16).toDouble();
       }
@@ -86,24 +87,23 @@ class CarouselMessage{
       }
 
       if(key==Running.whatInfo.name){
-
-        print("whatInfo V parameter = $v");
-        print("carousal No = $carouselId");
-
-        //ensure whatinfo and motor id match
+        //print("whatInfo V parameter = $val");
+        //print("carousal No = $carouselId");
         if(val.padLeft(2,"0") != carouselId){
-          print("Carousel Info What Info and Motor ID don't match");
+          //print("Carousel Info What Info and Motor ID don't match");
           return Map<String, String>();
           //throw FormatException("Carousel Info What Info and Motor ID don't match");
         }
       }
-      //print("t: $t, l: $l, v: $val");
-      _settings[key] = v.toString();
+      //print("t: $t, l: $l, v: $val key: $key");
+      if (key == Running.whatInfo.name){
+        _settings[key] = val;
+      }else {
+        _settings[key] = v.toString();
+      }
 
       i=i+4+l;
     }
-
-
 
     print(_settings);
     return _settings;
@@ -122,7 +122,7 @@ class CarouselMessage{
       }
     }
 
-    return "0";
+    return "";
   }
 
   String attributeName(String t){
@@ -159,6 +159,9 @@ class CarouselMessage{
     }
     else if(t==Running.outputMtrs.hexVal){
       return Running.outputMtrs.name;
+    }
+    else if(t==Running.totalPower.hexVal){
+      return Running.totalPower.name;
     }
     else{
       return "";

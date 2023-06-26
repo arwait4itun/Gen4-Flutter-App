@@ -9,7 +9,7 @@ import 'package:flyer/message/acknowledgement.dart';
 import 'package:flyer/message/Flyer/settings_request.dart';
 import 'package:flyer/message/Flyer/settingsMessage.dart';
 import 'package:flyer/screens/FlyerScreens/settingsPopUpPage.dart';
-import 'package:flyer/services/provider_service.dart';
+import 'package:flyer/services/Flyer/provider_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/snackbar_service.dart';
@@ -64,25 +64,30 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
     }
 
 
-    if(!Provider.of<ConnectionProvider>(context,listen: false).isSettingsEmpty){
+    try{
+      if(!Provider.of<FlyerConnectionProvider>(context,listen: false).isSettingsEmpty){
 
-      Map<String,String> _s = Provider.of<ConnectionProvider>(context,listen: false).settings;
+        Map<String,String> _s = Provider.of<FlyerConnectionProvider>(context,listen: false).settings;
 
-      _spindleSpeed.text = _s["spindleSpeed"].toString();
-      _draft.text =  _s["draft"].toString();
-      _twistPerInch.text = _s["twistPerInch"].toString();
-      _RTF.text = _s["RTF"].toString();
-      _layers.text=_s["layers"].toString();
-      _maxHeightOfContent.text  = _s["maxHeightOfContent"].toString();
-      _rovingWidth.text = _s["rovingWidth"].toString();
-      _deltaBobbinDia.text = _s["deltaBobbinDia"].toString();
-      _bareBobbinDia.text = _s["bareBobbinDia"].toString();
-      _rampupTime.text= _s["rampupTime"].toString();
-      _rampdownTime.text = _s["rampdownTime"].toString();
-      _changeLayerTime.text = _s["changeLayerTime"].toString();
-      _coneAngleFactor.text = _s["coneAngleFactor"].toString();
+        _spindleSpeed.text = _s["spindleSpeed"].toString();
+        _draft.text =  _s["draft"].toString();
+        _twistPerInch.text = _s["twistPerInch"].toString();
+        _RTF.text = _s["RTF"].toString();
+        _layers.text=_s["layers"].toString();
+        _maxHeightOfContent.text  = _s["maxHeightOfContent"].toString();
+        _rovingWidth.text = _s["rovingWidth"].toString();
+        _deltaBobbinDia.text = _s["deltaBobbinDia"].toString();
+        _bareBobbinDia.text = _s["bareBobbinDia"].toString();
+        _rampupTime.text= _s["rampupTime"].toString();
+        _rampdownTime.text = _s["rampdownTime"].toString();
+        _changeLayerTime.text = _s["changeLayerTime"].toString();
+        _coneAngleFactor.text = _s["coneAngleFactor"].toString();
+      }
+
     }
-
+    catch(e){
+      print("flyer: settings: init ${e.toString()}");
+    }
 
     try{
       settingsStream!.listen(_onDataReceived).onDone(() {});
@@ -112,7 +117,7 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
 
 
     if(connection!.isConnected){
-      bool _enabled = Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed;
+      bool _enabled = Provider.of<FlyerConnectionProvider>(context,listen: false).settingsChangeAllowed;
 
       return SingleChildScrollView(
         padding: EdgeInsets.only(left:screenHt *0.02,top: screenHt*0.01 ,bottom: screenHt*0.02, right: screenWidth*0.02),
@@ -171,7 +176,7 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
               width: MediaQuery.of(context).size.width,
 
               child: Row(
-                mainAxisAlignment: _settingsButtons().length==1? MainAxisAlignment.end: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: _settingsButtons(),
@@ -191,7 +196,7 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
 
   List<Widget> _settingsButtons(){
 
-    if(Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed){
+    if(Provider.of<FlyerConnectionProvider>(context,listen: false).settingsChangeAllowed){
       return [
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -236,8 +241,8 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
 
                 SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text,coneAngleFactor: _coneAngleFactor.text);
 
-                ConnectionProvider().setSettings(_sm.toMap());
-                Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+                FlyerConnectionProvider().setSettings(_sm.toMap());
+                Provider.of<FlyerConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
               },
               icon: Icon(Icons.settings_backup_restore,color: Theme.of(context).primaryColor,),
@@ -329,8 +334,8 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
 
                   SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text,coneAngleFactor:_coneAngleFactor.text);
 
-                  ConnectionProvider().setSettings(_sm.toMap());
-                  Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+                  FlyerConnectionProvider().setSettings(_sm.toMap());
+                  Provider.of<FlyerConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
                   showDialog(
                       context: context,
@@ -360,6 +365,25 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
     else{
       return [
 
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+                onPressed: () async {
+                  _requestSettings();
+                },
+                icon: Icon(Icons.input, color: Theme.of(context).primaryColor,)
+            ),
+            Text(
+              "Input",
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ],
+        ),
         IconButton(
           onPressed: (){
             try{
@@ -376,8 +400,8 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
 
               SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text,coneAngleFactor:_coneAngleFactor.text);
 
-              ConnectionProvider().setSettings(_sm.toMap());
-              Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+              FlyerConnectionProvider().setSettings(_sm.toMap());
+              Provider.of<FlyerConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
               showDialog(
                   context: context,
@@ -727,8 +751,8 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
 
 
         SettingsMessage _sm = SettingsMessage(spindleSpeed: _spindleSpeed.text, draft: _draft.text, twistPerInch: _twistPerInch.text, RTF: _RTF.text, layers: _layers.text, maxHeightOfContent: _maxHeightOfContent.text, rovingWidth: _rovingWidth.text, deltaBobbinDia: _deltaBobbinDia.text, bareBobbinDia: _bareBobbinDia.text, rampupTime: _rampupTime.text, rampdownTime: _rampdownTime.text, changeLayerTime: _changeLayerTime.text,coneAngleFactor: _coneAngleFactor.text);
-        ConnectionProvider().setSettings(_sm.toMap());
-        Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+        FlyerConnectionProvider().setSettings(_sm.toMap());
+        Provider.of<FlyerConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
 
         SnackBar _sb = SnackBarService(message: "Settings Received", color: Colors.green).snackBar();

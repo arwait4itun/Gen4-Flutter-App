@@ -3,30 +3,30 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/message/Flyer/diagnosticMessage.dart';
+import 'package:flyer/message/RingDoubler/diagnosticMessage.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/provider_service.dart';
+import '../../services/RingDoubler/provider_service.dart';
 
 
-class FlyerTestPage extends StatefulWidget {
+class RingDoublerTestPage extends StatefulWidget {
 
   BluetoothConnection connection;
 
   Stream<Uint8List> testsStream;
 
 
-  FlyerTestPage({required this.connection, required this.testsStream});
+  RingDoublerTestPage({required this.connection, required this.testsStream});
 
 
   @override
-  _FlyerTestPageState createState() => _FlyerTestPageState();
+  _RingDoublerTestPageState createState() => _RingDoublerTestPageState();
 }
 
-class _FlyerTestPageState extends State<FlyerTestPage> {
+class _RingDoublerTestPageState extends State<RingDoublerTestPage> {
 
   //run diagnose variables
   List<String> _testType = ["MOTOR","LIFT"];
@@ -188,6 +188,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                         elevation: 16,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
+                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -235,6 +236,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                         alignment: FractionalOffset.topLeft,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
+                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -289,6 +291,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                         elevation: 16,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
+                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -357,6 +360,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                         elevation: 16,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
+                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -529,6 +533,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                         elevation: 16,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
+                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -581,6 +586,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                         elevation: 16,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
+                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -618,7 +624,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
             ],
           ),
 
-          Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed ?
+          Provider.of<RingDoublerConnectionProvider>(context,listen: false).settingsChangeAllowed ?
           Container(
             height: MediaQuery.of(context).size.height*0.05,
             width: MediaQuery.of(context).size.width*0.9,

@@ -2,16 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-//import 'package:flyer/screens/FlyerScreens/drawer.dart';
 import 'package:flyer/screens/RingDoublerScreens/advanced_options.dart';
 import 'package:flyer/screens/RingDoublerScreens/phone_status_page.dart';
 import 'package:flyer/screens/RingDoublerScreens/settings.dart';
-import 'package:flyer/screens/status.dart';
+
 import 'package:flyer/screens/RingDoublerScreens/diagnostics.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:provider/provider.dart';
-import '../../services/provider_service.dart';
+import '../../services/RingDoubler/provider_service.dart';
 import '../../services/snackbar_service.dart';
 
 class RingDoublerDashboardScaffold extends StatefulWidget {
@@ -75,8 +74,8 @@ class _RingDoublerDashboardScaffoldState extends State<RingDoublerDashboardScaff
     widget.connection.close();
     widget.connection.dispose();
 
-    ConnectionProvider().clearSettings();
-    Provider.of<ConnectionProvider>(context,listen: false).clearSettings();
+    RingDoublerConnectionProvider().clearSettings();
+    Provider.of<RingDoublerConnectionProvider>(context,listen: false).clearSettings();
 
     super.dispose();
   }
@@ -99,10 +98,10 @@ class _RingDoublerDashboardScaffoldState extends State<RingDoublerDashboardScaff
       final List<Widget> _pages = <Widget>[
         //checks if the device is a phone or tablet based on screen size
         //MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.shortestSide < 550 ?
-        FlyerPhoneStatusPageUI(connection: connection,statusStream: multiStream,),
+        RingDoublerPhoneStatusUI(connection: connection,statusStream: multiStream,),
         RingDoublerSettingsPage(connection: connection, settingsStream: multiStream,),
-        FlyerTestPage(connection: connection, testsStream: multiStream,),
-        FlyerAdvancedOptionsUI(connection: connection,stream: multiStream,),
+        RingDoublerTestPage(connection: connection, testsStream: multiStream,),
+        RingDoublerAdvancedOptionsUI(connection: connection,stream: multiStream,),
       ];
 
 
@@ -151,8 +150,8 @@ class _RingDoublerDashboardScaffoldState extends State<RingDoublerDashboardScaff
           widget.connection.close();
           widget.connection.dispose();
 
-          ConnectionProvider().clearSettings();
-          Provider.of<ConnectionProvider>(context,listen: false).clearSettings();
+          RingDoublerConnectionProvider().clearSettings();
+          Provider.of<RingDoublerConnectionProvider>(context,listen: false).clearSettings();
 
           SnackBar _sb = SnackBarService(message: "Pair Again", color: Colors.green).snackBar();
 

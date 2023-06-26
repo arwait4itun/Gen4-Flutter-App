@@ -9,7 +9,7 @@ import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/services/snackbar_service.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/provider_service.dart';
+import '../../services/Flyer/provider_service.dart';
 
 
 class FlyerTestPage extends StatefulWidget {
@@ -180,6 +180,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                       width: MediaQuery.of(context).size.width*0.2,
                       margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
                       child: DropdownButton<String>(
+                        isExpanded: true,
                         value: _motorNameChoice,
                         icon: const Icon(Icons.arrow_drop_down),
                         elevation: 16,
@@ -223,7 +224,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                     child:
                     Container(
                       height: MediaQuery.of(context).size.height*0.05,
-                      width: MediaQuery.of(context).size.width*0.2,
+                      width: MediaQuery.of(context).size.width*0.1,
                       margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
                       child: DropdownButton<String>(
                         value: _controlTypeChoice,
@@ -231,6 +232,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                         elevation: 16,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
+                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -276,6 +278,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                         elevation: 16,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
+                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -386,7 +389,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
             ],
           ),
 
-          Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed ?
+          Provider.of<FlyerConnectionProvider>(context,listen: false).settingsChangeAllowed ?
           Container(
             height: MediaQuery.of(context).size.height*0.05,
             width: MediaQuery.of(context).size.width*0.9,

@@ -9,11 +9,9 @@ import 'package:flyer/screens/CardingScreens/Dashboard.dart';
 import 'package:flyer/screens/DrawFrameScreens/Dashboard.dart';
 import 'package:flyer/screens/FlyerScreens/Dashboard.dart';
 import 'package:flyer/screens/RingDoublerScreens/Dashboard.dart';
-import 'package:flyer/services/provider_service.dart';
 import 'package:flyer/services/snackbar_service.dart';
-import 'package:provider/provider.dart';
 
-import 'bluetoothFiles/DiscoveryPage.dart';
+
 import 'bluetoothFiles/SelectBondedDevicePage.dart';
 import 'package:flyer/globals.dart' as globals;
 
@@ -245,7 +243,6 @@ class _BluetoothPageState extends State<BluetoothPage> {
                         try {
                           print('Connect -> selected ' + selectedDevice.address);
                           globals.isConnected = true;
-                          ConnectionProvider().setConnection(true);
                           globals.selectedDevice = selectedDevice;
                           BluetoothConnection connection = await BluetoothConnection.toAddress(selectedDevice.address);
 
@@ -253,7 +250,6 @@ class _BluetoothPageState extends State<BluetoothPage> {
                           connection!.output!.add(ascii.encode(ImPaired().createPacket()));
                           await connection!.output.allSent;
 
-                          Provider.of<ConnectionProvider>(context,listen: false).setConnection(true);
 
                           SnackBar _sb = SnackBarService(message: "Connected!", color: Colors.green).snackBar();
 
@@ -266,7 +262,6 @@ class _BluetoothPageState extends State<BluetoothPage> {
 
                           print("Error pairing: paired devices: "+e.toString());
                           globals.isConnected = false;
-                          ConnectionProvider().setConnection(false);
 
                           //SnackBar _sb = SnackBarService(message: "Error Pairing", color: Colors.red).snackBar();
 

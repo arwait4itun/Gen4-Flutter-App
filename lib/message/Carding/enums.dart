@@ -159,57 +159,6 @@ extension homingExtension on Homing{
 
 
 
-enum Running{
-  leftLiftDistance,
-  rightLiftDistance,
-  layers,
-  ductSensor,
-  coilerSensor,
-  motorTemp,
-  MOSFETTemp,
-  current,
-  RPM,
-  outputMtrs,
-  totalPower,
-  deliveryMtrsPerMin,
-  whatInfo,
-}
-
-extension runningExtension on Running{
-
-  String get hexVal {
-    switch (this) {
-      case Running.leftLiftDistance:
-        return "01";
-      case Running.rightLiftDistance:
-        return "02";
-      case Running.layers:
-        return "03";
-      case Running.motorTemp:
-        return "04";
-      case Running.MOSFETTemp:
-        return "05";
-      case Running.current:
-        return "06";
-      case Running.RPM:
-        return "07";
-      case Running.outputMtrs:
-        return "08";
-      case Running.whatInfo:
-        return "09";
-      case Running.totalPower:
-        return "0A";
-      case Running.ductSensor:
-        return "0B";
-      case Running.coilerSensor:
-        return "0C";
-      case Running.deliveryMtrsPerMin:
-        return "0D";
-      default:
-        return "00";
-    }
-  }
-}
 
 enum Error{
   information,
