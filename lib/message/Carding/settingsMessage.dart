@@ -40,7 +40,7 @@ class SettingsMessage{
   required this.rampTimes,
   });
 
-  String createPacket(){
+  String createPacket(SettingsUpdate substate){
 
     String packet = "";
 
@@ -59,7 +59,7 @@ class SettingsMessage{
     //  packet += packetLength;
     
     packet += Information.settingsFromApp.hexVal;
-    packet += Substate.running.hexVal; // doesnt matter for this usecase
+    packet += substate.hexVal;
     packet += padding(attributeCount,bit2);
 
     packet += attribute(SettingsAttribute.deliverySpeed.hexVal,bit8s,padding(deliverySpeed, bit8));

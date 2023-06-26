@@ -67,3 +67,24 @@ extension MotorIdExtension on MotorId{
     }
   }
 }
+
+//only for carding
+
+enum SettingsUpdate{
+  update,
+  save
+}
+
+extension SettingsUpdateExtension on SettingsUpdate{
+
+  String get hexVal {
+    switch (this) {
+      case SettingsUpdate.update:
+        return "01";
+      case SettingsUpdate.save:
+        return "00";
+    }
+  }
+}
+
+

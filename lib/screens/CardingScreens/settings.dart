@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flyer/message/Carding/machineEnums.dart';
 
 import 'package:flyer/message/acknowledgement.dart';
 import 'package:flyer/message/Carding/settings_request.dart';
@@ -72,7 +73,7 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
       _btrFeedSpeed.text = _s["btrFeedSpeed"].toString();
       _trunkSensorDelay.text=_s["trunkDelay"].toString();
       _lengthLimit.text = _s["lengthLimit"].toString();
-      _rampTimes.text = _s["rampUpTime"].toString();
+      _rampTimes.text = _s["rampTimes"].toString();
     }
 
     try{
@@ -176,208 +177,233 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
 
   List<Widget> _settingsButtons(){
 
-    if(Provider.of<ConnectionProvider>(context,listen: false).settingsChangeAllowed){
-      return [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            IconButton(
-                onPressed: () async {
-                  _requestSettings();
-                },
-                icon: Icon(Icons.input, color: Theme.of(context).primaryColor,)
-            ),
-            Text(
-              "Input",
-              style: TextStyle(
-                fontSize: 10,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ],
-        ),
 
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            IconButton(
-              onPressed: (){
-                //hard coded change
-                _deliverySpeed.text =  "8";
-                _draft.text =  "1";
-                _cylinderSpeed.text = "1250";
-                _beaterSpeed.text = "900";
-                _cylFeedSpeed.text = "1.2";
-                _btrFeedSpeed.text = "1.2";
-                _trunkSensorDelay.text= "3";
-                _lengthLimit.text = "100";
-                _rampTimes.text = "5";
-
-                SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
-
-                ConnectionProvider().setSettings(_sm.toMap());
-                Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
-
-              },
-              icon: Icon(Icons.settings_backup_restore,color: Theme.of(context).primaryColor,),
-            ),
-            Text(
-              "Default",
-              style: TextStyle(
-                fontSize: 10,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ],
-        ),
-
-        //save button
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            IconButton(
+    return [
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
               onPressed: () async {
-                String _valid = isValidForm();
-                //if settings are valid, try to see if the motor RPMs are correct
-                if(_valid == "valid"){
-                  _valid = calculate();
-                }
-                if(_valid == "valid"){
-
-                  SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
-                  String _msg = _sm.createPacket();
-
-                  connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
-                  await connection!.output!.allSent.then((v) {});
-                  await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
-
-                  if(newDataReceived){
-                    String _d = _data.last;
-
-                    if(_d == Acknowledgement().createPacket()){
-                      //no eeprom error , acknowledge
-                      SnackBar _sb = SnackBarService(message: "Settings Saved", color: Colors.green).snackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(_sb);
-
-                    }
-                    else{
-                      //failed acknowledgement
-                      SnackBar _sb = SnackBarService(message: "Settings Not Saved", color: Colors.red).snackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(_sb);
-                    }
-
-                    newDataReceived = false;
-                    setState(() {
-                    });
-                  }
-
-                }
-                else{
-                  SnackBar _sb = SnackBarService(message: _valid, color: Colors.red).snackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(_sb);
-                }
+                _requestSettings();
               },
-              icon: Icon(Icons.save,color: Theme.of(context).primaryColor,),
+              icon: Icon(Icons.input, color: Theme.of(context).primaryColor,)
+          ),
+          Text(
+            "Input",
+            style: TextStyle(
+              fontSize: 10,
+              color: Theme.of(context).primaryColor,
             ),
-            Text(
-              "Save",
-              style: TextStyle(
-                fontSize: 10,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
+      ),
 
-        //parameters button
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            IconButton(
-              onPressed: (){
-                try{
-
-                  String _err = isValidForm();
-
-                  if(_err!="valid"){
-                    //if error in form
-                    SnackBar _snack = SnackBarService(message: _err, color: Colors.red).snackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(_snack);
-
-                    throw FormatException(_err);
-                  }
-
-                  SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
-
-                  ConnectionProvider().setSettings(_sm.toMap());
-                  Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
-
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return _popUpUI();
-                      }
-                  );
-                }
-                catch(e){
-                  print("Settings: search icon button: ${e.toString()}");
-                }
-              },
-              icon: Icon(Icons.search,color: Theme.of(context).primaryColor,),
-            ),
-            Text(
-              "Parameters",
-              style: TextStyle(
-                fontSize: 10,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ],
-        ),
-
-      ];
-    }
-    else{
-      return [
-
-        IconButton(
-          onPressed: (){
-            try{
-
-              String _err = isValidForm();
-
-              if(_err!="valid"){
-                //if error in form
-                SnackBar _snack = SnackBarService(message: _err, color: Colors.red).snackBar();
-                ScaffoldMessenger.of(context).showSnackBar(_snack);
-
-                throw FormatException(_err);
-              }
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: (){
+              //hard coded change
+              _deliverySpeed.text =  "8";
+              _draft.text =  "1";
+              _cylinderSpeed.text = "1250";
+              _beaterSpeed.text = "900";
+              _cylFeedSpeed.text = "1.2";
+              _btrFeedSpeed.text = "1.2";
+              _trunkSensorDelay.text= "3";
+              _lengthLimit.text = "100";
+              _rampTimes.text = "5";
 
               SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
 
               ConnectionProvider().setSettings(_sm.toMap());
               Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return _popUpUI();
+            },
+            icon: Icon(Icons.settings_backup_restore,color: Theme.of(context).primaryColor,),
+          ),
+          Text(
+            "Default",
+            style: TextStyle(
+              fontSize: 10,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+        ],
+      ),
+
+
+      //update
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: () async {
+              String _valid = isValidForm();
+              //if settings are valid, try to see if the motor RPMs are correct
+              if(_valid == "valid"){
+                _valid = calculate();
+              }
+              if(_valid == "valid"){
+
+                SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
+                String _msg = _sm.createPacket(SettingsUpdate.update);
+
+                connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
+                await connection!.output!.allSent.then((v) {});
+                await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
+
+                if(newDataReceived){
+                  String _d = _data.last;
+
+                  if(_d == Acknowledgement().createPacket()){
+                    //no eeprom error , acknowledge
+                    SnackBar _sb = SnackBarService(message: "Settings Updated", color: Colors.green).snackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(_sb);
+
                   }
-              );
-            }
-            catch(e){
-              print("Settings: search icon button: ${e.toString()}");
-            }
-          },
-          icon: Icon(Icons.search,color: Theme.of(context).primaryColor,),
-        ),
-      ];
-    }
+                  else{
+                    //failed acknowledgement
+                    SnackBar _sb = SnackBarService(message: "Settings Not Updated", color: Colors.red).snackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(_sb);
+                  }
+
+                  newDataReceived = false;
+                  setState(() {
+                  });
+                }
+
+              }
+              else{
+                SnackBar _sb = SnackBarService(message: _valid, color: Colors.red).snackBar();
+                ScaffoldMessenger.of(context).showSnackBar(_sb);
+              }
+            },
+            icon: Icon(Icons.system_update_alt,color: Theme.of(context).primaryColor,),
+          ),
+          Text(
+            "Update",
+            style: TextStyle(
+              fontSize: 10,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+        ],
+      ),
+
+      //save button
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: () async {
+              String _valid = isValidForm();
+              //if settings are valid, try to see if the motor RPMs are correct
+              if(_valid == "valid"){
+                _valid = calculate();
+              }
+              if(_valid == "valid"){
+
+                SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
+                String _msg = _sm.createPacket(SettingsUpdate.save);
+
+                connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
+                await connection!.output!.allSent.then((v) {});
+                await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
+
+                if(newDataReceived){
+                  String _d = _data.last;
+
+                  if(_d == Acknowledgement().createPacket()){
+                    //no eeprom error , acknowledge
+                    SnackBar _sb = SnackBarService(message: "Settings Saved", color: Colors.green).snackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+                  }
+                  else{
+                    //failed acknowledgement
+                    SnackBar _sb = SnackBarService(message: "Settings Not Saved", color: Colors.red).snackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(_sb);
+                  }
+
+                  newDataReceived = false;
+                  setState(() {
+                  });
+                }
+
+              }
+              else{
+                SnackBar _sb = SnackBarService(message: _valid, color: Colors.red).snackBar();
+                ScaffoldMessenger.of(context).showSnackBar(_sb);
+              }
+            },
+            icon: Icon(Icons.save,color: Theme.of(context).primaryColor,),
+          ),
+          Text(
+            "Save",
+            style: TextStyle(
+              fontSize: 10,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+        ],
+      ),
+
+      //parameters button
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: (){
+              try{
+
+                String _err = isValidForm();
+
+                if(_err!="valid"){
+                  //if error in form
+                  SnackBar _snack = SnackBarService(message: _err, color: Colors.red).snackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(_snack);
+
+                  throw FormatException(_err);
+                }
+
+                SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
+
+                ConnectionProvider().setSettings(_sm.toMap());
+                Provider.of<ConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return _popUpUI();
+                    }
+                );
+              }
+              catch(e){
+                print("Settings: search icon button: ${e.toString()}");
+              }
+            },
+            icon: Icon(Icons.search,color: Theme.of(context).primaryColor,),
+          ),
+          Text(
+            "Parameters",
+            style: TextStyle(
+              fontSize: 10,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+        ],
+      ),
+
+
+    ];
+
+
   }
 
 
