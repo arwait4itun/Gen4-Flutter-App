@@ -61,7 +61,7 @@ enum Information {
   diagnosticResponse,
   machineState,
   carouselInfo,
-  changeName,
+  resetLengthCounter,
   gearBoxSettingsFromApp,
   gearBoxSettingsFromMachine,
   RTF,
@@ -93,7 +93,7 @@ extension InformationExtension on Information{
         return "08";
       case Information.gearBoxSettingsFromMachine:
         return "09";
-      case Information.changeName:
+      case Information.resetLengthCounter:
         return "0A";
       case Information.RTF:
         return "0B";

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flyer/message/Carding/reset_length_message.dart';
 import 'package:flyer/message/acknowledgement.dart';
 import 'package:flyer/message/Carding/enums.dart';
 import 'package:flyer/message/gearBoxMessage.dart';
@@ -167,10 +168,94 @@ class _CardingAdvancedOptionsUIState extends State<CardingAdvancedOptionsUI> {
             const Divider(
               color: Colors.grey,
             ),
+
+            Center(
+              child: Container(
+                height: MediaQuery.of(context).size.height*0.05,
+                width: MediaQuery.of(context).size.width*0.9,
+                margin: EdgeInsets.only(top: 40),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: <Color>[Colors.blue,Colors.lightGreen]
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
+
+
+                      try{
+
+                        String _m = ResetLengthCounterMessage().ResetLengthCounter();
+                        String _msg = "Reset Length Counter";
+
+                        connection!.output.add(Uint8List.fromList(utf8.encode(_m)));
+                        await connection!.output!.allSent;
+
+                        await Future.delayed(Duration(milliseconds: 200));
+
+                        if(newDataReceived){
+
+                          newDataReceived = false;
+                          String _d = _data.last;
+
+                          if(_d==null || _d==""){
+
+                            SnackBar _sb = SnackBarService(message: "Invalid Packet", color: Colors.red).snackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+
+                            throw FormatException("enable: Invalid Packet");
+
+                          }
+
+                          else if(_d==Acknowledgement().createPacket()){
+
+                            SnackBar _sb = SnackBarService(message: "${_msg}", color: Colors.green).snackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+
+                          }
+                          else{
+                            SnackBar _sb = SnackBarService(message: "Error in Reset", color: Colors.red).snackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(_sb);
+
+                            throw FormatException("Error in Reset");
+
+                          }
+
+                        }
+
+
+                        setState(() {
+
+                        });
+
+                      }
+                      catch(e){
+                        print("adv op: reset : ${e.toString()}");
+                      }
+
+                    },
+                    child: Text("RESET LENGTH COUNTER", style: TextStyle(fontWeight: FontWeight.bold),),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
     );
   }
+
+
 
   void _onDataReceived(Uint8List data) {
 

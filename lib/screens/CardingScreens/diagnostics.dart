@@ -709,7 +709,7 @@ class _DrawFrameStopDiagnoseSingleUIState extends State<DrawFrameStopDiagnoseSin
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: Text(
-          "Flyer Frame",
+          "Blow Card",
           style: TextStyle(
             color: Colors.white,
           ),

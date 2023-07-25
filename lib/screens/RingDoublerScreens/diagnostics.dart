@@ -954,7 +954,7 @@ class _FlyerStopDiagnoseSingleUIState extends State<FlyerStopDiagnoseSingleUI> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: Text(
-          "Flyer Frame",
+          "Ring Doubler",
           style: TextStyle(
             color: Colors.white,
           ),
@@ -1192,7 +1192,7 @@ class _FlyerStopDiagnoseDoubleUIState extends State<FlyerStopDiagnoseDoubleUI> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: Text(
-          "Flyer Frame",
+          "Ring Doubler",
           style: TextStyle(
             color: Colors.white,
           ),

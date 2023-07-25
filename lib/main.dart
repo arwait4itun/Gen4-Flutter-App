@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flyer/screens/select_machine.dart';
+import 'package:flyer/screens/splash.dart';
 import 'package:flyer/services/Flyer/provider_service.dart';
 import 'package:flyer/services/Carding/provider_service.dart';
 import 'package:flyer/services/DrawFrame/provider_service.dart';
@@ -13,12 +13,8 @@ import 'package:permission_handler/permission_handler.dart';
 void main() async {
 
 
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  WidgetsFlutterBinding.ensureInitialized();
 
-  await Future.delayed(Duration(seconds: 2 ));
-
-  FlutterNativeSplash.remove();
 
   var status = await Permission.bluetooth.status;
   if (status.isDenied) {
@@ -87,9 +83,9 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      initialRoute: "/selectMachine",
+      initialRoute: "/splash",
       routes: {
-        '/selectMachine': (context) => SelectMachineUI(),
+        '/splash': (context) => SplashScreenUI(),
       },
     );
   }
