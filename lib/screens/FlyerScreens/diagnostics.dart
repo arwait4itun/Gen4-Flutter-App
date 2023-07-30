@@ -29,7 +29,8 @@ class FlyerTestPage extends StatefulWidget {
 class _FlyerTestPageState extends State<FlyerTestPage> {
 
   //run diagnose variables
-  List<String> _motorName = ["FRONT ROLLER","BACK ROLLER","CREEL","DRAFTING"];
+  List<String> _testType = ["MOTOR","LIFT"];
+  List<String> _motorName = ["FLYER","BOBBIN","FRONT ROLLER","BACK ROLLER","DRAFTING","WINDING"];
   List<String> _controlType = ["OPEN LOOP","CLOSED LOOP"];
 
   List<String> _motorDirection = ["DEFAULT","REVERSE"];
@@ -39,11 +40,15 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
 
   //bedTravelDistance : 2-250 mm
 
-  late String _testTypeChoice = "MOTOR"; //HARDCODED TO MOTOR
+  late String _testTypeChoice = _testType.first;
   late String _motorNameChoice = _motorName.first;
   late String _controlTypeChoice = _controlType.first;
 
   late String _motorDirectionChoice = _motorDirection.first;
+
+  late String _liftMotorsChoice = _liftMotors.first;
+  late String _bedDirectionChoice = _bedDirection.first;
+
 
   late double _target = 10; //10-90%
  // final TextEditingController _targetRPM = new TextEditingController();
@@ -158,7 +163,51 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
             },
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children:  <TableRow>[
-              //Motor Name section
+              TableRow(
+                children: <Widget>[
+                  TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child: Container(
+                      margin: EdgeInsets.only(left: 5, right: 5),
+                      child: Text(
+                        "Test Type",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child:
+                    Container(
+                      height: MediaQuery.of(context).size.height*0.05,
+                      width: MediaQuery.of(context).size.width*0.2,
+                      margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
+                      child: DropdownButton<String>(
+                        value: _testTypeChoice,
+                        icon: const Icon(Icons.arrow_drop_down),
+                        elevation: 16,
+                        style: const TextStyle(color: Colors.lightGreen),
+                        underline: Container(),
+                        onChanged: (String? value) {
+                          // This is called when the user selects an item.
+                          setState(() {
+                            _testTypeChoice = value!;
+                          });
+                        },
+                        items: _testType.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // this is motor name if youve selected "MOTOR" or an empty container
+              _testTypeChoice=="MOTOR"?
               TableRow(
                 children: <Widget>[
 
@@ -180,7 +229,6 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                       width: MediaQuery.of(context).size.width*0.2,
                       margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
                       child: DropdownButton<String>(
-                        isExpanded: true,
                         value: _motorNameChoice,
                         icon: const Icon(Icons.arrow_drop_down),
                         elevation: 16,
@@ -204,9 +252,18 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                   ),
 
                 ],
+              )
+              :TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
               ),
 
               // this is the control Type section.
+              //if motor show option to choose control type from dropdown, else
+              //if its lift you just show control type as a fixed close Loop.
+              _testTypeChoice=="MOTOR"?
               TableRow(
                 children: <Widget>[
                   TableCell(
@@ -224,7 +281,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                     child:
                     Container(
                       height: MediaQuery.of(context).size.height*0.05,
-                      width: MediaQuery.of(context).size.width*0.1,
+                      width: MediaQuery.of(context).size.width*0.2,
                       margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
                       child: DropdownButton<String>(
                         value: _controlTypeChoice,
@@ -232,7 +289,6 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                         elevation: 16,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
-                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -250,9 +306,32 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                   ),
 
                 ],
-              ),
+              )
+              :TableRow(children: <Widget>[
+                TableCell(
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                  child: Container(
+                  margin: EdgeInsets.only(left: 5, right: 5),
+                  child: Text(
+                    "Control Type",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                ),
+                TableCell(
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                  child:
+                  Container(
+                    height: MediaQuery.of(context).size.height*0.05,
+                    width: MediaQuery.of(context).size.width*0.2,
+                    margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
+                    child: _liftMotorsChoice=="BOTH"? Text("CLOSED LOOP"):Text("OPEN LOOP"),
+                  ),
+                ),
+              ]),
 
               //This section is for motor direction
+              _testTypeChoice=="MOTOR"?
               TableRow(
                 children: <Widget>[
                   TableCell(
@@ -278,7 +357,6 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                         elevation: 16,
                         style: const TextStyle(color: Colors.lightGreen),
                         underline: Container(),
-                        isExpanded: true,
                         onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
@@ -296,14 +374,31 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                   ),
 
                 ],
+              )
+              :TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
               ),
 
               // this is target% section. If "MOTOR", then put a target Row, a specialized table row,
               //else an empty rable row
-              _targetRow("Target(%)"),
+              _testTypeChoice=="MOTOR"?
+              _targetRow("Target(%)")
+                  :  TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
+              ),
+
+
 
               //if "MOTOR", is open Loop put target Duty, if Closed loop put targetRPM
-              _controlTypeChoice!="OPEN LOOP" ?
+              // if LIFT put empty container.
+              _testTypeChoice=="MOTOR" ?
+                _controlTypeChoice!="OPEN LOOP" ?
                   TableRow(
                     children: <Widget>[
                       TableCell(
@@ -329,8 +424,8 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                       ),
 
                     ],
-                  ) //closedLoop
-                  :TableRow(    //openLoop
+                  )
+                  :TableRow(
                   children: <Widget>[
                     TableCell(
                       verticalAlignment: TableCellVerticalAlignment.middle,
@@ -354,12 +449,26 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                       ),
                     ),
                   ]
+              )
+              :TableRow(
+                children: <Widget>[
+                TableCell(child: Container()),
+                TableCell(child: Container()),
+                ]
               ),
 
-              //Run Time
-              _testTimeRow("Run Time (%)"),
+              _testTypeChoice=="MOTOR" ?
+              _testTimeRow("Run Time (%)")
+                  :TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
+              ),
 
               //if "MOTOR", is open Loop put target Duty, if Closed loop put targetRPM
+              // if LIFT put empty container.
+              _testTypeChoice=="MOTOR" ?
               TableRow(
                 children: <Widget>[
                   TableCell(
@@ -385,7 +494,127 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
                   ),
 
                 ],
+              )
+              : TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
               ),
+
+              _testTypeChoice=="LIFT"?
+              TableRow(
+                children: <Widget>[
+
+                  TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child: Container(
+                      margin: EdgeInsets.only(left: 5, right: 5),
+                      child: Text(
+                        "Lift Motors",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child:
+                    Container(
+                      height: MediaQuery.of(context).size.height*0.05,
+                      width: MediaQuery.of(context).size.width*0.2,
+                      margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
+                      child: DropdownButton<String>(
+                        value: _liftMotorsChoice,
+                        icon: const Icon(Icons.arrow_drop_down),
+                        elevation: 16,
+                        style: const TextStyle(color: Colors.lightGreen),
+                        underline: Container(),
+                        onChanged: (String? value) {
+                          // This is called when the user selects an item.
+                          setState(() {
+                            _liftMotorsChoice = value!;
+                          });
+                        },
+                        items: _liftMotors.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+
+                ],
+              )
+                  :TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
+              ),
+
+              _testTypeChoice=="LIFT"?
+              TableRow(
+                children: <Widget>[
+
+                  TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child: Container(
+                      margin: EdgeInsets.only(left: 5, right: 5),
+                      child: Text(
+                        "Bed Direction",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child:
+                    Container(
+                      height: MediaQuery.of(context).size.height*0.05,
+                      width: MediaQuery.of(context).size.width*0.2,
+                      margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
+                      child: DropdownButton<String>(
+                        value: _bedDirectionChoice,
+                        icon: const Icon(Icons.arrow_drop_down),
+                        elevation: 16,
+                        style: const TextStyle(color: Colors.lightGreen),
+                        underline: Container(),
+                        onChanged: (String? value) {
+                          // This is called when the user selects an item.
+                          setState(() {
+                            _bedDirectionChoice = value!;
+                          });
+                        },
+                        items: _bedDirection.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+
+                ],
+              )
+                  :TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
+              ),
+
+              _testTypeChoice=="LIFT"?
+              _customRow2("Bed Travel Distance(mm)", _bedTravelDistance)
+                  :TableRow(
+                  children: <Widget>[
+                    TableCell(child: Container()),
+                    TableCell(child: Container()),
+                  ]
+              ),
+
             ],
           ),
 
@@ -608,9 +837,9 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
           target: _target.toString(),
           targetRPM: _targetRPM,
           testRuntime: _testRuntimeval.toString(),
-          motorDirection: "BOTH" ,
-          bedDirectionChoice: "UP",
-          bedTravelDistance: "1",
+          motorDirection: _testTypeChoice!="LIFT" ? _motorDirectionChoice.toString() : _liftMotorsChoice.toString() ,
+          bedDirectionChoice: _bedDirectionChoice.toString(),
+          bedTravelDistance: _bedTravelDistance.text.toString(),
       );
 
 
@@ -627,17 +856,27 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
         MaterialPageRoute(
           builder: (_){
 
-            if(_testTypeChoice=="MOTOR" && _motorNameChoice=="DRAFTING"){
+            if(_testTypeChoice=="MOTOR" &&(_motorNameChoice=="DRAFTING" || _motorNameChoice=="WINDING") || _testTypeChoice=="LIFT"&&_liftMotorsChoice=="BOTH"){
 
               String leftTitle,rightTitle;
 
-              leftTitle = "FR";
-              rightTitle = "BR";
+              if(_testTypeChoice=="MOTOR" &&(_motorNameChoice=="DRAFTING")){
+                leftTitle = "FR";
+                rightTitle = "BR";
+              }
+              else if(_testTypeChoice=="MOTOR" &&(_motorNameChoice=="WINDING")){
+                leftTitle = "Flyer";
+                rightTitle = "Bobbin";
+              }
+              else{
+                leftTitle = "Left";
+                rightTitle = "Right";
+              }
 
               return FlyerStopDiagnoseDoubleUI(
                 connection: connection,
                 testsStream: testsStream,
-                isLift: false,
+                isLift: _testTypeChoice=="LIFT",
                 leftTitle: leftTitle,
                 rightTitle: rightTitle,
               );
@@ -646,7 +885,7 @@ class _FlyerTestPageState extends State<FlyerTestPage> {
               return FlyerStopDiagnoseSingleUI(
                 connection: connection,
                 testsStream: testsStream,
-                isLift: false,
+                isLift: _testTypeChoice=="LIFT",
               );
             }
           }
@@ -748,23 +987,31 @@ class _FlyerStopDiagnoseSingleUIState extends State<FlyerStopDiagnoseSingleUI> {
           if(snapshot.hasData){
             var data = snapshot.data;
             String _d = utf8.decode(data!);
-            //print("\nTESTS: run diagnose data: "+_d);
-            //print(snapshot.data);
+            print("\nTESTS: run diagnose data: "+_d);
+            print(snapshot.data);
 
 
             try{
 
               Map<String,double> _diagResponse = DiagnosticMessageResponse().decode(_d);
-              //print("HERE!!!!!!!!!!!!!!: $_diagResponse");
+              print("HERE!!!!!!!!!!!!!!: $_diagResponse");
 
               _runningRPM = _diagResponse["speedRPM"]!.toStringAsFixed(0);
               _runningSignalVoltage = _diagResponse["signalVoltage"]!.toStringAsFixed(0);
               _current = _diagResponse["current"]!.toStringAsFixed(2);
               _power = _diagResponse["power"]!.toStringAsFixed(2);
 
+              if(_diagResponse.keys.length == 5){
+                //contains lift
+
+                _lift = _diagResponse["lift"]!.toStringAsFixed(2);
+              }
+              else{
+                _lift = null;
+              }
             }
             catch(e){
-              print("error in DiagnosticsResponse: ${e.toString()}");
+              print("tests1: ${e.toString()}");
             }
           }
 
@@ -794,14 +1041,23 @@ class _FlyerStopDiagnoseSingleUIState extends State<FlyerStopDiagnoseSingleUI> {
                   _customRow("PWM (0 to 1500)", _runningSignalVoltage),
                   _customRow("Current (A)", _current),
                   _customRow("Power (W)", _power),
+
+                  widget.isLift ?
+                  _customRow("Lift (mm)", _lift)
+                      :TableRow(
+                      children: <Widget>[
+                        TableCell(child: Container()),
+                        TableCell(child: Container()),
+                      ]
+                  ),
                 ],
               ),
               Container(
                 height: MediaQuery.of(context).size.height*0.05,
                 width: MediaQuery.of(context).size.width*0.9,
-                margin: const EdgeInsets.only(top: 40),
+                margin: EdgeInsets.only(top: 40),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: <Color>[Colors.blue,Colors.lightGreen]
@@ -813,12 +1069,12 @@ class _FlyerStopDiagnoseSingleUIState extends State<FlyerStopDiagnoseSingleUI> {
                     onPressed: (){
                       _stopDiagnose();
                     },
+                    child: Text("STOP DIAGNOSE", style: TextStyle(fontWeight: FontWeight.bold),),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text("STOP DIAGNOSE", style: TextStyle(fontWeight: FontWeight.bold),),
                   ),
                 ),
               ),
@@ -859,7 +1115,7 @@ class _FlyerStopDiagnoseSingleUIState extends State<FlyerStopDiagnoseSingleUI> {
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.middle,
           child: Container(
-            margin: const EdgeInsets.only(left: 5, right: 5),
+            margin: EdgeInsets.only(left: 5, right: 5),
             child: Text(
               label,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
@@ -873,8 +1129,8 @@ class _FlyerStopDiagnoseSingleUIState extends State<FlyerStopDiagnoseSingleUI> {
 
             height: MediaQuery.of(context).size.height*0.05,
             width: MediaQuery.of(context).size.width*0.2,
-            margin: const EdgeInsets.only(top: 2.5,bottom: 2.5),
-            padding: const EdgeInsets.only(left: 5, top: 11),
+            margin: EdgeInsets.only(top: 2.5,bottom: 2.5),
+            padding: EdgeInsets.only(left: 5, top: 11),
             child: Text(attribute ?? "--", ),
           ),
         ),
@@ -908,6 +1164,9 @@ class _FlyerStopDiagnoseDoubleUIState extends State<FlyerStopDiagnoseDoubleUI> {
   String? _runningSignalVoltage1,_runningSignalVoltage2;
   String? _current1,_current2;
   String? _power1,_power2;
+
+  String? _lift1,_lift2;
+
   bool isConnected = false;
 
 
@@ -929,7 +1188,7 @@ class _FlyerStopDiagnoseDoubleUIState extends State<FlyerStopDiagnoseDoubleUI> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: Text(
-          "Draw Frame",
+          "Flyer Frame",
           style: TextStyle(
             color: Colors.white,
           ),
@@ -986,9 +1245,20 @@ class _FlyerStopDiagnoseDoubleUIState extends State<FlyerStopDiagnoseDoubleUI> {
               _runningSignalVoltage2 = _diagResponse["signalVoltage1"]!.toStringAsFixed(0);
               _current2 = _diagResponse["current1"]!.toStringAsFixed(2);
               _power2 = _diagResponse["power1"]!.toStringAsFixed(2);
+
+              if(_diagResponse.keys.length == 10){
+                //contains lift
+
+                _lift1 = _diagResponse["lift"]!.toStringAsFixed(2);
+                _lift2 = _diagResponse["lift1"]!.toStringAsFixed(2);
+              }
+              else{
+                _lift1 = null;
+                _lift2 = null;
+              }
             }
             catch(e){
-              print("Diagnostics Reponse Err: ${e.toString()}");
+              print("tests1: ${e.toString()}");
             }
           }
 
@@ -1021,6 +1291,15 @@ class _FlyerStopDiagnoseDoubleUIState extends State<FlyerStopDiagnoseDoubleUI> {
                   _customRow("Current (A)", _current1, _current2),
                   _customRow("Power (W)", _power1, _power2),
 
+                  widget.isLift ?
+                  _customRow("Lift (mm)", _lift1, _lift2)
+                      :TableRow(
+                      children: <Widget>[
+                        TableCell(child: Container()),
+                        TableCell(child: Container()),
+                        TableCell(child: Container()),
+                      ]
+                  ),
                 ],
               ),
               Container(
