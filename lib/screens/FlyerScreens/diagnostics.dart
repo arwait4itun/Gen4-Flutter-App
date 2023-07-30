@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flyer/message/DrawFrame/diagnosticMessage.dart';
+import 'package:flyer/message/Flyer/diagnosticMessage.dart';
 
 import 'package:flyer/globals.dart' as globals;
 import 'package:flyer/services/snackbar_service.dart';
