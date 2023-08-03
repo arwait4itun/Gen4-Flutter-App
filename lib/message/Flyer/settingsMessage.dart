@@ -6,7 +6,7 @@ import 'machineEnums.dart';
 
 Map<String,List> settingsLimits = {
   "spindleSpeed":[500,1000],
-  "draft":[5,9.9],
+  "draft":[5,15],
   "twistPerInch":[1,1.6],
   "RTF":[0.5,1.5],
   "layers":[1,100],

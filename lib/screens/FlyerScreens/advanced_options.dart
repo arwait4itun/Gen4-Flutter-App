@@ -429,21 +429,6 @@ class _FlyerMotorGearPageUIState extends State<FlyerMotorGearPageUI> {
           ),
         ),
 
-        enabled?
-        IconButton(
-            onPressed: (){
-              function();
-            },
-            color: Theme.of(context).highlightColor,
-            icon: Icon(Icons.arrow_forward,)
-        )
-        :IconButton(
-            onPressed: (){
-              print("gb: disabled");
-            },
-            color: Colors.grey,
-            icon: Icon(Icons.arrow_forward,)
-        ),
       ],
     );
 

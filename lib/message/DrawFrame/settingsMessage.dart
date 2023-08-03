@@ -7,9 +7,10 @@ import 'machineEnums.dart';
 Map<String,List> settingsLimits = {
   "deliverySpeed":[50,150],
   "draft":[5,12],
-  "lengthLimit":[250,1250],
+  "lengthLimit":[5,1250],
   "rampUpTime":[3,15],
   "rampDownTime":[3,15],
+  "creelTensionFactor":[0.25,5],
 };
 
 class SettingsMessage{
@@ -19,6 +20,7 @@ class SettingsMessage{
   String lengthLimit;
   String rampUpTime;
   String rampDownTime;
+  String creelTensionFactor;
 
   SettingsMessage({
   required this.deliverySpeed,
@@ -26,6 +28,7 @@ class SettingsMessage{
   required this.lengthLimit,
   required this.rampUpTime,
   required this.rampDownTime,
+  required this.creelTensionFactor,
   });
 
   String createPacket(){
@@ -56,6 +59,7 @@ class SettingsMessage{
     packet += attribute(SettingsAttribute.lengthLimit.hexVal, bit4s, padding(lengthLimit, bit4));
     packet += attribute(SettingsAttribute.rampUpTime.hexVal, bit4s, padding(rampUpTime, bit4));
     packet += attribute(SettingsAttribute.rampDownTime.hexVal,bit4s, padding(rampDownTime, bit4));
+    packet += attribute(SettingsAttribute.creelTensionFactor.hexVal,bit8s, padding(creelTensionFactor, bit8));
 
     packet += Separator.eof.hexVal;
 
@@ -106,6 +110,7 @@ class SettingsMessage{
       "lengthLimit": lengthLimit,
       "rampUpTime": rampUpTime,
       "rampDownTime": rampDownTime,
+      "creelTensionFactor": creelTensionFactor,
     };
 
     return _settings;

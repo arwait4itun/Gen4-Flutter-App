@@ -4,7 +4,8 @@ enum SettingsAttribute{
   draft,
   lengthLimit,
   rampUpTime,
-  rampDownTime
+  rampDownTime,
+  creelTensionFactor,
 }
 
 extension SettingsAttributeTypeExtension on SettingsAttribute{
@@ -21,6 +22,8 @@ extension SettingsAttributeTypeExtension on SettingsAttribute{
         return "73";
       case SettingsAttribute.rampDownTime:
         return "74";
+      case SettingsAttribute.creelTensionFactor:
+        return "75";
     }
   }
 }

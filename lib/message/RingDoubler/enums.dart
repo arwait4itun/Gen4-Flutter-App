@@ -56,7 +56,7 @@ enum Information {
   diagnosticResponse,
   machineState,
   carouselInfo,
-  changeName,
+  resetGramsPerSpindle,
   gearBoxSettingsFromApp,
   gearBoxSettingsFromMachine,
   RTF,
@@ -89,7 +89,7 @@ extension InformationExtension on Information{
 
       case Information.gearBoxSettingsFromMachine:
         return "09";
-      case Information.changeName:
+      case Information.resetGramsPerSpindle:
         return "0A";
       case Information.RTF:
         return "0B";

@@ -230,7 +230,7 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
                 _twistPerInch.text = "1.4";
                 _RTF.text = "1";
                 _layers.text="50";
-                _maxHeightOfContent.text = "280";
+                _maxHeightOfContent.text = "270";
                 _rovingWidth.text = "1.2";
                 _deltaBobbinDia.text = "1.1";
                 _bareBobbinDia.text = "48";

@@ -34,6 +34,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
   final TextEditingController _lengthLimit = TextEditingController();
   final TextEditingController _rampUpTime = TextEditingController();
   final TextEditingController _rampDownTime = TextEditingController();
+  final TextEditingController _creelTensionFactor = TextEditingController();
 
 
   List<String> _data = List<String>.empty(growable: true);
@@ -67,6 +68,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
         _lengthLimit.text = _s["lengthLimit"].toString();
         _rampUpTime.text = _s["rampUpTime"].toString();
         _rampDownTime.text=_s["rampDownTime"].toString();
+        _creelTensionFactor.text = _s["creelTensionFactor"].toString();
       }
     }
     catch(e){
@@ -139,6 +141,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
                 _customRow("Length Limit (mtrs)", _lengthLimit,isFloat: false,defaultValue: "",enabled: _enabled),
                 _customRow("RampUp Time (sec)", _rampUpTime,isFloat: false,defaultValue: "",enabled: _enabled),
                 _customRow("RampDown Time (sec)", _rampDownTime, isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Creel Tension Factor", _creelTensionFactor,isFloat: true, defaultValue: "", enabled: _enabled),
               ],
             ),
 
@@ -206,8 +209,9 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
                 _lengthLimit.text = "400";
                 _rampUpTime.text = "6";
                 _rampDownTime.text="6";
+                _creelTensionFactor.text="1";
 
-                SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
+                SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text, creelTensionFactor: _creelTensionFactor.text);
 
                 DrawFrameConnectionProvider().setSettings(_sm.toMap());
                 Provider.of<DrawFrameConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
@@ -238,8 +242,11 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
                 }
                 if(_valid == "valid"){
 
-                  SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
+                  SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text, creelTensionFactor: _creelTensionFactor.text);
                   String _msg = _sm.createPacket();
+
+                  DrawFrameConnectionProvider().setSettings(_sm.toMap());
+                  Provider.of<DrawFrameConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 
                   connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
                   await connection!.output!.allSent.then((v) {});
@@ -301,7 +308,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
                     throw FormatException(_err);
                   }
 
-                  SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
+                  SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text, creelTensionFactor: _creelTensionFactor.text);
 
                   DrawFrameConnectionProvider().setSettings(_sm.toMap());
                   Provider.of<DrawFrameConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
@@ -366,7 +373,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
                 throw FormatException(_err);
               }
 
-              SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
+              SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text, creelTensionFactor: _creelTensionFactor.text);
 
               DrawFrameConnectionProvider().setSettings(_sm.toMap());
               Provider.of<DrawFrameConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
@@ -559,6 +566,21 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
       }
     }
 
+
+    if(_creelTensionFactor.text.trim() == "" ){
+      errorMessage = "Creel Tension Factor is Empty!";
+      return errorMessage;
+    }
+    else{
+      List range = settingsLimits["creelTensionFactor"]!;
+      double val = double.parse(_creelTensionFactor.text.trim());
+
+      if(val < range[0] || val > range[1]){
+        errorMessage = "Creel TensionFactor values should be within $range";
+        return errorMessage;
+      }
+    }
+
     return errorMessage;
   }
 
@@ -596,7 +618,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
         newDataReceived = false;
 
 
-        SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text);
+        SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, lengthLimit: _lengthLimit.text, rampUpTime: _rampUpTime.text, rampDownTime: _rampDownTime.text, creelTensionFactor: _creelTensionFactor.text);
         DrawFrameConnectionProvider().setSettings(_sm.toMap());
         Provider.of<DrawFrameConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
 

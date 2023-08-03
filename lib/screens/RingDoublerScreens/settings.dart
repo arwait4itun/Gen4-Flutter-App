@@ -317,6 +317,10 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
 
                   String _msg = _sm.createPacket();
 
+                  RingDoublerConnectionProvider().setSettings(_sm.toMap());
+
+                  Provider.of<RingDoublerConnectionProvider>(context, listen: false).setSettings(_sm.toMap());
+
                   connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
                   await connection!.output!.allSent.then((v) {});
                   await Future.delayed(

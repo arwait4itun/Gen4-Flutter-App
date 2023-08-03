@@ -330,7 +330,7 @@ class _RingDoublerPhoneStatusUIState extends State<RingDoublerPhoneStatusUI> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Output Weight",
+              "Doff Percent",
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontSize: 18,
