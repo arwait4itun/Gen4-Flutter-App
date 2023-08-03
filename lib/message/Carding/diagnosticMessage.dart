@@ -54,10 +54,10 @@ class DiagnosticMessage{
       String _motorId;
 
       switch(motorNameChoice){
-        case "CYLINDER":
+        case "CARD CYLINDER":
           _motorId = MotorId.cylinder.hexVal;
           break;
-        case "BEATER":
+        case "BEATER CYLINDER":
           _motorId = MotorId.beater.hexVal;
           break;
         case "CAGE":

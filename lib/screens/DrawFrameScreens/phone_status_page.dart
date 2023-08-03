@@ -328,7 +328,7 @@ class _DrawFramePhoneStatusPageUIState extends State<DrawFramePhoneStatusPageUI>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Current Length",
+              "Current Length (mtrs)r",
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontSize: 18,

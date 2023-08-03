@@ -6,7 +6,7 @@ import 'machineEnums.dart';
 
 Map<String,List> settingsLimits = {
   "deliverySpeed":[6,15],
-  "draft":[0.5,1.5],
+  "draft":[0.5,3],
   "cylSpeed":[1200,1500],
   "btrSpeed":[800,1300],
   "cylFeedSpeed":[0.1,5],

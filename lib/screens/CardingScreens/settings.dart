@@ -112,6 +112,9 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
     if(connection!.isConnected){
       bool _enabled = true; //only for carding
 
+      bool _disable = Provider.of<CardingConnectionProvider>(context,listen: false).settingsChangeAllowed;
+
+
       return SingleChildScrollView(
         padding: EdgeInsets.only(left:screenHt *0.02,top: screenHt*0.01 ,bottom: screenHt*0.02, right: screenWidth*0.02),
         scrollDirection: Axis.vertical,
@@ -144,13 +147,13 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
               children: <TableRow>[
                 _customRow("DeliverySpeed (mtr/min)", _deliverySpeed,defaultValue: "",enabled: _enabled),
                 _customRow("Draft", _draft,defaultValue: "",enabled: _enabled),
-                _customRow("Cylinder RPM", _cylinderSpeed, isFloat: false,defaultValue: "",enabled: _enabled),
-                _customRow("Beater RPM", _beaterSpeed, isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Card Cylinder RPM", _cylinderSpeed, isFloat: false,defaultValue: "",enabled: _disable),
+                _customRow("Beater Cylinder RPM", _beaterSpeed, isFloat: false,defaultValue: "",enabled: _disable),
                 _customRow("Card Feed RPM", _cylFeedSpeed,defaultValue: "",enabled: _enabled),
                 _customRow("Beater Feed RPM", _btrFeedSpeed,defaultValue: "",enabled: _enabled),
-                _customRow("Trunk Sensor Delay(sec)", _trunkSensorDelay,isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Duct Sensor Delay(s)", _trunkSensorDelay,isFloat: false,defaultValue: "",enabled: _enabled),
                 _customRow("Length Limit (mtrs)", _lengthLimit,isFloat: false,defaultValue: "",enabled: _enabled),
-                _customRow("Ramp Times (sec)", _rampTimes,isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Ramp Times (sec)", _rampTimes,isFloat: false,defaultValue: "",enabled: _disable),
               ],
             ),
 
@@ -258,6 +261,10 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
                 SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
                 String _msg = _sm.createPacket(SettingsUpdate.update);
 
+
+                CardingConnectionProvider().setSettings(_sm.toMap());
+                Provider.of<CardingConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+
                 connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
                 await connection!.output!.allSent.then((v) {});
                 await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
@@ -317,6 +324,9 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
                 SettingsMessage _sm = SettingsMessage(deliverySpeed: _deliverySpeed.text, draft: _draft.text, cylSpeed:_cylinderSpeed.text,beaterSpeed:_beaterSpeed.text,cylFeedSpeed:_cylFeedSpeed.text,btrFeedSpeed:_btrFeedSpeed.text,trunkDelay:_trunkSensorDelay.text,lengthLimit: _lengthLimit.text, rampTimes: _rampTimes.text);
                 String _msg = _sm.createPacket(SettingsUpdate.save);
 
+                CardingConnectionProvider().setSettings(_sm.toMap());
+                Provider.of<CardingConnectionProvider>(context,listen: false).setSettings(_sm.toMap());
+
                 connection!.output.add(Uint8List.fromList(utf8.encode(_msg)));
                 await connection!.output!.allSent.then((v) {});
                 await Future.delayed(Duration(milliseconds: 500)); //wait for acknowledgement
@@ -326,6 +336,7 @@ class _CardingSettingsPageState extends State<CardingSettingsPage> {
 
                   if(_d == Acknowledgement().createPacket()){
                     //no eeprom error , acknowledge
+
                     SnackBar _sb = SnackBarService(message: "Settings Saved", color: Colors.green).snackBar();
                     ScaffoldMessenger.of(context).showSnackBar(_sb);
 

@@ -142,8 +142,8 @@ class _DrawFrameRunningCarouselState extends State<DrawFrameRunningCarousel> {
                     children: [
                       Text(_names[i-1], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
 
-                      i!=1? _customRow("Motor Temp (C)", motorTemp??"-"): _customRow("Output Per Spindle", production??"-"),
-                      i!=1? _customRow("MOSFET Temp (C)", MOSFETTemp??"-"): _customRow("Total Power", totalPower??"-"),
+                      i!=1? _customRow("Motor Temp (C)", motorTemp??"-"): _customRow("Time Remaining (s)", production??"-"),
+                      i!=1? _customRow("MOSFET Temp (C)", MOSFETTemp??"-"): _customRow("Total Power (W)", totalPower??"-"),
                       i!=1?_customRow("Current (A)", current??"-"): Container(),
                       i!=1? _customRow("RPM", RPM??"-"): Container(),
 
