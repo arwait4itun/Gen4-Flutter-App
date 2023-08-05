@@ -99,6 +99,9 @@ class RequestSettings{
     else if(t==SettingsAttribute.rampDownTime.hexVal){
       return SettingsAttribute.rampDownTime.name;
     }
+    else if(t==SettingsAttribute.creelTensionFactor.hexVal){
+      return SettingsAttribute.creelTensionFactor.name;
+    }
     else{
       return "";
     }
@@ -107,7 +110,7 @@ class RequestSettings{
 
 void main() {
 
-  String p = "7E840200125004028A51084100000052083F99999A540404B05504011856084040000057083F8000005804003053083F80000059042EE060041F4060041F40610403207E";
+  String p = "7E4002990670040050710841000000720401907304000675083f800000740400067E";
   
   print(RequestSettings().decode(p));
 }

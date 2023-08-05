@@ -117,6 +117,10 @@ class StatusMessage{
       Substate v = vals[i];
 
       if(v.hexVal == t){
+
+        if(v.name=="stop"){
+          return "CAN OVER";
+        }
         return v.name;
       }
     }
