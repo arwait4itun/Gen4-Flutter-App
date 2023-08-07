@@ -153,7 +153,7 @@ class _FlyerSettingsPageState extends State<FlyerSettingsPage> {
                 _customRow("Draft", _draft,defaultValue: "",enabled: _enabled),
                 _customRow("Twists Per Inch", _twistPerInch,defaultValue: "",enabled: _enabled),
                 _customRow("Initial RTF", _RTF,defaultValue: "",enabled: _enabled),
-                _customRow("Layers (m)", _layers, isFloat: false,defaultValue: "",enabled: _enabled),
+                _customRow("Layers", _layers, isFloat: false,defaultValue: "",enabled: _enabled),
                 _customRow("Max Content Ht (mm)", _maxHeightOfContent, isFloat: false,defaultValue: "",enabled: _enabled),
                 _customRow("Roving Width", _rovingWidth, defaultValue: "",enabled: _enabled),
                 _customRow("Delta Bobbin-dia (mm)", _deltaBobbinDia,defaultValue: "",enabled: _enabled),

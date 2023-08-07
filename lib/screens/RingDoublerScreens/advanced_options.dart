@@ -172,6 +172,8 @@ class _RingDoublerAdvancedOptionsUIState extends State<RingDoublerAdvancedOption
               color: Colors.grey,
 
             ),
+
+            /*
             Center(
               child: Container(
                 height: MediaQuery.of(context).size.height*0.05,
@@ -253,6 +255,8 @@ class _RingDoublerAdvancedOptionsUIState extends State<RingDoublerAdvancedOption
                 ),
               ),
             ),
+
+             */
           ],
         ),
     );

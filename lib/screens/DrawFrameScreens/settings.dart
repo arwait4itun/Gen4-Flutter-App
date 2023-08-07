@@ -614,6 +614,7 @@ class _DrawFrameSettingsPageState extends State<DrawFrameSettingsPage> {
         _lengthLimit.text = settings["lengthLimit"]!.toInt().toString();
         _rampUpTime.text = settings["rampUpTime"]!.toInt().toString();
         _rampDownTime.text = settings["rampDownTime"]!.toInt().toString();
+        _creelTensionFactor.text = settings["creelTensionFactor"]!.toDouble().toStringAsFixed(2);
 
         newDataReceived = false;
 
