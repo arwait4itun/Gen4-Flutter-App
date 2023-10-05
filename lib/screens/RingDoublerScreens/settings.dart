@@ -9,7 +9,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flyer/message/acknowledgement.dart';
 import 'package:flyer/message/RingDoubler/settings_request.dart';
 import 'package:flyer/message/RingDoubler/settingsMessage.dart';
-import 'package:flyer/screens/FlyerScreens/settingsPopUpPage.dart';
+import 'package:flyer/screens/RingDoublerScreens/settingsPopUpPage.dart';
 import 'package:flyer/services/RingDoubler/provider_service.dart';
 import 'package:provider/provider.dart';
 
@@ -521,7 +521,7 @@ class _RingDoublerSettingsPageState extends State<RingDoublerSettingsPage> {
         height: MediaQuery.of(context).size.height * 0.8,
         width: MediaQuery.of(context).size.width * 0.9,
         color: Colors.white,
-        child: FlyerPopUpUI(),
+        child: RDPopUpUI(),
       ),
     );
   }

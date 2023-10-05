@@ -1,37 +1,46 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/RingDoubler/provider_service.dart';
 
-class FlyerPopUpUI extends StatefulWidget {
-  const FlyerPopUpUI({Key? key}) : super(key: key);
+class RDPopUpUI extends StatefulWidget {
+  const RDPopUpUI({Key? key}) : super(key: key);
 
   @override
-  _FlyerPopUpUIState createState() => _FlyerPopUpUIState();
+  _RDPopUpUIState createState() => _RDPopUpUIState();
 }
 
-class _FlyerPopUpUIState extends State<FlyerPopUpUI> {
+class _RDPopUpUIState extends State<RDPopUpUI> {
 
   late double delivery_mtr_min;
-  late double maxLayers;
+  late double calMotorRPM;
+  late double outputCountInNm;
+  late double windingVelocity;
+  late double bindingVelocity;
+  late double windingTimeSec;
+  late double bindingTimeSec;
+  late double bindingliftMotorRPM;
 
-  late double flyerMotorRPM,bobbinMotorRPM,FR_MotorRPM,BR_MotorRPM,liftMotorRPM,totalRunTime_Min;
-  
+  late double htDifferencePerStroke;
+  late double strokesPerDoff;
+  late double maxStrokesPerZ;
+  late double estFullBobbinWidth;
+
+  late double doffTime;
+  late double totalYarnLength;
+  late double totalyarnWeightInGrams;
+
+  late double _inputYarnCount;
+  late double _outputYarnDia ;
+  late double _twistPerInch ;
   late double _spindleSpeed;
-  late double _draft;
-  late double _twistPerInch;
-  late double _RTF;
-  late double _layers;
-
-  late double _maxHeightOfContent;
-
-  late double _rovingWidth;
-
-  late double _deltaBobbinDia,_bareBobbinDia,_rampupTime,_rampdownTime,_changeLayerTime;
-  late double _strokeDistperSec;
-
-
+  late double _packageHeight ;
+  late double _diaBuildFactor ;
+  late double _windingClosenessFactor ;
+  late double _windingOffsetCoils ;
 
   
   @override
@@ -43,22 +52,17 @@ class _FlyerPopUpUIState extends State<FlyerPopUpUI> {
 
       Map<String,String> _s = Provider.of<RingDoublerConnectionProvider>(context,listen: false).settings;
 
-      _spindleSpeed = double.parse(_s["spindleSpeed"].toString());
-      _draft =  double.parse(_s["draft"].toString());
+      _inputYarnCount = double.parse(_s["inputYarnCount"].toString());
+      _outputYarnDia =  double.parse(_s["outputYarnDia"].toString());
       _twistPerInch = double.parse(_s["twistPerInch"].toString());
-      _RTF = double.parse(_s["RTF"].toString());
-      _layers=double.parse(_s["layers"].toString());
-      _maxHeightOfContent  = double.parse(_s["maxHeightOfContent"].toString());
-      _rovingWidth = double.parse(_s["rovingWidth"].toString());
-      _deltaBobbinDia = double.parse(_s["deltaBobbinDia"].toString());
-      _bareBobbinDia = double.parse(_s["bareBobbinDia"].toString());
-      _rampupTime = double.parse(_s["rampupTime"].toString());
-      _rampdownTime = double.parse(_s["rampdownTime"].toString());
-      _changeLayerTime = double.parse(_s["changeLayerTime"].toString());
-
+      _spindleSpeed = double.parse(_s["spindleSpeed"]!);
+      _packageHeight = double.parse(_s["packageHeight"].toString());
+      _diaBuildFactor=double.parse(_s["diaBuildFactor"].toString());
+      _windingClosenessFactor  = double.parse(_s["windingClosenessFactor"].toString());
+      _windingOffsetCoils = double.parse(_s["windingOffsetCoils"].toString());
     }
-
   }
+
   @override
   Widget build(BuildContext context) {
 
@@ -115,7 +119,7 @@ class _FlyerPopUpUIState extends State<FlyerPopUpUI> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(10.0),
             child: Text(
               'Delivery:\t${delivery_mtr_min.toStringAsFixed(2)??"-"} m/min',
               style:
@@ -123,86 +127,141 @@ class _FlyerPopUpUIState extends State<FlyerPopUpUI> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(10.0),
             child: Text(
-              'Stroke Velocity:\t\t${_strokeDistperSec.toStringAsFixed(2)??"-"} mm/s',
+              'Calendar Motor RPM:\t${calMotorRPM.toStringAsFixed(1)??"-"} ',
+              style:
+              TextStyle(color: Colors.black, fontSize:  15),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Text(
+              'Output Yarn Count in Nm:\t${outputCountInNm.toStringAsFixed(2)??"-"}',
+              style:
+              TextStyle(color: Colors.black, fontSize:  15),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Text(
+              'Winding Velocity:\t\t${windingVelocity.toStringAsFixed(2)??"-"} mm/s',
               style:
               TextStyle(
-                  color: _strokeDistperSec>5.5? Colors.red: Colors.black,
+                  color: Colors.black,
                   fontSize:  15,
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Text(
+              'Binding Velocity:\t\t${bindingVelocity.toStringAsFixed(2)??"-"} mm/s',
+              style:
+              TextStyle(
+                color: Colors.black,
+                fontSize:  15,
               ),
             ),
           ),
           
           Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(10.0),
             child: Text(
-              'Max Layers Possible:\t\t${maxLayers.ceil()??"-"}',
+              'Winding Time :\t\t${windingTimeSec.toStringAsFixed(1)??""} sec',
               style:
               TextStyle(color: Colors.black, fontSize:  15),
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(10.0),
             child: Text(
-              'Runtime ${_layers.toInt()} layers:\t\t${totalRunTime_Min.toStringAsFixed(2)??"-"} min',
+              'Binding Time :\t\t${bindingTimeSec.toStringAsFixed(1)??""} sec',
               style:
               TextStyle(color: Colors.black, fontSize:  15),
             ),
           ),
-
           Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(10.0),
             child: Text(
-              'Flyer Motor RPM:\t\t\t\t${flyerMotorRPM.ceil()??"-"}',
+              'Lift Motor RPM during Binding :\t\t${bindingliftMotorRPM.ceil()??""}',
               style:
-              TextStyle(
-                  color: flyerMotorRPM <= 1400?  Colors.black: Colors.red,
-                  fontSize:  15
-              ),
+              TextStyle(color: Colors.black, fontSize:  15),
             ),
           ),
-
           Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(10.0),
             child: Text(
-              'Bobbin Motor RPM:    ${bobbinMotorRPM.ceil()??"-"}',
+              'HtDifferencePerStroke:\t\t\t\t${htDifferencePerStroke.toStringAsFixed(2)??""} mm',
               style:
               TextStyle(
-                  color: bobbinMotorRPM <= 1400?  Colors.black: Colors.red,
+                  color: Colors.black,
                   fontSize:  15
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(10.0),
             child: Text(
-              'FR Motor RPM:    ${FR_MotorRPM.ceil()??"-"}',
+              'StrokesPerDoff :\t\t\t\t ${strokesPerDoff.ceil()??"-"}',
               style:
               TextStyle(
-                  color: FR_MotorRPM <= 1400?  Colors.black: Colors.red,
+                  color: Colors.black,
                   fontSize:  15
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(10.0),
             child: Text(
-              'BR Motor RPM:    ${BR_MotorRPM.ceil()??"-"}',
+              'MaxStrokesPerZ:    ${maxStrokesPerZ.ceil()??"-"}',
               style:
               TextStyle(
-                  color: BR_MotorRPM <= 1400?  Colors.black: Colors.red,
+                  color: Colors.black,
                   fontSize:  15
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(10.0),
             child: Text(
-              'Lift Motor RPM:    ${liftMotorRPM.ceil()??"-"}',
+              'Estimated Full Bobbin Width:    ${estFullBobbinWidth.toStringAsFixed(2)??"-"}',
               style:
               TextStyle(
-                  color: liftMotorRPM <= 1400?  Colors.black: Colors.red,
+                  color: Colors.black,
+                  fontSize:  15
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Text(
+              'Doff Time:    ${doffTime.toStringAsFixed(2)??""} min',
+              style:
+              TextStyle(
+                  color: Colors.black,
+                  fontSize:  15
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Text(
+              'Total Yarn Length:    ${totalYarnLength.toStringAsFixed(2)??"-"} mtrs',
+              style:
+              TextStyle(
+                  color: Colors.black,
+                  fontSize:  15
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Text(
+              'Total Yarn Weight in Grams:    ${totalyarnWeightInGrams.toStringAsFixed(2)??"-"} grams',
+              style:
+              TextStyle(
+                  color:Colors.black,
                   fontSize:  15
               ),
             ),
@@ -217,52 +276,40 @@ class _FlyerPopUpUIState extends State<FlyerPopUpUI> {
   
   void calculate(){
 
-    var maxRPM = 1450;
-    var strokeDistLimit = 5.5;
-
-    double frCircumference = 94.248;
-    double frRollerToMotorGearRatio = 4.61;
-
-    flyerMotorRPM = _spindleSpeed * 1.476;
     delivery_mtr_min = (_spindleSpeed/ _twistPerInch) * 0.0254;
+    var calRollerCircumference = 141.37;
+    var calRollerRPM = delivery_mtr_min*1000/calRollerCircumference;
+    var calRollerGB = 6.91;
+    calMotorRPM = calRollerRPM * calRollerGB;
 
-    double frRpm = (delivery_mtr_min * 1000) / frCircumference;
-    FR_MotorRPM = (frRpm * frRollerToMotorGearRatio);
-    BR_MotorRPM = ((frRpm * 23.562) / (_draft/ 1.5));
 
-    var maxLayers_1 = (_maxHeightOfContent/_rovingWidth); // for stroke Ht != 0
-    var maxLayers_2 = ((140 - _bareBobbinDia)/_deltaBobbinDia); // for bobbin Circumference= max Width
-    if (maxLayers_1 >= maxLayers_2){
-      maxLayers = maxLayers_2  - 5;
-    }else{
-      maxLayers = maxLayers_1  - 5;
-    }
-    double layerNo = 0; //layer 0 has highest speed for bobbin RPM so calculate only for that
-    var bobbinDia = _bareBobbinDia+ layerNo * _deltaBobbinDia;
+    outputCountInNm = (_inputYarnCount /2)/0.591;
+    var emptyBobbinDiaMM = 24;
+    var emptyBobbinWidth_Circ = emptyBobbinDiaMM * pi;
+    var windingVelocity_mmMin = ((delivery_mtr_min*1000.0)/emptyBobbinWidth_Circ) * _outputYarnDia * (_windingClosenessFactor/100.0);
 
-    var deltaRpmSpindleBobbin = (delivery_mtr_min * 1000) /(bobbinDia * 3.14159);
-    var bobbinRPM = _spindleSpeed + deltaRpmSpindleBobbin;
-    bobbinMotorRPM = bobbinRPM * 1.476;
+    windingVelocity = windingVelocity_mmMin/60.0;
+    bindingVelocity = windingVelocity*2;
 
-    var strokeHeight = _maxHeightOfContent - (_rovingWidth * layerNo);
-    _strokeDistperSec = (deltaRpmSpindleBobbin * _rovingWidth) / 60.0; //5.5
-    liftMotorRPM = (_strokeDistperSec * 60.0 / 4) * 15.3;
+    var chaselength = 55;
+    windingTimeSec = chaselength/windingVelocity;
+    bindingTimeSec = chaselength/bindingVelocity;
 
-    //calculate time for input layers
-    double totalTime_s = 0;
-    totalRunTime_Min = 0;
-    
-    for (int i=0;i<maxLayers; i++){
-      bobbinDia = _bareBobbinDia + i*_deltaBobbinDia;
-      var deltaRPM = (delivery_mtr_min*1000)/(bobbinDia * 3.14159);
+    var leadscrewPitch = 4;
+    var turns_min = windingVelocity_mmMin/leadscrewPitch;
+    var liftGB_Ratio = 24;
+    var windingLiftMotorRPM = turns_min*liftGB_Ratio;
+    bindingliftMotorRPM = windingLiftMotorRPM* 2;
 
-      strokeHeight = _maxHeightOfContent - (_rovingWidth * i); // to change this after cone Angle factor is added
-      var strokeDist_sec = (deltaRPM * _rovingWidth)/60.0;
-      double strokeTime = strokeHeight/strokeDist_sec;
-      totalTime_s += strokeTime;
-    }
-    totalRunTime_Min = totalTime_s/60.0;
-    
+    htDifferencePerStroke = _windingOffsetCoils*(_windingClosenessFactor/100.0)*_outputYarnDia/_diaBuildFactor;
+    strokesPerDoff = (_packageHeight - chaselength)/htDifferencePerStroke;
+    maxStrokesPerZ = chaselength/htDifferencePerStroke;
+    estFullBobbinWidth = maxStrokesPerZ * (_outputYarnDia * 2) + emptyBobbinDiaMM;
+
+    var timePerStroke = (windingTimeSec + bindingTimeSec)/60.0;
+    doffTime = strokesPerDoff * timePerStroke;
+    totalYarnLength = doffTime * delivery_mtr_min;
+    totalyarnWeightInGrams = totalYarnLength/outputCountInNm ;
   }
 
 
